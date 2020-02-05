@@ -4,6 +4,9 @@ Latest version: 1.0.1
 
 This documents the changes between versions:
 
+1.0.2 (Feb 5 2020)
+    Used the new Localization class to simplify the new data model for localizing FreeMarker.
+
 1.0.1 (Feb 5 2020)
     New FreeMarker data model that adds support for localization and directionality (ltr / rtl).
 
