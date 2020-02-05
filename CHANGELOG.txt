@@ -1,0 +1,11 @@
+Project: kotlin-restful
+Description: Brings Kotlin closer to Undertow, FreeMarker and other RESTful libraries.
+Latest version: 1.0.1
+
+This documents the changes between versions:
+
+1.0.1 (Feb 5 2020)
+    New FreeMarker data model that adds support for localization and directionality (ltr / rtl).
+
+1.0.0 (Feb 4 2020)
+    Initial public release with few extensions and support classes.
