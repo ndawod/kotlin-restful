@@ -29,22 +29,31 @@ import org.noordawod.kotlin.core.extension.direction
 import org.noordawod.kotlin.core.extension.endAlignment
 import org.noordawod.kotlin.core.extension.getNewLanguage
 import org.noordawod.kotlin.core.extension.startAlignment
-import org.noordawod.kotlin.core.util.Properties
+import org.noordawod.kotlin.core.util.Localization
 
 /**
  * A FreeMarker data model that supports localization through the use of a query parameter.
  */
 abstract class FreeMarkerL10nDataModel : FreeMarkerDataModel {
   /**
-   * Returns the localized translations based on the client's preferred [java.util.Locale].
+   * Returns the localized translations for the base [java.util.Locale].
    */
-  abstract val translation: Properties
+  protected abstract val baseL10n: Localization
 
   /**
-   * Returns the [java.util.Locale] for a request, if provided, or reverts back to a configured
-   * locale in the app.
+   * Returns the localized translations based on the client's preferred [java.util.Locale].
    */
-  abstract val locale: java.util.Locale
+  protected abstract val clientL10n: Localization
+
+  /**
+   * Returns the base [java.util.Locale].
+   */
+  val baseLocale: java.util.Locale get() = baseL10n.locale
+
+  /**
+   * Returns the client's preferred [java.util.Locale].
+   */
+  val locale: java.util.Locale get() = clientL10n.locale
 
   /**
    * Returns the requested language in this request, if provided, or reverts back to the base,
@@ -70,14 +79,26 @@ abstract class FreeMarkerL10nDataModel : FreeMarkerDataModel {
   open val endAlignment: String get() = locale.endAlignment()
 
   /**
-   * Localizes the specified text [key] based on the loaded configuration. Localization files are
-   * loaded on startup from *.properties found in "l10n/&lt;env&gt;/" directory.
+   * Localizes the specified text [key] based on the client's preferred [java.util.Locale].
    */
-  open fun l10n(key: String): String? = translation[key]
+  open fun l10n(key: String): String? = l10n(key, false)
 
   /**
-   * Localizes the specified text [key] based on the loaded configuration. Localization files are
-   * loaded on startup from *.properties found in "l10n/&lt;env&gt;/" directory.
+   * Localizes the specified text [key] based on the client's preferred [java.util.Locale]. If
+   * [fallback] is true, and the translations for the [clientL10n] don't have this key, then
+   * the original text for this key is retrieved from the [baseL10n].
+   */
+  open fun l10n(key: String, fallback: Boolean): String? {
+    var text: String? = clientL10n.translation[key]
+    if (fallback && text.isNullOrBlank()) {
+      text = baseL10n.translation[key]
+    }
+    return text
+  }
+
+  /**
+   * Localizes the specified text [key] based on the client's preferred [java.util.Locale]. If
+   * not found, the [defaultValue] will be returned instead.
    */
   open fun l10n(key: String, defaultValue: String): String = l10n(key) ?: defaultValue
 }
