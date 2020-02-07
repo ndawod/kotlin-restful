@@ -5,7 +5,7 @@ Latest version: 1.0.2
 This documents the changes between versions:
 
 1.0.3 (Feb 7 2020)
-    Introduce few handy functions that can be configured for use within a FreeMarker template.
+    Introduce a FreeMarker method to encode any object to a JSON string.
 
 1.0.2 (Feb 5 2020)
     Used the new Localization class to simplify the new data model for localizing FreeMarker.
