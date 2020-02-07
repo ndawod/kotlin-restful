@@ -35,7 +35,7 @@ import freemarker.template.TemplateModelException
  * A handy FreeMarker method to encode any object to a JSON string. Method must be called with
  * one parameter.
  */
-class JsonEncode : TemplateMethodModelEx {
+class JsonEncodeMethod : TemplateMethodModelEx {
   private val engine: ObjectMapper = ObjectMapper()
 
   /** {@inheritDoc}. */
