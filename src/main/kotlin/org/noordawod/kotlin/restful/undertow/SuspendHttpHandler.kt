@@ -45,11 +45,15 @@ abstract class SuspendHttpHandler constructor(
   final override fun handleRequest(exchange: HttpServerExchange?) {
     exchange?.let {
       val runnable = Runnable {
+        var endExchange = false
         scope.launch {
-          var endExchange = false
           it.startBlocking()
+          @Suppress("LiftReturnOrAssignment")
           try {
             endExchange = handleRequest(it, this)
+          } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+            e.printStackTrace()
+            endExchange = true
           } finally {
             if (endExchange) {
               it.endExchange()

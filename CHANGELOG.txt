@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.0.5 (Feb 7 2020)
+    When a coroutine fails to execute properly, always end the exchange.
+
 1.0.4 (Feb 7 2020)
     Rename the JsonEncode method to reflect that it's actually a method.
 
