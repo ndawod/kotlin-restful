@@ -21,14 +21,29 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_1_8,
-    ndawod_kotlin: '1.0.1',
-    kotlin: '1.3.61',
-    kotlinx: '1.3.3',
-    detekt: '1.5.0',
-    jackson: '2.9.9',
-    undertow: '2.0.28.Final',
-    freemarker: '2.3.29'
-]
+@file:Suppress("unused")
+
+package org.noordawod.kotlin.restful.freemarker.method
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import freemarker.template.SimpleScalar
+import freemarker.template.TemplateMethodModelEx
+import freemarker.template.TemplateModel
+import freemarker.template.TemplateModelException
+
+/**
+ * A handy FreeMarker method to encode any object to a JSON string. Method must be called with at
+ * least one parameter.
+ */
+class JsonEncode : TemplateMethodModelEx {
+  private val engine: ObjectMapper = ObjectMapper()
+
+  /** {@inheritDoc}. */
+  @Throws(TemplateModelException::class)
+  override fun exec(args: List<*>): TemplateModel {
+    if (args.isEmpty()) {
+      throw TemplateModelException("Method called with a null or no value.")
+    }
+    return SimpleScalar(engine.writeValueAsString(args[0]))
+  }
+}

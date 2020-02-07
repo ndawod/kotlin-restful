@@ -32,7 +32,7 @@ import org.noordawod.kotlin.core.extension.startAlignment
 import org.noordawod.kotlin.core.util.Localization
 
 /**
- * A FreeMarker data model that supports localization through the use of a query parameter.
+ * A FreeMarker data model that supports localization.
  */
 abstract class FreeMarkerL10nDataModel : FreeMarkerDataModel {
   /**
