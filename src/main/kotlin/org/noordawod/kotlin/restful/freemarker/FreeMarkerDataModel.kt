@@ -112,4 +112,22 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
 
     return builder.toString()
   }
+
+  /**
+   * Returns the value for the [name] query parameter if it exists, null otherwise. Note that only
+   * the first value will be examined.
+   */
+  fun queryParameter(name: String): String? {
+    val values = queryParameters[name]
+    return if (values.isNullOrEmpty()) null else values.first
+  }
+
+  /**
+   * Returns the value for the [name] query parameter if it exists, [defaultValue] otherwise. Note
+   * that only the first value will be examined.
+   */
+  fun queryParameter(name: String, defaultValue: String): String {
+    val values = queryParameters[name]
+    return if (values.isNullOrEmpty()) defaultValue else values.first
+  }
 }
