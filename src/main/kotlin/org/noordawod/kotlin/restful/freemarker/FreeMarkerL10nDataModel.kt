@@ -87,9 +87,13 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * Localizes the specified text [key] based on the client's preferred [java.util.Locale] with the
    * specified arguments to replace any placeholders in the translation (%1$d, %2$s, ...).
    */
-  open fun l10n(key: String, vararg args: Any): String? {
+  open fun l10n(key: String, args: Iterable<Any>): String? {
     val text: String? = l10n(key, true)
-    return if (text.isNullOrBlank()) null else String.format(locale, text, args)
+    return if (text.isNullOrBlank()) {
+      null
+    } else {
+      java.lang.String.format(locale, text, *args.map { it.toString() }.toTypedArray())
+    }
   }
 
   /**
