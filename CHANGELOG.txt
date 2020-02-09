@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.0.10 (Feb 9 2020)
+    Fix a small issue when calling Java with a vararg parameter.
+
 1.0.9 (Feb 9 2020)
     Add another localization method to support a key with placeholder parameters.
 
