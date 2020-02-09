@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.0.9 (Feb 9 2020)
+    Add another localization method to support a key with placeholder parameters.
+
 1.0.8 (Feb 9 2020)
     Add a couple of methods to the FreeMarker query-aware base model to aid in retrieving a value
     for a query parameter.
