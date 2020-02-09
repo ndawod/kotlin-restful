@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.0.7 (Feb 9 2020)
+    Make FreeMarker's localization model extend the model that supports query parameters.
+
 1.0.6 (Feb 9 2020)
     Make FreeMarker's base model support query parameters.
 

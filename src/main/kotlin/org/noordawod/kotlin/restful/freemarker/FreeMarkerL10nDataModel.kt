@@ -34,7 +34,7 @@ import org.noordawod.kotlin.core.util.Localization
 /**
  * A FreeMarker data model that supports localization.
  */
-abstract class FreeMarkerL10nDataModel : FreeMarkerDataModel {
+abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   /**
    * Returns the localized translations for the base [java.util.Locale].
    */
