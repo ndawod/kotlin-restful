@@ -30,29 +30,47 @@ import org.noordawod.kotlin.core.util.Environment
 /**
  * Returns the base directory for this [Environment] where configuration files are stored.
  */
-fun Environment.configDirectory() = "config${java.io.File.separatorChar}$this"
+fun Environment.configDirectory() =
+  "config${java.io.File.separatorChar}$this"
 
 /**
  * Returns the path to a configuration [file] based on this [Environment].
  */
-fun Environment.configFile(file: String) = "${configDirectory()}${java.io.File.separatorChar}$file"
+fun Environment.configFile(file: String) =
+  "${configDirectory()}${java.io.File.separatorChar}$file"
 
 /**
  * Returns the base directory for this [Environment] where HTML files are stored.
  */
-fun Environment.htmlDirectory() = "html${java.io.File.separatorChar}$this"
+fun Environment.htmlDirectory() =
+  "html${java.io.File.separatorChar}$this"
 
 /**
  * Returns the path to an HTML [file] based on this [Environment].
  */
-fun Environment.htmlFile(file: String) = "${htmlDirectory()}${java.io.File.separatorChar}$file"
+fun Environment.htmlFile(file: String) =
+  "${htmlDirectory()}${java.io.File.separatorChar}$file"
+
+/**
+ * Returns the base directory for this [Environment] where FreeMarker templates are stored.
+ */
+fun Environment.templatesDirectory(name: String = "templates") =
+  "${htmlDirectory()}${java.io.File.separatorChar}$name"
+
+/**
+ * Returns the path to an HTML [file] based on this [Environment].
+ */
+fun Environment.templateFile(file: String) =
+  "${templatesDirectory()}${java.io.File.separatorChar}$file"
 
 /**
  * Returns the base directory for this [Environment] where localization files are stored.
  */
-fun Environment.l10nDirectory() = "l10n${java.io.File.separatorChar}$this"
+fun Environment.l10nDirectory() =
+  "l10n${java.io.File.separatorChar}$this"
 
 /**
  * Returns the path to a localization [file] based on this [Environment].
  */
-fun Environment.l10nFile(file: String) = "${l10nDirectory()}${java.io.File.separatorChar}$file"
+fun Environment.l10nFile(file: String) =
+  "${l10nDirectory()}${java.io.File.separatorChar}$file"
