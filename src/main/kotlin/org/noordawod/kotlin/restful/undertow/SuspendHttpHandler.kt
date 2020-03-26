@@ -38,8 +38,8 @@ import kotlinx.coroutines.launch
  */
 abstract class SuspendHttpHandler constructor(
   private val executor: java.util.concurrent.Executor = SameThreadExecutor.INSTANCE
-) : HttpHandler, Thread.UncaughtExceptionHandler {
-  private val scope = CoroutineScope(Dispatchers.IO)
+) : HttpHandler {
+  private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
   /**
    * Whether this [HttpHandler] should close end the exchange when an error occurs executing
@@ -48,43 +48,34 @@ abstract class SuspendHttpHandler constructor(
   open val endExchangeOnError: Boolean = true
 
   /**
-   * Whether this [HttpHandler] should rethrow a captured error while executing
-   * the suspended method.
+   * Whether to print an exception's stack trace whenever the suspended method throws an error.
    */
-  open val rethrowOnError: Boolean = false
+  open val printStackTraceOnError: Boolean = true
 
   final override fun handleRequest(exchange: HttpServerExchange) {
-    val self = this
-    val runnable = Runnable {
-      scope.launch {
-        Thread.currentThread().uncaughtExceptionHandler = self
-        var endExchange = false
-        exchange.startBlocking()
-        @Suppress("LiftReturnOrAssignment")
-        try {
-          endExchange = handleRequest(exchange, this)
-        } catch (ignored: Throwable) {
-          endExchange = endExchangeOnError
-        } finally {
+    scope.launch {
+      var endExchange = false
+      val scope = this
+      Thread.currentThread().uncaughtExceptionHandler =
+        Thread.UncaughtExceptionHandler { _, e: Throwable ->
+          if (printStackTraceOnError) {
+            e.printStackTrace()
+          }
+          handleThrowable(exchange, scope, e)
           if (endExchange) {
             exchange.endExchange()
           }
         }
-      }
-    }
-    if (exchange.isInIoThread) {
-      exchange.dispatch(executor, runnable)
-    } else {
-      runnable.run()
-    }
-  }
 
-  override fun uncaughtException(t: Thread?, e: Throwable?) {
-    if (null != e) {
-      if (rethrowOnError) {
-        throw e
-      } else {
-        e.printStackTrace()
+      exchange.startBlocking()
+      @Suppress("LiftReturnOrAssignment")
+      try {
+        endExchange = handleRequest(exchange, this)
+        if (endExchange) {
+          exchange.endExchange()
+        }
+      } catch (ignored: Throwable) {
+        endExchange = endExchangeOnError
       }
     }
   }
@@ -93,14 +84,13 @@ abstract class SuspendHttpHandler constructor(
    * Handles the request in blocking mode and returns whether to end the exchange or not.
    */
   abstract suspend fun handleRequest(exchange: HttpServerExchange, scope: CoroutineScope): Boolean
-}
 
-/**
- * A [SuspendHttpHandler] that will rethrow any captured errors while executing the
- * suspended method.
- */
-abstract class ThrowableSuspendHttpHandler constructor(
-  executor: java.util.concurrent.Executor = SameThreadExecutor.INSTANCE
-) : SuspendHttpHandler(executor) {
-  override val rethrowOnError: Boolean = true
+  /**
+   * Handles an unhandled error that was thrown while executing the suspended method.
+   */
+  abstract fun handleThrowable(
+    exchange: HttpServerExchange,
+    scope: CoroutineScope,
+    e: Throwable
+  )
 }
