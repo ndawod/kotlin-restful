@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.0.15 (Mar 26 2020)
+    Adjust SuspendHttpHandler to support rethrowing captured errors.
+
 1.0.14 (Mar 26 2020)
     Bump library versions and update this file.
 

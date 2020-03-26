@@ -33,39 +33,51 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * A handler for an HTTP request that relays the call to a suspend method.
- *
- * The request handler must eventually either call another handler or end the exchange.
+ * An [HttpHandler] that relays HTTP requests to a Kotlin suspend method, even if the exchange
+ * is already running on the IO thread.
  */
 abstract class SuspendHttpHandler constructor(
   private val executor: java.util.concurrent.Executor = SameThreadExecutor.INSTANCE
 ) : HttpHandler {
   private val scope = CoroutineScope(Dispatchers.IO)
 
-  final override fun handleRequest(exchange: HttpServerExchange?) {
-    exchange?.let {
-      val runnable = Runnable {
+  /**
+   * Whether this [HttpHandler] should close end the exchange when an error occurs executing
+   * the suspended method.
+   */
+  open val endExchangeOnError: Boolean = true
+
+  /**
+   * Whether this [HttpHandler] should rethrow a captured error while executing
+   * the suspended method.
+   */
+  open val rethrowOnError: Boolean = false
+
+  final override fun handleRequest(exchange: HttpServerExchange) {
+    val runnable = Runnable {
+      scope.launch {
         var endExchange = false
-        scope.launch {
-          it.startBlocking()
-          @Suppress("LiftReturnOrAssignment")
-          try {
-            endExchange = handleRequest(it, this)
-          } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-            e.printStackTrace()
-            endExchange = true
-          } finally {
-            if (endExchange) {
-              it.endExchange()
-            }
+        exchange.startBlocking()
+        @Suppress("LiftReturnOrAssignment")
+        try {
+          endExchange = handleRequest(exchange, this)
+        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+          e.printStackTrace()
+          endExchange = endExchangeOnError
+          if (rethrowOnError) {
+            throw e
+          }
+        } finally {
+          if (endExchange) {
+            exchange.endExchange()
           }
         }
       }
-      if (it.isInIoThread) {
-        it.dispatch(executor, runnable)
-      } else {
-        runnable.run()
-      }
+    }
+    if (exchange.isInIoThread) {
+      exchange.dispatch(executor, runnable)
+    } else {
+      runnable.run()
     }
   }
 
@@ -73,4 +85,14 @@ abstract class SuspendHttpHandler constructor(
    * Handles the request in blocking mode and returns whether to end the exchange or not.
    */
   abstract suspend fun handleRequest(exchange: HttpServerExchange, scope: CoroutineScope): Boolean
+}
+
+/**
+ * A [SuspendHttpHandler] that will rethrow any captured errors while executing the
+ * suspended method.
+ */
+abstract class ThrowableSuspendHttpHandler constructor(
+  executor: java.util.concurrent.Executor = SameThreadExecutor.INSTANCE
+) : SuspendHttpHandler(executor) {
+  override val rethrowOnError: Boolean = true
 }
