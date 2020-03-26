@@ -28,6 +28,8 @@ package org.noordawod.kotlin.restful.undertow
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.SameThreadExecutor
+import io.undertow.util.StatusCodes
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,22 +55,9 @@ abstract class SuspendHttpHandler constructor(
   open val printStackTraceOnError: Boolean = true
 
   final override fun handleRequest(exchange: HttpServerExchange) {
-    scope.launch {
-      val scope = this
-
-      Thread.currentThread().uncaughtExceptionHandler =
-        Thread.UncaughtExceptionHandler { _, e: Throwable ->
-          if (printStackTraceOnError) {
-            e.printStackTrace()
-          }
-          handleThrowable(exchange, scope, e)
-          if (endExchangeOnError) {
-            exchange.endExchange()
-          }
-        }
-
+    scope.launch(exceptionHandler(exchange, scope)) {
       exchange.startBlocking()
-      if(handleRequest(exchange, this)) {
+      if(handleRequest(exchange, scope)) {
         exchange.endExchange()
       }
     }
@@ -77,14 +66,25 @@ abstract class SuspendHttpHandler constructor(
   /**
    * Handles the request in blocking mode and returns whether to end the exchange or not.
    */
-  abstract suspend fun handleRequest(exchange: HttpServerExchange, scope: CoroutineScope): Boolean
+  abstract suspend fun handleRequest(
+    exchange: HttpServerExchange,
+    scope: CoroutineScope
+  ): Boolean
 
   /**
-   * Handles an unhandled error that was thrown while executing the suspended method.
+   * Returns a generic [CoroutineExceptionHandler] that prints the exception to standard error,
+   * and sets the HTTP status code to 500 using [HttpServerExchange.setStatusCode].
    */
-  abstract fun handleThrowable(
+  open fun exceptionHandler(
     exchange: HttpServerExchange,
-    scope: CoroutineScope,
-    e: Throwable
-  )
+    scope: CoroutineScope
+  ): CoroutineExceptionHandler = CoroutineExceptionHandler { _, e: Throwable ->
+    if (printStackTraceOnError) {
+      e.printStackTrace()
+    }
+    exchange.statusCode = StatusCodes.INTERNAL_SERVER_ERROR
+    if (endExchangeOnError) {
+      exchange.endExchange()
+    }
+  }
 }

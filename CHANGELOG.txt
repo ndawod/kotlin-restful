@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.0.19 (Mar 26 2020)
+    Fix a bug when handling errors in SuspendHttpHandler.
+
 1.0.18 (Mar 26 2020)
     Fix a bug when handling errors in SuspendHttpHandler.
 
