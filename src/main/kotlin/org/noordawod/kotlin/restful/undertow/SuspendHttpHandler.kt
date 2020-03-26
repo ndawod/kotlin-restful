@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
  */
 abstract class SuspendHttpHandler constructor(
   private val executor: java.util.concurrent.Executor = SameThreadExecutor.INSTANCE
-) : HttpHandler {
+) : HttpHandler, Thread.UncaughtExceptionHandler {
   private val scope = CoroutineScope(Dispatchers.IO)
 
   /**
@@ -54,19 +54,17 @@ abstract class SuspendHttpHandler constructor(
   open val rethrowOnError: Boolean = false
 
   final override fun handleRequest(exchange: HttpServerExchange) {
+    val self = this
     val runnable = Runnable {
       scope.launch {
+        Thread.currentThread().uncaughtExceptionHandler = self
         var endExchange = false
         exchange.startBlocking()
         @Suppress("LiftReturnOrAssignment")
         try {
           endExchange = handleRequest(exchange, this)
-        } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
-          e.printStackTrace()
+        } catch (ignored: Throwable) {
           endExchange = endExchangeOnError
-          if (rethrowOnError) {
-            throw e
-          }
         } finally {
           if (endExchange) {
             exchange.endExchange()
@@ -78,6 +76,16 @@ abstract class SuspendHttpHandler constructor(
       exchange.dispatch(executor, runnable)
     } else {
       runnable.run()
+    }
+  }
+
+  override fun uncaughtException(t: Thread?, e: Throwable?) {
+    if (null != e) {
+      if (rethrowOnError) {
+        throw e
+      } else {
+        e.printStackTrace()
+      }
     }
   }
 
