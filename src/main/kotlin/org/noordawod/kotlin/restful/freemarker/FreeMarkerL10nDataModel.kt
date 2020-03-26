@@ -92,6 +92,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
     return if (text.isNullOrBlank()) {
       null
     } else {
+      @Suppress("SpreadOperator")
       java.lang.String.format(locale, text, *args.map { it.toString() }.toTypedArray())
     }
   }
