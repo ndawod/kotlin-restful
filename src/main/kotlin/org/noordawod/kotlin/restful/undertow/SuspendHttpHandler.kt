@@ -54,28 +54,22 @@ abstract class SuspendHttpHandler constructor(
 
   final override fun handleRequest(exchange: HttpServerExchange) {
     scope.launch {
-      var endExchange = false
       val scope = this
+
       Thread.currentThread().uncaughtExceptionHandler =
         Thread.UncaughtExceptionHandler { _, e: Throwable ->
           if (printStackTraceOnError) {
             e.printStackTrace()
           }
           handleThrowable(exchange, scope, e)
-          if (endExchange) {
+          if (endExchangeOnError) {
             exchange.endExchange()
           }
         }
 
       exchange.startBlocking()
-      @Suppress("LiftReturnOrAssignment")
-      try {
-        endExchange = handleRequest(exchange, this)
-        if (endExchange) {
-          exchange.endExchange()
-        }
-      } catch (ignored: Throwable) {
-        endExchange = endExchangeOnError
+      if(handleRequest(exchange, this)) {
+        exchange.endExchange()
       }
     }
   }
