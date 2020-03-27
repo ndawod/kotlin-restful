@@ -27,38 +27,41 @@ package org.noordawod.kotlin.restful.undertow
 
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
-import io.undertow.util.SameThreadExecutor
-import io.undertow.util.StatusCodes
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
- * An [HttpHandler] that relays HTTP requests to a Kotlin suspend method, even if the exchange
- * is already running on the IO thread.
+ * An [HttpHandler] that always relays HTTP requests to a XNIO worker thread.
  */
-abstract class SuspendHttpHandler constructor(
-  private val executor: java.util.concurrent.Executor = SameThreadExecutor.INSTANCE
-) : HttpHandler {
-  private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-
+abstract class WorkerHttpHandler constructor(
   /**
    * Whether this [HttpHandler] should close end the exchange when an error occurs executing
-   * the suspended method.
+   * the [handleWork] method.
    */
-  open val endExchangeOnError: Boolean = true
-
-  /**
-   * Whether to print an exception's stack trace whenever the suspended method throws an error.
-   */
-  open val printStackTraceOnError: Boolean = true
-
+  private val endExchangeOnError: Boolean = true
+) : HttpHandler {
   final override fun handleRequest(exchange: HttpServerExchange) {
-    scope.launch(exceptionHandler(exchange, scope)) {
+    if (exchange.isInIoThread) {
+      exchange.dispatch(this)
+    } else {
       exchange.startBlocking()
-      if(handleRequest(exchange, scope)) {
-        exchange.endExchange()
+      var shouldEndExchange = false
+      try {
+        shouldEndExchange = handleWork(exchange)
+      } catch (e: Exception) {
+        shouldEndExchange = endExchangeOnError
+        try {
+          handleException(exchange, e)
+        } catch (ignored: Exception) {
+          System.err.println("\nUnhandled exception while executing handleException():")
+          System.err.println("------------------------------------------------------")
+          ignored.printStackTrace()
+          System.err.println("\nOriginal exception sent to handleException():")
+          System.err.println("---------------------------------------------")
+          e.printStackTrace()
+        }
+      } finally {
+        if (shouldEndExchange) {
+          exchange.endExchange()
+        }
       }
     }
   }
@@ -66,25 +69,10 @@ abstract class SuspendHttpHandler constructor(
   /**
    * Handles the request in blocking mode and returns whether to end the exchange or not.
    */
-  abstract suspend fun handleRequest(
-    exchange: HttpServerExchange,
-    scope: CoroutineScope
-  ): Boolean
+  abstract fun handleWork(exchange: HttpServerExchange): Boolean
 
   /**
-   * Returns a generic [CoroutineExceptionHandler] that prints the exception to standard error,
-   * and sets the HTTP status code to 500 using [HttpServerExchange.setStatusCode].
+   * Handles an exception [e] that was thrown while work was being done using [handleWork].
    */
-  open fun exceptionHandler(
-    exchange: HttpServerExchange,
-    scope: CoroutineScope
-  ): CoroutineExceptionHandler = CoroutineExceptionHandler { _, e: Throwable ->
-    if (printStackTraceOnError) {
-      e.printStackTrace()
-    }
-    exchange.statusCode = StatusCodes.INTERNAL_SERVER_ERROR
-    if (endExchangeOnError) {
-      exchange.endExchange()
-    }
-  }
+  abstract fun handleException(exchange: HttpServerExchange, e: Exception)
 }
