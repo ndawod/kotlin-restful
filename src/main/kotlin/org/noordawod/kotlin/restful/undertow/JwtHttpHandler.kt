@@ -163,7 +163,7 @@ class JwtAuthenticationHandler constructor(
     private fun sendHeader(exchange: HttpServerExchange, authorization: JwtAuthorization) {
       exchange.responseHeaders.put(
         Headers.AUTHORIZATION,
-        "${authorization.first} ${authorization.second}"
+        "${authorization.first}${authorization.second}"
       )
     }
   }
