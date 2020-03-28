@@ -30,5 +30,6 @@ ext.versions = [
     detekt: '1.6.0',
     jackson: '2.9.9',
     undertow: '2.0.28.Final',
-    freemarker: '2.3.29'
+    freemarker: '2.3.29',
+    auth0_jwt: '3.10.1'
 ]

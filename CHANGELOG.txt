@@ -4,6 +4,9 @@ Latest version: 1.0.2
 
 This documents the changes between versions:
 
+1.1.1 (Mar 28 2020)
+    Added a JwtHttpHandler to easily handle JWT resending and rearming.
+
 1.1.0 (Mar 27 2020)
     After numerous attempts to have coroutines play friends with Undertow, it's been scrapped
     and instead introduced WorkerHttpHandler which offloads its work to an XNIO worker thread,
