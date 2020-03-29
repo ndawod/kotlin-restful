@@ -38,6 +38,7 @@ abstract class WorkerHttpHandler constructor(
    */
   private val endExchangeOnError: Boolean = true
 ) : HttpHandler {
+  @Suppress("PrintStackTrace", "TooGenericExceptionCaught")
   final override fun handleRequest(exchange: HttpServerExchange) {
     if (exchange.isInIoThread) {
       exchange.dispatch(this)
