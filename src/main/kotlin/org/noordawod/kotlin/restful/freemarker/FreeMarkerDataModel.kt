@@ -29,6 +29,11 @@ import org.noordawod.kotlin.restful.extension.appendQueryParameter
 import org.noordawod.kotlin.restful.util.QuerySeparator
 
 /**
+ * A [Collection] of query parameters that are allowed in the app.
+ */
+typealias AllowedQueryParameters = Collection<String>
+
+/**
  * A [Map] of query parameters indexed by a [String] key, and its associated values as a
  * [java.util.Deque] of [String] values.
  */
@@ -39,6 +44,12 @@ typealias QueryParameters = Map<String, java.util.Deque<String>>
  * query parameters.
  */
 interface FreeMarkerDataModel {
+  /**
+   * Allowed query parameters for the app. If the value is null, then all parameters
+   * are automatically allowed (use with care).
+   */
+  val allowedQueryParameters: AllowedQueryParameters?
+
   /**
    * Query parameters in this page.
    */
@@ -87,24 +98,33 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
     val sep = QuerySeparator()
     val overriddenKeys = mutableListOf<String>()
 
+    val allowedQueryParameters = this.allowedQueryParameters
+    val queryParameters = this.queryParameters
+
     // Add the new query parameters first.
     if (true == params?.isNotEmpty()) {
       params.forEach { (key, values) ->
-        if (values is String || values is Number || values is Boolean) {
-          builder.appendQueryParameter(sep, key, listOf(values))
-        } else if (values is Iterable<*> && values.iterator().hasNext()) {
-          builder.appendQueryParameter(sep, key, values)
-        } else {
-          throw IllegalArgumentException("Received an unsupported value for parameter '$key'.")
+        if (null == allowedQueryParameters || allowedQueryParameters.contains(key)) {
+          if (values is String || values is Number || values is Boolean) {
+            builder.appendQueryParameter(sep, key, listOf(values))
+          } else if (values is Iterable<*> && values.iterator().hasNext()) {
+            builder.appendQueryParameter(sep, key, values)
+          } else {
+            throw IllegalArgumentException("Received an unsupported value for parameter '$key'.")
+          }
+          overriddenKeys.add(key)
         }
-        overriddenKeys.add(key)
       }
     }
 
     // Add this page's query parameters second, ignore those that were overridden.
     if (append && queryParameters.isNotEmpty()) {
       queryParameters.forEach { (key, values) ->
-        if (!overriddenKeys.contains(key) && values.isNotEmpty()) {
+        if (
+          !overriddenKeys.contains(key) &&
+          values.isNotEmpty() &&
+          (null == allowedQueryParameters || allowedQueryParameters.contains(key))
+        ) {
           builder.appendQueryParameter(sep, key, values)
         }
       }
