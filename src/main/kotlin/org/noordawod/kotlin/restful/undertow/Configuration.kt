@@ -32,12 +32,12 @@ import org.xnio.ByteBufferSlicePool
  */
 interface Configuration {
   /**
-   * Hostname to bind the server to.
+   * IP address to bind the server to.
    */
-  val hostName: String
+  val ipAddr: String
 
   /**
-   * Port to bind the [hostName] to.
+   * Port to bind the [ipAddr] to.
    */
   val port: Int
 

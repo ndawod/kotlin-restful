@@ -124,7 +124,7 @@ open class UndertowServer constructor(val config: Configuration) {
       )
 
       server = worker.createStreamConnectionServer(
-        java.net.InetSocketAddress(java.net.Inet4Address.getByName(config.hostName), config.port),
+        java.net.InetSocketAddress(java.net.Inet4Address.getByName(config.ipAddr), config.port),
         ChannelListeners.openListenerAdapter(channel),
         OptionMap.builder()
           .set(Options.WORKER_IO_THREADS, config.ioThreads)
