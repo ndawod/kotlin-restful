@@ -91,7 +91,7 @@ interface FreeMarkerDataModel {
  * A base class that provides implementation for generating a URL query.
  */
 abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
-  /** {@inheritDoc}. */
+  @Suppress("ComplexMethod", "NestedBlockDepth") // A bit long, but not complex.
   override fun query(params: Map<String, Any>?, append: Boolean): String {
     @Suppress("MagicNumber")
     val builder = StringBuilder(128)
@@ -120,6 +120,7 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
     // Add this page's query parameters second, ignore those that were overridden.
     if (append && queryParameters.isNotEmpty()) {
       queryParameters.forEach { (key, values) ->
+        @Suppress("ComplexCondition")
         if (
           !overriddenKeys.contains(key) &&
           values.isNotEmpty() &&
