@@ -22,8 +22,8 @@
  */
 
 group = 'org.noordawod.kotlin'
-version = '1.1.6'
-description = 'Brings Kotlin closer to Undertow, FreeMarker and other RESTful libraries.'
+version = '1.1.8'
+description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 buildscript {
     apply from: 'gradle/config.gradle'

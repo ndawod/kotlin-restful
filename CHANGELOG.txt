@@ -1,8 +1,10 @@
 Project: kotlin-restful
-Description: Brings Kotlin closer to Undertow, FreeMarker and other RESTful libraries.
-Latest version: 1.0.2
+Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
+
+1.1.8 (May 12 2020)
+    Bump versions of some dependencies and Kotlin plugin.
 
 1.1.7 (Apr 8 2020)
     Make sure l10n() methods do not return null.
