@@ -29,6 +29,7 @@ ext.versions = [
     kotlinx: '1.3.3',
     detekt: '1.6.0',
     jackson: '2.9.9',
+    moshi: '1.9.2',
     undertow: '2.0.28.Final',
     freemarker: '2.3.29',
     auth0_jwt: '3.10.1'

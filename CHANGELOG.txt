@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.2.0 (May 16 2020)
+    Replace FasterXML with Moshi.
+
 1.1.8 (May 12 2020)
     Bump versions of some dependencies and Kotlin plugin.
 

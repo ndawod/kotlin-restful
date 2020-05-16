@@ -32,7 +32,7 @@ import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.AttachmentKey
 import io.undertow.util.Headers
-import java.time.Duration
+import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 
 /**
  * The exception that's thrown when a JWT fails verification.
@@ -83,16 +83,16 @@ class JwtAuthenticationHandler constructor(
   val sendAlways: Boolean = false,
 
   /**
-   * If a client's JWT expires less than the value of this [Duration], then it will be
-   * auto-rearmed when the exchange finishes.
+   * If a client's JWT expires less than the value of this [Duration][java.time.Duration],
+   * then it will be auto-rearmed when the exchange finishes.
    */
-  val rearmThreshold: Duration? = null,
+  val rearmThreshold: java.time.Duration? = null,
 
   /**
-   * If an auto-rearm is scheduled, this set the [Duration] in the future for the new
-   * expiration time. Default is 2 more weeks.
+   * If an auto-rearm is scheduled, this set the [Duration][java.time.Duration] in the future
+   * for the new expiration time. Default is 2 more weeks.
    */
-  val rearmDuration: Duration = Duration.ofDays(14)
+  val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14)
 ) : HttpHandler {
   override fun handleRequest(exchange: HttpServerExchange) {
     // Extract the JWT from the header.
@@ -153,7 +153,7 @@ class JwtAuthenticationHandler constructor(
 
       // Prerequisite.
       val autoRenewMillis = rearmThreshold?.toMillis() ?: 0L
-      val rearmDurationMillis = rearmDuration.toMillis() / 1_000L * 1_000L
+      val rearmDurationMillis = rearmDuration.toMillis() / MILLIS_IN_1_SECOND * MILLIS_IN_1_SECOND
       val expiresMillis = expiresAt.time
 
       // Needs to rearm or resent?

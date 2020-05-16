@@ -57,8 +57,7 @@ dependencies {
     implementation "com.github.ndawod:kotlin-core:${versions.ndawod_kotlin_core}"
     implementation "io.undertow:undertow-core:${versions.undertow}"
     implementation "org.freemarker:freemarker:${versions.freemarker}"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${versions.jackson}"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${versions.jackson}"
+    implementation "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
+    implementation "com.squareup.moshi:moshi-adapters:${versions.moshi}"
     implementation "com.auth0:java-jwt:${versions.auth0_jwt}"
 }
