@@ -23,7 +23,7 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.restful.undertow
+package org.noordawod.kotlin.restful.undertow.handler
 
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange

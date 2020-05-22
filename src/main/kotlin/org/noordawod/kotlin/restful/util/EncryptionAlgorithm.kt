@@ -30,9 +30,18 @@ import com.auth0.jwt.algorithms.Algorithm
 /**
  * Lists the three most used algorithms when creating a JWT, just for making things a
  * bit more easy.
+ *
+ * @property method the encryption algorithm method
+ * @property bits how many bits this encryption algorithm has
  */
 @Suppress("UnderscoresInNumericLiterals", "MagicNumber")
-enum class EncryptionAlgorithm constructor(private val method: String, val bits: Int) {
+enum class EncryptionAlgorithm constructor(
+  @Suppress("MemberVisibilityCanBePrivate")
+  val method: String,
+
+  @Suppress("MemberVisibilityCanBePrivate")
+  val bits: Int
+) {
   /**
    * A moderate-length algorithm suitable for development.
    */

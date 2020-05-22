@@ -42,11 +42,10 @@ annotation class Base62Json
 
 /**
  * A [JsonAdapter] to convert from a [ByteArray] to Base62, and vice versa.
+ *
+ * @property rethrowOnError whether to rethrow the [Exception] when encoding/decoding Base62 data
  */
 class Base62JsonAdapter constructor(
-  /**
-   * Whether to rethrow the [Exception] when encoding/decoding Base62 data.
-   */
   @Suppress("MemberVisibilityCanBePrivate")
   val rethrowOnError: Boolean
 ) : JsonAdapter<ByteArray>() {

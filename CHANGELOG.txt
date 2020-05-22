@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.3.0 (May 22 2020)
+    Upgraded Detekt to latest version, added a new CORS HTTP handler.
+
 1.2.0-1.2.1 (May 16 2020)
     Replace FasterXML with Moshi, add a couple of Moshi JSON adapters.
 

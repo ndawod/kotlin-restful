@@ -23,7 +23,7 @@
 
 @file:Suppress("unused", "MagicNumber", "MemberVisibilityCanBePrivate")
 
-package org.noordawod.kotlin.restful.undertow
+package org.noordawod.kotlin.restful.undertow.handler
 
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
@@ -62,36 +62,24 @@ typealias JwtAuthentication = Pair<String, String>
 
 /**
  * Performs simple authentication using a JSON Web Token mechanism.
+ *
+ * @property next next [HTTP handler][HttpHandler] to execute if JWT token is valid
+ * @property creator function to call with a future date to generate a new JWT
+ * @property verifier function to verify the validity of a JWT
+ * @property sendAlways whether to resend JWT authorization header regardless if rearming is
+ * required or not
+ * @property rearmThreshold when the token expires in less than the value of this
+ * [Duration][java.time.Duration], then it will be auto-rearmed when the exchange finishes
+ * @property rearmDuration when auto-rearm is scheduled, this set the
+ * [Duration][java.time.Duration] in the future for the new expiration time
  */
+@Suppress("LongParameterList")
 class JwtAuthenticationHandler constructor(
   private val next: HttpHandler,
-
-  /**
-   * A function to call with a future date to generate a new JWT.
-   */
   val creator: JwtAuthenticationCreator,
-
-  /**
-   * A function to verify the validity of a JWT.
-   */
   val verifier: JwtAuthenticationVerifier,
-
-  /**
-   * Whether this [HttpHandler] should send the authorization header always to the client,
-   * regardless if a rearm is needed or not.
-   */
   val sendAlways: Boolean = false,
-
-  /**
-   * If a client's JWT expires less than the value of this [Duration][java.time.Duration],
-   * then it will be auto-rearmed when the exchange finishes.
-   */
   val rearmThreshold: java.time.Duration? = null,
-
-  /**
-   * If an auto-rearm is scheduled, this set the [Duration][java.time.Duration] in the future
-   * for the new expiration time. Default is 2 more weeks.
-   */
   val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14)
 ) : HttpHandler {
   override fun handleRequest(exchange: HttpServerExchange) {
@@ -123,13 +111,17 @@ class JwtAuthenticationHandler constructor(
     exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()?.let {
       val authorizationHeaderLength = it.length
       if (it.startsWith(BASIC_PREFIX) && BASIC_PREFIX.length < authorizationHeaderLength) {
-        return BASIC_PREFIX to it.substring(BASIC_PREFIX.length)
+        return BASIC_PREFIX to it.substring(
+          BASIC_PREFIX.length)
       }
       if (it.startsWith(BEARER_PREFIX) && BEARER_PREFIX.length < authorizationHeaderLength) {
-        return BEARER_PREFIX to it.substring(BEARER_PREFIX.length)
+        return BEARER_PREFIX to it.substring(
+          BEARER_PREFIX.length)
       }
     }
-    throw JwtVerificationException("Authorization token is invalid.")
+    throw JwtVerificationException(
+      "Authorization token is invalid."
+    )
   }
 
   private inner class JwtExchangeCompletionListener constructor(
@@ -192,6 +184,7 @@ class JwtAuthenticationHandler constructor(
     /**
      * The attachment key to fetch the resolved [Jwt] from a [HttpServerExchange].
      */
-    val SERVER_JWT_ID: AttachmentKey<Jwt> = AttachmentKey.create(Jwt::class.java)
+    val SERVER_JWT_ID: AttachmentKey<Jwt> = AttachmentKey.create(
+      Jwt::class.java)
   }
 }

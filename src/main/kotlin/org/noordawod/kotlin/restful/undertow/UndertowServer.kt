@@ -43,6 +43,8 @@ import org.xnio.channels.AcceptingChannel
 /**
  * A base class that wraps an [AcceptingChannel] and abstracts some settings and configuration
  * suitable to operate an HTTP/1.1 REST server.
+ *
+ * @property config configuration required to start this Undertow server
  */
 open class UndertowServer constructor(val config: Configuration) {
   private val mainThread = Thread.currentThread()
@@ -100,7 +102,7 @@ open class UndertowServer constructor(val config: Configuration) {
   /**
    * Binds the server to the configured host:port and starts it.
    */
-  open fun start(dieDuration: Long = 5_000) = startImpl(dieDuration)
+  open fun start(dieDuration: Long = 5000L) = startImpl(dieDuration)
 
   /**
    * Shuts down the server.
@@ -110,7 +112,7 @@ open class UndertowServer constructor(val config: Configuration) {
   /**
    * Allows children classes to use the same logic to start the server.
    */
-  protected fun startImpl(dieDuration: Long = 5_000) {
+  protected fun startImpl(dieDuration: Long = 5000L) {
     if (null == hook) {
       val worker: XnioWorker = Xnio.getInstance().createWorker(
         OptionMap.builder()
