@@ -26,6 +26,7 @@
 package org.noordawod.kotlin.restful.moshi
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonQualifier
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
@@ -38,6 +39,7 @@ import org.noordawod.kotlin.security.ByteUtils
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 @kotlin.annotation.Target(AnnotationTarget.FIELD)
 @MustBeDocumented
+@JsonQualifier
 annotation class Base62Json
 
 /**

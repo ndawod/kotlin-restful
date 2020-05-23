@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.3.2 (May 23 2020)
+    Fixed a small bug in Base62JsonAdapter.
+
 1.3.0-1.3.1 (May 23 2020)
     Upgraded Detekt to latest version, added a new CORS HTTP handler, added extensions for
     Undertow's HttpServerExchange.
