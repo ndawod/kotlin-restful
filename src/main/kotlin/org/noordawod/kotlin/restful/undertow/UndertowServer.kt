@@ -44,7 +44,7 @@ import org.xnio.channels.AcceptingChannel
  * A base class that wraps an [AcceptingChannel] and abstracts some settings and configuration
  * suitable to operate an HTTP/1.1 REST server.
  *
- * @property config configuration required to start this Undertow server
+ * @param config configuration required to start this Undertow server
  */
 open class UndertowServer constructor(val config: Configuration) {
   private val mainThread = Thread.currentThread()

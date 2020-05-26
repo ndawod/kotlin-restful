@@ -63,14 +63,14 @@ typealias JwtAuthentication = Pair<String, String>
 /**
  * Performs simple authentication using a JSON Web Token mechanism.
  *
- * @property next next [HTTP handler][HttpHandler] to execute if JWT token is valid
- * @property creator function to call with a future date to generate a new JWT
- * @property verifier function to verify the validity of a JWT
- * @property sendAlways whether to resend JWT authorization header regardless if rearming is
+ * @param next next [HTTP handler][HttpHandler] to execute if JWT token is valid
+ * @param creator function to call with a future date to generate a new JWT
+ * @param verifier function to verify the validity of a JWT
+ * @param sendAlways whether to resend JWT authorization header regardless if rearming is
  * required or not
- * @property rearmThreshold when the token expires in less than the value of this
+ * @param rearmThreshold when the token expires in less than the value of this
  * [Duration][java.time.Duration], then it will be auto-rearmed when the exchange finishes
- * @property rearmDuration when auto-rearm is scheduled, this set the
+ * @param rearmDuration when auto-rearm is scheduled, this set the
  * [Duration][java.time.Duration] in the future for the new expiration time
  */
 @Suppress("LongParameterList")

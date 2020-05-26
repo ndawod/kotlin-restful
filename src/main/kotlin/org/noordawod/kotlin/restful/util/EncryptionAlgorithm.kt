@@ -31,8 +31,8 @@ import com.auth0.jwt.algorithms.Algorithm
  * Lists the three most used algorithms when creating a JWT, just for making things a
  * bit more easy.
  *
- * @property method the encryption algorithm method
- * @property bits how many bits this encryption algorithm has
+ * @param method the encryption algorithm method
+ * @param bits how many bits this encryption algorithm has
  */
 @Suppress("UnderscoresInNumericLiterals", "MagicNumber")
 enum class EncryptionAlgorithm constructor(

@@ -40,11 +40,11 @@ typealias HostsCollection = Collection<String>
 /**
  * A base [HttpHandler] that implements a simple CORS contract.
  *
- * @property next next [HTTP handler][HttpHandler] to execute if CORS passes
- * @property hosts list of allowed CORS hosts (must not be empty to be used)
- * @property headers list of headers to expose to remote clients; this is needed for browsers
+ * @param next next [HTTP handler][HttpHandler] to execute if CORS passes
+ * @param hosts list of allowed CORS hosts (must not be empty to be used)
+ * @param headers list of headers to expose to remote clients; this is needed for browsers
  * to allow JavaScript code to access such headers in the xhr.responseHeaders
- * @property maxAge how long, in seconds, to allow browsers to cache CORS headers
+ * @param maxAge how long, in seconds, to allow browsers to cache CORS headers
  */
 @Suppress("UnnecessaryAbstractClass")
 abstract class BaseCorsHttpHandler constructor(

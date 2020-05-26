@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.4.1 (May 26 2020)
+    Use @param instead of @property in KDoc.
+
 1.4.0 (May 24 2020)
     Upgrade dependencies.
 

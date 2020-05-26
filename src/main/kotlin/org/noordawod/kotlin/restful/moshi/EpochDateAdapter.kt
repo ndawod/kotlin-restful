@@ -34,9 +34,9 @@ import com.squareup.moshi.Moshi
  * A Moshi-compatible [JsonAdapter] to convert a [Date][java.util.Date] from and to a numeric
  * representation (since the UNIX epoch).
  *
- * @property usingSeconds whether this [JsonAdapter] should use seconds to denote a
+ * @param usingSeconds whether this [JsonAdapter] should use seconds to denote a
  * [Date][java.util.Date] when true, or milliseconds when false
- * @property zeroAsNull whether this [JsonAdapter] should use the digit 0 to denote a null
+ * @param zeroAsNull whether this [JsonAdapter] should use the digit 0 to denote a null
  * when true, or null itself when false
  */
 class EpochDateAdapter constructor(

@@ -21,8 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-group = 'org.noordawod.kotlin'
-version = '1.4.0'
+group = 'org.noordawod.kotlin.restful'
+version = '1.4.1'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 buildscript {

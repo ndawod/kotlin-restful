@@ -45,7 +45,7 @@ annotation class Base62Json
 /**
  * A [JsonAdapter] to convert from a [ByteArray] to Base62, and vice versa.
  *
- * @property rethrowOnError whether to rethrow the [Exception] when encoding/decoding Base62 data
+ * @param rethrowOnError whether to rethrow the [Exception] when encoding/decoding Base62 data
  */
 class Base62JsonAdapter constructor(
   @Suppress("MemberVisibilityCanBePrivate")
