@@ -22,7 +22,7 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '1.4.2'
+version = '1.4.3'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 buildscript {

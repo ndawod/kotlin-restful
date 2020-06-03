@@ -33,7 +33,7 @@ import io.undertow.util.Methods
 import io.undertow.util.StatusCodes
 
 /**
- * A signature for passing a list of hosts to [CorsHttpHandler].
+ * A signature for passing a list of hosts to [BaseCorsHttpHandler].
  */
 typealias HostsCollection = Collection<String>
 
@@ -47,7 +47,7 @@ typealias HostsCollection = Collection<String>
  * @param maxAge how long, in seconds, to allow browsers to cache CORS headers
  */
 @Suppress("UnnecessaryAbstractClass")
-abstract class CorsHttpHandler protected constructor(
+abstract class BaseCorsHttpHandler protected constructor(
   val next: HttpHandler,
   val hosts: HostsCollection,
   val headers: Collection<String>,

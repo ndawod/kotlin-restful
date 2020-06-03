@@ -37,7 +37,6 @@ import io.undertow.server.HttpServerExchange
 abstract class WorkerHttpHandler constructor(
   private val endExchangeOnError: Boolean = true
 ) : HttpHandler {
-  @Suppress("PrintStackTrace", "TooGenericExceptionCaught")
   final override fun handleRequest(exchange: HttpServerExchange) {
     if (exchange.isInIoThread) {
       exchange.dispatch(this)
@@ -46,17 +45,14 @@ abstract class WorkerHttpHandler constructor(
       var shouldEndExchange = false
       try {
         shouldEndExchange = handleWork(exchange)
-      } catch (e: Exception) {
+      } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+        val classSimpleName = javaClass.simpleName
+        log("Unhandled error while handling work in '$classSimpleName'", e)
         shouldEndExchange = endExchangeOnError
         try {
-          handleException(exchange, e)
-        } catch (ignored: Exception) {
-          System.err.println("\nUnhandled exception while executing handleException():")
-          System.err.println("------------------------------------------------------")
-          ignored.printStackTrace()
-          System.err.println("\nOriginal exception sent to handleException():")
-          System.err.println("---------------------------------------------")
-          e.printStackTrace()
+          handleError(exchange, e)
+        } catch (@Suppress("TooGenericExceptionCaught") ee: Throwable) {
+          log("Unhandled error while handling error for '$classSimpleName'", ee)
         }
       } finally {
         if (shouldEndExchange) {
@@ -64,6 +60,18 @@ abstract class WorkerHttpHandler constructor(
         }
       }
     }
+  }
+
+  /**
+   * Logs a message, defaults to writing it to the standard output.
+   *
+   * @param message message to log
+   * @param e optional error to log too
+   */
+  protected open fun log(message: String, e: Throwable? = null) {
+    System.err.println(message)
+    @Suppress("PrintStackTrace")
+    e?.printStackTrace()
   }
 
   /**
@@ -78,5 +86,5 @@ abstract class WorkerHttpHandler constructor(
    *
    * @param exchange the HTTP request/response exchange
    */
-  abstract fun handleException(exchange: HttpServerExchange, e: Exception)
+  abstract fun handleError(exchange: HttpServerExchange, e: Throwable)
 }

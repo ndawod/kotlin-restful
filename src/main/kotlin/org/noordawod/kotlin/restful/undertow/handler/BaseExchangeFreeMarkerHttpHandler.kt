@@ -26,45 +26,34 @@
 package org.noordawod.kotlin.restful.undertow.handler
 
 import io.undertow.server.HttpServerExchange
-import io.undertow.util.StatusCodes
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
 
 /**
- * A [ByteArrayFreeMarkerHttpHandler] that orchestrates preparing an email message based on
- * a FreeMarker template, offloading to a worker thread, and sending the email in the
- * background. The output is considered to be UTF-8 always.
+ * A [BaseFreeMarkerHttpHandler] that prepare a writer using
+ * [HttpServerExchange.outputStream][HttpServerExchange.getOutputStream]. The output is
+ * considered to be UTF-8 always.
  *
  * @param T type of the data model
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  */
-abstract class SendmailFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseExchangeFreeMarkerHttpHandler<T : Any> constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
-  bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : ByteArrayFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
-  /**
-   * Perform the sendmail operation.
-   *
-   * @param exchange the HTTP request/response exchange
-   * @param contents the FreeMarker+[model] output
-   */
-  abstract fun sendEmail(exchange: HttpServerExchange, contents: String)
+  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE
+) : BaseFreeMarkerHttpHandler<T>(config, basePath) {
+  override fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
+    java.io.BufferedWriter(
+      java.io.OutputStreamWriter(exchange.outputStream, FreeMarkerDataModel.CHARSET),
+      bufferSize
+    )
 
-  override fun handleRequest(exchange: HttpServerExchange) {
-    if (exchange.isInIoThread) {
-      exchange.dispatch(this)
-    } else {
-      super.handleRequest(exchange)
-      val output = stream.use {
-        it.toString(FreeMarkerDataModel.CHARSET_NAME)
-      }
-
-      sendEmail(exchange, output)
-
-      exchange.statusCode = StatusCodes.NO_CONTENT
-    }
+  companion object {
+    /**
+     * Default buffer size.
+     */
+    const val DEFAULT_BUFFER_SIZE: Int = 8192
   }
 }

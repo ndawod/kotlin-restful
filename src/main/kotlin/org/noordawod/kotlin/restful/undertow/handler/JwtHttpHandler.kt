@@ -186,7 +186,6 @@ class JwtAuthenticationHandler constructor(
     /**
      * The attachment key to fetch the resolved [Jwt] from a [HttpServerExchange].
      */
-    val SERVER_JWT_ID: AttachmentKey<Jwt> = AttachmentKey.create(
-      Jwt::class.java)
+    val SERVER_JWT_ID: AttachmentKey<Jwt> = AttachmentKey.create(Jwt::class.java)
   }
 }

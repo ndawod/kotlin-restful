@@ -44,7 +44,7 @@ typealias DataModelProvider<T> = (HttpServerExchange) -> T
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  */
-abstract class FreeMarkerHttpHandler<T : Any> protected constructor(
+abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   protected val config: FreeMarkerConfiguration,
   protected val basePath: String
 ) : HttpHandler {

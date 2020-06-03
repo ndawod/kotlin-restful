@@ -30,30 +30,38 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
 
 /**
- * A [FreeMarkerHttpHandler] that prepare a writer using
- * [HttpServerExchange.outputStream][HttpServerExchange.getOutputStream]. The output is
- * considered to be UTF-8 always.
+ * A [BaseByteArrayFreeMarkerHttpHandler] that orchestrates preparing an email message based on
+ * a FreeMarker template, offloading to a worker thread, and sending the email in the
+ * background. The output is considered to be UTF-8 always.
  *
  * @param T type of the data model
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  */
-abstract class ExchangeFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseSendmailFreeMarkerHttpHandler<T : Any> constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
-  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : FreeMarkerHttpHandler<T>(config, basePath) {
-  override fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
-    java.io.BufferedWriter(
-      java.io.OutputStreamWriter(exchange.outputStream, FreeMarkerDataModel.CHARSET),
-      bufferSize
-    )
+  bufferSize: Int = DEFAULT_BUFFER_SIZE
+) : BaseByteArrayFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
+  /**
+   * Perform the sendmail operation.
+   *
+   * @param exchange the HTTP request/response exchange
+   * @param contents the FreeMarker+[model] output
+   */
+  abstract fun sendEmail(exchange: HttpServerExchange, contents: String)
 
-  companion object {
-    /**
-     * Default buffer size.
-     */
-    const val DEFAULT_BUFFER_SIZE: Int = 8192
+  override fun handleRequest(exchange: HttpServerExchange) {
+    if (exchange.isInIoThread) {
+      exchange.dispatch(this)
+    } else {
+      super.handleRequest(exchange)
+      val output = stream.use {
+        it.toString(FreeMarkerDataModel.CHARSET_NAME)
+      }
+
+      sendEmail(exchange, output)
+    }
   }
 }
