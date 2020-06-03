@@ -25,6 +25,7 @@
 
 package org.noordawod.kotlin.restful.undertow.handler
 
+import freemarker.template.Template
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.core.extension.withExtension
@@ -77,19 +78,29 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
    */
   protected abstract fun getTemplateFile(exchange: HttpServerExchange): String
 
+  /**
+   * Allow extended classes to modify the FreeMarker template before it's processed.
+   *
+   * @param template the FreeMarker template to modify
+   */
+  protected open fun modifyTemplate(template: Template) {
+    // NO-OP
+  }
+
   override fun handleRequest(exchange: HttpServerExchange) {
+    // Prepare the model so all other abstract or overloaded methods have access to it.
     model = modelProvider(exchange)
 
     // Logical file path + configured template extension.
     val filePath = getTemplateFile(exchange).withExtension(fileExtension)
 
+    // Allow extended classes to modify the FreeMarker template, if needed.
+    val template = config.getTemplate("$basePath/$filePath")
+    modifyTemplate(template)
+
     // Prepare the writer buffer, generate the content and finally spit it out to the writer.
     prepareWriter(exchange).use { buffer ->
-      config
-        .getTemplate("$basePath/$filePath")
-        .process(this, buffer)
-
-      // Flush out all content.
+      template.process(model, buffer)
       buffer.flush()
     }
   }
