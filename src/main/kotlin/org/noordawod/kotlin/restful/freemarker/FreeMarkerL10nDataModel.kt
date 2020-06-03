@@ -80,12 +80,18 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
 
   /**
    * Localizes the specified text [key] based on the client's preferred [java.util.Locale].
+   *
+   * @param key the localization key to localize
    */
   open fun l10n(key: String): String = l10n(key, false)
 
   /**
-   * Localizes the specified text [key] based on the client's preferred [java.util.Locale] with the
-   * specified arguments to replace any placeholders in the translation (%1$d, %2$s, ...).
+   * Localizes the specified text [key] based on the client's preferred [java.util.Locale]
+   * with the specified arguments to replace any placeholders in the translation
+   * (%1$d, %2$s, ...).
+   *
+   * @param key the localization key to localize
+   * @param args list of arguments to substitute in the localized text
    */
   open fun l10n(key: String, args: Iterable<Any>): String {
     val text: String? = l10n(key, true)
@@ -101,9 +107,13 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   }
 
   /**
-   * Localizes the specified text [key] based on the client's preferred [java.util.Locale]. If
-   * [fallback] is true, and the translations for the [clientL10n] don't have this key, then
-   * the original text for this key is retrieved from the [baseL10n].
+   * Localizes the specified text [key] based on the client's preferred [java.util.Locale].
+   * If [fallback] is true, and the translations for the [clientL10n] don't have this key,
+   * then the original text for this key is retrieved from the [baseL10n].
+   *
+   * @param key the localization key to localize
+   * @param fallback whether to use text from [baseL10n] if current translation is missing
+   * the translation for [key]
    */
   open fun l10n(key: String, fallback: Boolean): String {
     var text: String? = clientL10n.translation[key]

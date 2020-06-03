@@ -57,8 +57,7 @@ interface FreeMarkerHtmlPage : FreeMarkerPage {
   /**
    * The file name with a suffix indicating this is an HTML page.
    */
-  val pathWithExtension: String get() =
-    if (path.isBlank()) "" else "$path.html"
+  val pathWithExtension: String get() = if (path.isBlank()) "" else "$path.html"
 
   /**
    * The URL path to access this page, including the leading "/".

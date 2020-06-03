@@ -30,12 +30,11 @@ import io.undertow.server.HttpServerExchange
 
 /**
  * An [HttpHandler] that always relays HTTP requests to a XNIO worker thread.
+ *
+ * @param endExchangeOnError whether this [HttpHandler] should close end the exchange
+ * when an error occurs executing the [handleWork] method
  */
 abstract class WorkerHttpHandler constructor(
-  /**
-   * Whether this [HttpHandler] should close end the exchange when an error occurs executing
-   * the [handleWork] method.
-   */
   private val endExchangeOnError: Boolean = true
 ) : HttpHandler {
   @Suppress("PrintStackTrace", "TooGenericExceptionCaught")
@@ -69,11 +68,15 @@ abstract class WorkerHttpHandler constructor(
 
   /**
    * Handles the request in blocking mode and returns whether to end the exchange or not.
+   *
+   * @param exchange the HTTP request/response exchange
    */
   abstract fun handleWork(exchange: HttpServerExchange): Boolean
 
   /**
    * Handles an exception [e] that was thrown while work was being done using [handleWork].
+   *
+   * @param exchange the HTTP request/response exchange
    */
   abstract fun handleException(exchange: HttpServerExchange, e: Exception)
 }

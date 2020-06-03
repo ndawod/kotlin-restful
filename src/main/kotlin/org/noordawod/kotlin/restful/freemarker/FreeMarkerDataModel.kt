@@ -64,6 +64,8 @@ interface FreeMarkerDataModel {
   /**
    * Generates the query part of a URL from a combination of the existing [queryParameters]
    * detected for this page and the specified [params].
+   *
+   * @param params list of parameters as a [Map] of [String] to [Any]
    */
   fun query(params: Map<String, Any>): String = query(params, true)
 
@@ -71,6 +73,9 @@ interface FreeMarkerDataModel {
    * Generates the query part of a URL from the specified [params]. If [append] is true, then
    * the specified [params] will be appended to the existing [queryParameters] detected for this
    * page. Otherwise, only [params] will comprise the final result.
+   *
+   * @param params list of parameters as a [Map] of [String] to [Any]
+   * @param append whether to override the existing params or merge them to the existing ones
    */
   fun query(params: Map<String, Any>? = null, append: Boolean): String
 
@@ -83,7 +88,7 @@ interface FreeMarkerDataModel {
     /**
      * The [java.nio.charset.Charset] this package shall use when encoding query parameters.
      */
-    val CHARSET: java.nio.charset.Charset = java.nio.charset.Charset.forName(CHARSET_NAME)
+    val CHARSET: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
   }
 }
 

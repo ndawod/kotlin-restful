@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.4.2 (June 3 2020)
+    Added a couple of Undertow HttpHandlers, adjusted KDoc.
+
 1.4.1 (May 26 2020)
     Use @param instead of @property in KDoc.
 

@@ -105,6 +105,8 @@ class JwtAuthenticationHandler constructor(
   /**
    * We'll accept both a "Bearer" and a "Basic" authentication requests, and we'll
    * treat the latter as a "Bearer" since we're asked to use JWT.
+   *
+   * @param exchange the HTTP request/response exchange
    */
   @Throws(JwtVerificationException::class)
   private fun verifyAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication {

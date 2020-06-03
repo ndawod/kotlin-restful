@@ -33,7 +33,7 @@ import io.undertow.util.Methods
 import io.undertow.util.StatusCodes
 
 /**
- * A signature for passing a list of hosts to [BaseCorsHttpHandler].
+ * A signature for passing a list of hosts to [CorsHttpHandler].
  */
 typealias HostsCollection = Collection<String>
 
@@ -47,16 +47,22 @@ typealias HostsCollection = Collection<String>
  * @param maxAge how long, in seconds, to allow browsers to cache CORS headers
  */
 @Suppress("UnnecessaryAbstractClass")
-abstract class BaseCorsHttpHandler constructor(
+abstract class CorsHttpHandler protected constructor(
   val next: HttpHandler,
   val hosts: HostsCollection,
   val headers: Collection<String>,
   val maxAge: Long
 ) : HttpHandler {
+  /**
+   * The actual method that sends CORS headers to the client.
+   *
+   * @param exchange the HTTP request/response exchange
+   * @param originHost value of "Origin:" request header
+   */
   protected fun setCorsResponseHeaders(exchange: HttpServerExchange, originHost: String) {
     // Allowed headers are usually supplied by the client.
-    val allowedMethod =
-      exchange.requestHeaders[ACCESS_CONTROL_REQUEST_METHOD]?.firstOrNull() ?: "*"
+    val allowedMethod = exchange.requestHeaders[ACCESS_CONTROL_REQUEST_METHOD]?.firstOrNull()
+      ?: "*"
 
     // For now we'll allow all such requests.
     exchange.responseHeaders.put(Headers.CONNECTION, "keep-alive")
@@ -76,8 +82,8 @@ abstract class BaseCorsHttpHandler constructor(
     // If this is a preflight method, we're done.
     if (exchange.requestMethod == Methods.OPTIONS) {
       // Allowed headers are usually supplied by the client.
-      val allowedHeaders =
-        exchange.requestHeaders[ACCESS_CONTROL_REQUEST_HEADERS]?.firstOrNull() ?: mutableListOf(
+      val allowedHeaders = exchange.requestHeaders[ACCESS_CONTROL_REQUEST_HEADERS]?.firstOrNull()
+        ?: mutableListOf(
           Headers.AUTHORIZATION_STRING,
           Headers.ORIGIN_STRING,
           Headers.CONTENT_TYPE_STRING,
@@ -88,7 +94,6 @@ abstract class BaseCorsHttpHandler constructor(
       exchange.responseHeaders.put(ACCESS_CONTROL_ALLOW_HEADERS, allowedHeaders)
       exchange.statusCode = StatusCodes.OK
       exchange.endExchange()
-      return
     }
   }
 

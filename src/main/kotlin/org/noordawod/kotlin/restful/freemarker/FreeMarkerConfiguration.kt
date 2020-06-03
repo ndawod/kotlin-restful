@@ -33,8 +33,8 @@ import java.nio.charset.StandardCharsets
  * Encapsulates a common configuration for the FreeMarker processor.
  */
 open class FreeMarkerConfiguration constructor(
-  version: Version = VERSION,
-  charset: Charset = CHARSET
+  version: Version = DEFAULT_VERSION,
+  charset: Charset = StandardCharsets.UTF_8
 ) : freemarker.template.Configuration(version) {
   init {
     defaultEncoding = charset.name()
@@ -50,11 +50,6 @@ open class FreeMarkerConfiguration constructor(
     /**
      * The [Version] of FreeMarker we're targeting.
      */
-    val VERSION: Version = VERSION_2_3_29
-
-    /**
-     * The [Version] of FreeMarker we're targeting.
-     */
-    val CHARSET: Charset = StandardCharsets.UTF_8
+    val DEFAULT_VERSION: Version = VERSION_2_3_29
   }
 }
