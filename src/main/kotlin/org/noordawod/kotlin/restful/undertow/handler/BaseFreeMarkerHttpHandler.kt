@@ -26,6 +26,7 @@
 package org.noordawod.kotlin.restful.undertow.handler
 
 import freemarker.template.Template
+import freemarker.template.TemplateException
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.core.extension.withExtension
@@ -87,6 +88,7 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
     // NO-OP
   }
 
+  @Throws(TemplateException::class, java.io.IOException::class)
   override fun handleRequest(exchange: HttpServerExchange) {
     // Prepare the model so all other abstract or overloaded methods have access to it.
     model = modelProvider(exchange)
@@ -98,10 +100,10 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
     val template = config.getTemplate("$basePath/$filePath")
     modifyTemplate(template)
 
-    // Prepare the writer buffer, generate the content and finally spit it out to the writer.
-    prepareWriter(exchange).use { buffer ->
-      template.process(model, buffer)
-      buffer.flush()
+    // Prepare the writer buffer and generate the content into it.
+    prepareWriter(exchange).apply {
+      template.process(model, this)
+      flush()
     }
   }
 }

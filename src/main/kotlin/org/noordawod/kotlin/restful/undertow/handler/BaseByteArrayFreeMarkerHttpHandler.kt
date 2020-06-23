@@ -45,13 +45,13 @@ abstract class BaseByteArrayFreeMarkerHttpHandler<T : Any> constructor(
   bufferSize: Int = DEFAULT_BUFFER_SIZE
 ) : BaseExchangeFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
   /**
-   * The memory-based, [ByteArray]-backed writer to use for preparing the content.
+   * A memory-based, [ByteArray]-backed writer to use for preparing the content.
    */
-  protected val stream = CloseableByteArrayOutputStream(bufferSize)
+  protected val bytes = CloseableByteArrayOutputStream(bufferSize)
 
   override fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
     java.io.BufferedWriter(
-      java.io.OutputStreamWriter(stream, FreeMarkerDataModel.CHARSET),
+      java.io.OutputStreamWriter(bytes, FreeMarkerDataModel.CHARSET),
       bufferSize
     )
 }

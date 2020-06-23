@@ -57,11 +57,9 @@ abstract class BaseSendmailFreeMarkerHttpHandler<T : Any> constructor(
       exchange.dispatch(this)
     } else {
       super.handleRequest(exchange)
-      val output = stream.use {
-        it.toString(FreeMarkerDataModel.CHARSET_NAME)
+      bytes.use {
+        sendEmail(exchange, it.toString(FreeMarkerDataModel.CHARSET_NAME))
       }
-
-      sendEmail(exchange, output)
     }
   }
 }
