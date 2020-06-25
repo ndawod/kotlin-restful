@@ -3,7 +3,10 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
-1.4.5 (June 3 2020)
+1.4.6 (June 25 2020)
+    Send Undertow's exchange to modifyTemplate().
+
+1.4.5 (June 23 2020)
     Fix a bug when generating FreeMarker output in BaseFreeMarkerHttpHandler.
 
 1.4.4 (June 3 2020)

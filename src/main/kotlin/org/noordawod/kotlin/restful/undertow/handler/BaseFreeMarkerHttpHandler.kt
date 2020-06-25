@@ -82,9 +82,10 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   /**
    * Allow extended classes to modify the FreeMarker template before it's processed.
    *
+   * @param exchange the HTTP request/response exchange
    * @param template the FreeMarker template to modify
    */
-  protected open fun modifyTemplate(template: Template) {
+  protected open fun modifyTemplate(exchange: HttpServerExchange, template: Template) {
     // NO-OP
   }
 
@@ -96,9 +97,11 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
     // Logical file path + configured template extension.
     val filePath = getTemplateFile(exchange).withExtension(fileExtension)
 
-    // Allow extended classes to modify the FreeMarker template, if needed.
+    // The location of the FreeMarker template is always under the configured base path.
     val template = config.getTemplate("$basePath/$filePath")
-    modifyTemplate(template)
+
+    // Allow extended classes to modify the FreeMarker template, if needed.
+    modifyTemplate(exchange, template)
 
     // Prepare the writer buffer and generate the content into it.
     prepareWriter(exchange).apply {
