@@ -3,7 +3,7 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
-1.4.7 (July 28 2020)
+1.4.7-1.4.8 (July 28 2020)
     Make sure that when checking for JWT the check for the prefix is case-insensitive.
 
 1.4.6 (June 25 2020)
