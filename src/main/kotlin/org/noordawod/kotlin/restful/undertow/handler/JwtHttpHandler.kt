@@ -111,19 +111,20 @@ class JwtAuthenticationHandler constructor(
   @Throws(JwtVerificationException::class)
   private fun verifyAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication {
     exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()?.let {
-      val authorizationHeaderLength = it.length
-      if (it.startsWith(BASIC_PREFIX) && BASIC_PREFIX.length < authorizationHeaderLength) {
-        return BASIC_PREFIX to it.substring(
-          BASIC_PREFIX.length)
+      if (
+        BEARER_PREFIX_LENGTH < it.length &&
+        BEARER_PREFIX.equals(it.substring(0, BEARER_PREFIX_LENGTH), ignoreCase = true)
+      ) {
+        return BEARER_PREFIX to it.substring(BEARER_PREFIX_LENGTH)
       }
-      if (it.startsWith(BEARER_PREFIX) && BEARER_PREFIX.length < authorizationHeaderLength) {
-        return BEARER_PREFIX to it.substring(
-          BEARER_PREFIX.length)
+      if (
+        BASIC_PREFIX_LENGTH < it.length &&
+        BASIC_PREFIX.equals(it.substring(0, BASIC_PREFIX_LENGTH), ignoreCase = true)
+      ) {
+        return BASIC_PREFIX to it.substring(BASIC_PREFIX_LENGTH)
       }
     }
-    throw JwtVerificationException(
-      "Authorization token is invalid."
-    )
+    throw JwtVerificationException("Authorization token is invalid.")
   }
 
   private inner class JwtExchangeCompletionListener constructor(
@@ -175,8 +176,10 @@ class JwtAuthenticationHandler constructor(
   }
 
   companion object {
-    private const val BASIC_PREFIX: String = "Basic "
-    private const val BEARER_PREFIX: String = "Bearer "
+    private const val BASIC_PREFIX: String = "basic "
+    private const val BASIC_PREFIX_LENGTH: Int = BASIC_PREFIX.length
+    private const val BEARER_PREFIX: String = "bearer "
+    private const val BEARER_PREFIX_LENGTH: Int = BEARER_PREFIX.length
 
     /**
      * The attachment key to fetch the client-provided JWT from a [HttpServerExchange].
