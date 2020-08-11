@@ -47,12 +47,17 @@ typealias Jwt = DecodedJWT
 /**
  * A function signature to create a JWT string that expires in a specific date.
  */
-typealias JwtAuthenticationCreator = (subject: String, expiresAt: java.util.Date) -> String
+typealias JwtAuthenticationCreator = (
+  id: String,
+  subject: String,
+  issuer: String,
+  expiresAt: java.util.Date
+) -> String
 
 /**
  * A function signature that verifies a JWT string and returns the [Jwt].
  */
-typealias JwtAuthenticationVerifier = (subject: String) -> Jwt
+typealias JwtAuthenticationVerifier = (token: String) -> Jwt
 
 /**
  * Holds the two most important pieces of authorization information: first is the
@@ -157,7 +162,9 @@ class JwtAuthenticationHandler constructor(
         sendHeader(
           exchange,
           authentication.first to creator(
+            jwt.id,
             jwt.subject,
+            jwt.issuer,
             java.util.Date(expiresMillis + rearmDurationMillis)
           )
         )

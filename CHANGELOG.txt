@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.4.9 (Aug 11 2020)
+    Make JWT creator accept an id and the issuer.
+
 1.4.7-1.4.8 (July 28 2020)
     Make sure that when checking for JWT the check for the prefix is case-insensitive.
 
