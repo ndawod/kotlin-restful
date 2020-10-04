@@ -23,17 +23,11 @@
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
-package org.noordawod.kotlin.restful.undertow.handler
-
-import io.undertow.server.HttpHandler
-import io.undertow.server.HttpServerExchange
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
+package org.noordawod.kotlin.restful.freemarker
 
 /**
- * A [BaseByteArrayFreeMarkerHttpHandler] that orchestrates preparing an email message based on
- * a FreeMarker template, offloading to a worker thread, and sending the email in the
- * background. The output is considered to be UTF-8 always.
+ * A [BaseByteArrayFreeMarkerRunnable] that orchestrates preparing an email message based on
+ * a FreeMarker template, and sending the email. The output is considered to be UTF-8 always.
  *
  * Note: after the method [sendEmail] is executed, the contents of the [bytes] buffer is
  * emptied.
@@ -43,27 +37,22 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  */
-abstract class BaseSendmailFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseSendmailFreeMarkerRunnable<T : Any> constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
   bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : BaseByteArrayFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
+) : BaseByteArrayFreeMarkerRunnable<T>(config, basePath, bufferSize) {
   /**
    * Perform the sendmail operation.
    *
-   * @param exchange the HTTP request/response exchange
    * @param contents the FreeMarker+[model] output
    */
-  abstract fun sendEmail(exchange: HttpServerExchange, contents: String)
+  abstract fun sendEmail(contents: String)
 
-  override fun handleRequest(exchange: HttpServerExchange) {
-    if (exchange.isInIoThread) {
-      exchange.dispatch(this as HttpHandler)
-    } else {
-      super.handleRequest(exchange)
-      bytes.use {
-        sendEmail(exchange, it.toString(FreeMarkerDataModel.CHARSET_NAME))
-      }
+  override fun run() {
+    super.run()
+    bytes.use {
+      sendEmail(it.toString(FreeMarkerDataModel.CHARSET_NAME))
     }
   }
 }
