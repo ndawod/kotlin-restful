@@ -23,15 +23,18 @@
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
-package org.noordawod.kotlin.restful.undertow.handler
+package org.noordawod.kotlin.restful.freemarker
 
 import freemarker.template.Template
 import freemarker.template.TemplateException
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.core.extension.withExtension
-import org.noordawod.kotlin.restful.freemarker.BaseFreeMarkerRunnable
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
+
+/**
+ * A signature for a function that accepts an [HttpServerExchange] and returns a model.
+ */
+typealias DataModelProvider<T> = () -> T
 
 /**
  * An [HttpHandler] that orchestrates the task to prepare a data model,
@@ -42,62 +45,60 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  */
-abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
-  config: FreeMarkerConfiguration,
-  basePath: String
-) : BaseFreeMarkerRunnable<T>(config, basePath), HttpHandler {
-  final override fun run() {
-    error("Use handleRequest(exchange) instead.")
-  }
+abstract class BaseFreeMarkerRunnable<T : Any> protected constructor(
+  protected val config: FreeMarkerConfiguration,
+  protected val basePath: String
+) : Runnable {
+  /**
+   * Extension for template files.
+   */
+  protected abstract val fileExtension: String
 
-  final override fun prepareWriter(): java.io.BufferedWriter {
-    error("Use prepareWriter(exchange) instead.")
-  }
+  /**
+   * Provider function for model of type [T].
+   */
+  protected abstract val modelProvider: DataModelProvider<T>
 
-  final override fun getTemplateFile(): String {
-    error("Use getTemplateFile(exchange) instead.")
-  }
+  /**
+   * The data model itself is evaluated in [run] and stored here momentarily.
+   */
+  protected lateinit var model: T
 
   /**
    * Prepares a [buffer][java.io.BufferedWriter] to write the FreeMarker output to.
-   *
-   * @param exchange the HTTP request/response exchange
    */
-  protected abstract fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter
+  protected abstract fun prepareWriter(): java.io.BufferedWriter
 
   /**
    * The FreeMarker template file that resides under [basePath], excluding a leading slash.
-   *
-   * @param exchange the HTTP request/response exchange
    */
-  protected abstract fun getTemplateFile(exchange: HttpServerExchange): String
+  protected abstract fun getTemplateFile(): String
 
   /**
    * Allow extended classes to modify the FreeMarker template before it's processed.
    *
-   * @param exchange the HTTP request/response exchange
    * @param template the FreeMarker template to modify
    */
-  protected open fun modifyTemplate(exchange: HttpServerExchange, template: Template) {
+  protected open fun modifyTemplate(template: Template) {
     // NO-OP
   }
 
   @Throws(TemplateException::class, java.io.IOException::class)
-  override fun handleRequest(exchange: HttpServerExchange) {
+  override fun run() {
     // Prepare the model so all other abstract or overloaded methods have access to it.
     model = modelProvider()
 
     // Logical file path + configured template extension.
-    val filePath = getTemplateFile(exchange).withExtension(fileExtension)
+    val filePath = getTemplateFile().withExtension(fileExtension)
 
     // The location of the FreeMarker template is always under the configured base path.
     val template = config.getTemplate("$basePath/$filePath")
 
     // Allow extended classes to modify the FreeMarker template, if needed.
-    modifyTemplate(exchange, template)
+    modifyTemplate(template)
 
     // Prepare the writer buffer and generate the content into it.
-    prepareWriter(exchange).apply {
+    prepareWriter().apply {
       template.process(model, this)
       flush()
     }

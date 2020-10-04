@@ -3,6 +3,10 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.5.0 (Oct 4 2020)
+    Added a couple of Runnable classes to deal with FreeMarker templates without the need
+    for an Undertow HttpExchange.
+
 1.4.9 (Aug 11 2020)
     Make JWT creator accept an id and the issuer.
 

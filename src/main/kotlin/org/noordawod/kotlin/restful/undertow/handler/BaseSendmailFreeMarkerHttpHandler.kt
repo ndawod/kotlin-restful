@@ -25,6 +25,7 @@
 
 package org.noordawod.kotlin.restful.undertow.handler
 
+import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
@@ -54,7 +55,7 @@ abstract class BaseSendmailFreeMarkerHttpHandler<T : Any> constructor(
 
   override fun handleRequest(exchange: HttpServerExchange) {
     if (exchange.isInIoThread) {
-      exchange.dispatch(this)
+      exchange.dispatch(this as HttpHandler)
     } else {
       super.handleRequest(exchange)
       bytes.use {

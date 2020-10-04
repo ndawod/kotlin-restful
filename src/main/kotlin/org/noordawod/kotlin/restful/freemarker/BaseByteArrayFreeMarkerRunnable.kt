@@ -23,30 +23,32 @@
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
-package org.noordawod.kotlin.restful.undertow.handler
+package org.noordawod.kotlin.restful.freemarker
 
-import io.undertow.server.HttpServerExchange
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
+import org.noordawod.kotlin.core.util.CloseableByteArrayOutputStream
 
 /**
- * A [BaseFreeMarkerHttpHandler] that prepare a writer using
- * [HttpServerExchange.outputStream][HttpServerExchange.getOutputStream]. The output is
- * considered to be UTF-8 always.
+ * A [BaseFreeMarkerRunnable] that prepare a memory-based, [ByteArray]-backed writer using
+ * [CloseableByteArrayOutputStream]. The content is considered to be UTF-8 always.
  *
  * @param T type of the data model
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  */
-abstract class BaseExchangeFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseByteArrayFreeMarkerRunnable<T : Any> constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
   protected val bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : BaseFreeMarkerHttpHandler<T>(config, basePath) {
-  override fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
+) : BaseFreeMarkerRunnable<T>(config, basePath) {
+  /**
+   * A memory-based, [ByteArray]-backed writer to use for preparing the content.
+   */
+  protected val bytes = CloseableByteArrayOutputStream(bufferSize)
+
+  override fun prepareWriter(): java.io.BufferedWriter =
     java.io.BufferedWriter(
-      java.io.OutputStreamWriter(exchange.outputStream, FreeMarkerDataModel.CHARSET),
+      java.io.OutputStreamWriter(bytes, FreeMarkerDataModel.CHARSET),
       bufferSize
     )
 }
