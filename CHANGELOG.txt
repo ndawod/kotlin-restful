@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.5.3 (Oct 6 2020)
+    Bump up versions of dependencies.
+
 1.5.2 (Oct 6 2020)
     Added a new Moshi adapter for OffsetDateTime instances.
 
