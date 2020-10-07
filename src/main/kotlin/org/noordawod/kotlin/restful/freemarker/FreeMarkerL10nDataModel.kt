@@ -100,9 +100,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
     return when {
       null == text -> key
       text.isEmpty() -> ""
-      else -> java.lang.String.format(locale, text, *args.map {
-        it.toString()
-      }.toTypedArray())
+      else -> java.lang.String.format(locale, text, *args.map { it.toString() }.toTypedArray())
     }
   }
 
