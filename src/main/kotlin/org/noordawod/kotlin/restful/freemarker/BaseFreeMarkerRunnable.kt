@@ -28,13 +28,7 @@ package org.noordawod.kotlin.restful.freemarker
 import freemarker.template.Template
 import freemarker.template.TemplateException
 import io.undertow.server.HttpHandler
-import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.core.extension.withExtension
-
-/**
- * A signature for a function that accepts an [HttpServerExchange] and returns a model.
- */
-typealias DataModelProvider<T> = () -> T
 
 /**
  * An [HttpHandler] that orchestrates the task to prepare a data model,
@@ -55,14 +49,14 @@ abstract class BaseFreeMarkerRunnable<T : Any> protected constructor(
   protected abstract val fileExtension: String
 
   /**
-   * Provider function for model of type [T].
-   */
-  protected abstract val modelProvider: DataModelProvider<T>
-
-  /**
    * The data model itself is evaluated in [run] and stored here momentarily.
    */
   protected lateinit var model: T
+
+  /**
+   * Provider function for model of type [T].
+   */
+  protected abstract fun modelProvider(): T
 
   /**
    * Prepares a [buffer][java.io.BufferedWriter] to write the FreeMarker output to.

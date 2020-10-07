@@ -50,6 +50,10 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
     error("Use handleRequest(exchange) instead.")
   }
 
+  final override fun modelProvider(): T {
+    error("Use modelProvider(exchange) instead.")
+  }
+
   final override fun prepareWriter(): java.io.BufferedWriter {
     error("Use prepareWriter(exchange) instead.")
   }
@@ -57,6 +61,11 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   final override fun getTemplateFile(): String {
     error("Use getTemplateFile(exchange) instead.")
   }
+
+  /**
+   * Provider function for model of type [T].
+   */
+  protected abstract fun modelProvider(exchange: HttpServerExchange): T
 
   /**
    * Prepares a [buffer][java.io.BufferedWriter] to write the FreeMarker output to.
@@ -85,7 +94,7 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   @Throws(TemplateException::class, java.io.IOException::class)
   override fun handleRequest(exchange: HttpServerExchange) {
     // Prepare the model so all other abstract or overloaded methods have access to it.
-    model = modelProvider()
+    model = modelProvider(exchange)
 
     // Logical file path + configured template extension.
     val filePath = getTemplateFile(exchange).withExtension(fileExtension)
