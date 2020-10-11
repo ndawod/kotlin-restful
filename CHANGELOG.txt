@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.5.7 (Oct 11 2020)
+    Fix a bug when encoding dates as a (milli)seconds since the epoch.
+
 1.5.6 (Oct 7 2020)
     Revert back to using older Kotlin version due to problems with serialization.
 

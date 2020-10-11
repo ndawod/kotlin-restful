@@ -29,6 +29,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
+import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 
 /**
  * A Moshi-compatible [JsonAdapter] to convert a [Date][java.util.Date] from and to a numeric
@@ -49,30 +50,19 @@ class EpochDateAdapter constructor(
   override fun fromJson(reader: JsonReader): java.util.Date? =
     if (reader.hasNext()) {
       val value = reader.nextLong()
-      if (usingSeconds) java.util.Date(value * MILLIS_IN_1_SECOND) else java.util.Date(value)
+      java.util.Date(if (usingSeconds) value * MILLIS_IN_1_SECOND else value)
     } else {
       null
     }
 
   override fun toJson(writer: JsonWriter, value: java.util.Date?) {
-    val date: String? = if (null == value) {
-      if (zeroAsNull) "0" else null
+    val time: Long? = if (null == value) {
+      if (zeroAsNull) 0L else null
     } else {
       val milliseconds = value.time
-      if (usingSeconds) {
-        (milliseconds / MILLIS_IN_1_SECOND).toString()
-      } else {
-        milliseconds.toString()
-      }
+      if (usingSeconds) milliseconds / MILLIS_IN_1_SECOND else milliseconds
     }
-    writer.value(date)
-  }
-
-  companion object {
-    /**
-     * How many milliseconds in one second.
-     */
-    const val MILLIS_IN_1_SECOND: Long = 1000L
+    writer.value(time)
   }
 }
 
