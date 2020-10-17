@@ -99,7 +99,7 @@ fun HttpServerExchange.binaryOutput(file: java.io.File, bufferSize: Int): Long {
         fileStream.write(buffer)
         totalBytes += readBytes
       }
-    } while (!hasBytes)
+    } while (hasBytes)
   }
 
   return totalBytes
