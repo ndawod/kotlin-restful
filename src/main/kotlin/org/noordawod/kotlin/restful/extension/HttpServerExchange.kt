@@ -67,3 +67,40 @@ fun <T> HttpServerExchange.jsonOutput(model: T?, adapterProvider: JsonAdapterPro
     }
   }
 }
+
+/**
+ * Stores the request body of this [HttpServerExchange]'s [InputStream][java.io.InputStream]
+ * in a [file], and returns the number of bytes written. If the request contains no body,
+ * then 0 is returned.
+ *
+ * Note that if the [file] already exists in the file system, it will be overwritten.
+ */
+fun HttpServerExchange.binaryOutput(file: java.io.File): Long =
+  binaryOutput(file, DEFAULT_BUFFER_SIZE)
+
+/**
+ * Stores the request body of this [HttpServerExchange]'s [InputStream][java.io.InputStream]
+ * in a [file], and returns the number of bytes written. If the request contains no body,
+ * then 0 is returned.
+ *
+ * Note that if the [file] already exists in the file system, it will be overwritten.
+ */
+fun HttpServerExchange.binaryOutput(file: java.io.File, bufferSize: Int): Long {
+  val inputStream = this.inputStream
+  var totalBytes = 0L
+  var hasBytes: Boolean
+
+  java.io.BufferedOutputStream(java.io.FileOutputStream(file), bufferSize).use { fileStream ->
+    do {
+      val buffer = ByteArray(bufferSize)
+      val readBytes = inputStream.read(buffer, 0, bufferSize)
+      hasBytes = 0 < readBytes
+      if (hasBytes) {
+        fileStream.write(buffer)
+        totalBytes += readBytes
+      }
+    } while (!hasBytes)
+  }
+
+  return totalBytes
+}

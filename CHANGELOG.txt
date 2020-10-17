@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.5.8 (Oct 17 2020)
+    Added a couple of functions to store a request body as a binary file.
+
 1.5.7 (Oct 11 2020)
     Fix a bug when encoding dates as a (milli)seconds since the epoch.
 
