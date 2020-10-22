@@ -93,10 +93,10 @@ fun HttpServerExchange.binaryOutput(file: java.io.File, bufferSize: Int): Long {
   java.io.BufferedOutputStream(java.io.FileOutputStream(file), bufferSize).use { fileStream ->
     do {
       val buffer = ByteArray(bufferSize)
-      val readBytes = inputStream.read(buffer, 0, bufferSize)
+      val readBytes = inputStream.read(buffer, 0, buffer.size)
       hasBytes = 0 < readBytes
       if (hasBytes) {
-        fileStream.write(buffer)
+        fileStream.write(buffer, 0, readBytes)
         totalBytes += readBytes
       }
     } while (hasBytes)

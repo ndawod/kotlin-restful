@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.5.10 (Oct 22 2020)
+    Fixed a bug with storing HttpServerExchange's inputStream to a file.
+
 1.5.8-1.5.9 (Oct 17 2020)
     Added a couple of functions to store a request body as a binary file.
 

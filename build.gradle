@@ -22,7 +22,7 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '1.5.9'
+version = '1.5.10'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 buildscript {
@@ -36,6 +36,7 @@ buildscript {
     }
 
     dependencies {
+        // noinspection DifferentKotlinGradleVersion
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${versions.detekt}"
     }
