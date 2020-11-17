@@ -73,6 +73,7 @@ typealias JwtAuthentication = Pair<String, String>
  * @param verifier function to verify the validity of a JWT
  * @param sendAlways whether to resend JWT authorization header regardless if rearming is
  * required or not
+ * @param enforced whether to require the existence of an authorization header or not
  * @param rearmThreshold when the token expires in less than the value of this
  * [Duration][java.time.Duration], then it will be auto-rearmed when the exchange finishes
  * @param rearmDuration when auto-rearm is scheduled, this set the
@@ -84,53 +85,46 @@ class JwtAuthenticationHandler constructor(
   val creator: JwtAuthenticationCreator,
   val verifier: JwtAuthenticationVerifier,
   val sendAlways: Boolean = false,
+  val enforced: Boolean = true,
   val rearmThreshold: java.time.Duration? = null,
   val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14)
 ) : HttpHandler {
   override fun handleRequest(exchange: HttpServerExchange) {
     // Extract the JWT from the header.
-    val authorization = verifyAuthorizationHeader(exchange)
+    val authorization = detectAuthorizationHeader(exchange)
+    if (null != authorization) {
+      // Verify it.
+      val jwt = verifier(authorization.second)
 
-    // Verify it.
-    val jwt = verifier(authorization.second)
+      // Attach encoded JWT to this exchange and allow others to access it.
+      exchange.putAttachment(CLIENT_JWT_ID, authorization.second)
 
-    // Attach encoded JWT to this exchange and allow others to access it.
-    exchange.putAttachment(CLIENT_JWT_ID, authorization.second)
+      // Attach resolved JWT to this exchange and allow others to access it.
+      exchange.putAttachment(SERVER_JWT_ID, jwt)
 
-    // Attach resolved JWT to this exchange and allow others to access it.
-    exchange.putAttachment(SERVER_JWT_ID, jwt)
+      // We'll listen to when the exchange is finished so we can either resend the header,
+      // or rearm it if needed.
+      exchange.addExchangeCompleteListener(JwtExchangeCompletionListener(authorization, jwt))
+    } else if (enforced) {
+      throw JwtVerificationException("Authorization token is invalid.")
+    }
 
-    // We'll listen to when the exchange is finished so we can either resend the header,
-    // or rearm it if needed.
-    exchange.addExchangeCompleteListener(JwtExchangeCompletionListener(authorization, jwt))
-
+    // On to the next handler.
     next.handleRequest(exchange)
   }
 
-  /**
-   * We'll accept both a "Bearer" and a "Basic" authentication requests, and we'll
-   * treat the latter as a "Bearer" since we're asked to use JWT.
-   *
-   * @param exchange the HTTP request/response exchange
-   */
   @Throws(JwtVerificationException::class)
-  private fun verifyAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication {
+  private fun detectAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication? =
     exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()?.let {
       if (
         BEARER_PREFIX_LENGTH < it.length &&
         BEARER_PREFIX.equals(it.substring(0, BEARER_PREFIX_LENGTH), ignoreCase = true)
       ) {
-        return BEARER_PREFIX to it.substring(BEARER_PREFIX_LENGTH)
-      }
-      if (
-        BASIC_PREFIX_LENGTH < it.length &&
-        BASIC_PREFIX.equals(it.substring(0, BASIC_PREFIX_LENGTH), ignoreCase = true)
-      ) {
-        return BASIC_PREFIX to it.substring(BASIC_PREFIX_LENGTH)
+        BEARER_PREFIX to it.substring(BEARER_PREFIX_LENGTH)
+      } else {
+        null
       }
     }
-    throw JwtVerificationException("Authorization token is invalid.")
-  }
 
   private inner class JwtExchangeCompletionListener constructor(
     val authentication: JwtAuthentication,
@@ -183,8 +177,6 @@ class JwtAuthenticationHandler constructor(
   }
 
   companion object {
-    private const val BASIC_PREFIX: String = "basic "
-    private const val BASIC_PREFIX_LENGTH: Int = BASIC_PREFIX.length
     private const val BEARER_PREFIX: String = "bearer "
     private const val BEARER_PREFIX_LENGTH: Int = BEARER_PREFIX.length
 
