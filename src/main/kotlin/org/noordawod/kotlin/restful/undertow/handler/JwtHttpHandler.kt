@@ -27,7 +27,6 @@ package org.noordawod.kotlin.restful.undertow.handler
 
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
-import io.undertow.server.ExchangeCompletionListener
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.AttachmentKey
@@ -59,10 +58,9 @@ typealias JwtAuthenticationCreator = (
 typealias JwtAuthenticationVerifier = (token: String) -> Jwt
 
 /**
- * Holds the two most important pieces of authorization information: first is the
- * type of authorization (Basic, Bearer) and second is the JWT token itself.
+ * The JWT authorization token type.
  */
-typealias JwtAuthentication = Pair<String, String>
+typealias JwtAuthentication = String
 
 /**
  * Performs simple authentication using a JSON Web Token mechanism.
@@ -71,7 +69,8 @@ typealias JwtAuthentication = Pair<String, String>
  * @param creator function to call with a future date to generate a new JWT
  * @param verifier function to verify the validity of a JWT
  * @param sendAlways whether to resend JWT authorization header regardless if rearming is
- * required or not
+ * @param prependBearer whether the "Bearer " string appears before the JWT authorization token
+ * or not
  * @param enforced whether to require the existence of an authorization header or not
  * @param rearmThreshold when the token expires in less than the value of this
  * [Duration][java.time.Duration], then it will be auto-rearmed when the exchange finishes
@@ -84,26 +83,27 @@ class JwtAuthenticationHandler constructor(
   val creator: JwtAuthenticationCreator,
   val verifier: JwtAuthenticationVerifier,
   val sendAlways: Boolean = false,
+  val prependBearer: Boolean = false,
   val enforced: Boolean = true,
   val rearmThreshold: java.time.Duration = java.time.Duration.ofDays(1),
   val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14)
 ) : HttpHandler {
   override fun handleRequest(exchange: HttpServerExchange) {
-    // Extract the JWT from the header.
-    val authorization = detectAuthorizationHeader(exchange)
-    if (null != authorization) {
+    // Extract the JWT token from the header.
+    val token = detectAuthorizationHeader(exchange)
+    if (null != token) {
       // Verify it.
-      val jwt = verifier(authorization.second)
+      val jwt = verifier(token)
 
       // Attach encoded JWT to this exchange and allow others to access it.
-      exchange.putAttachment(CLIENT_JWT_ID, authorization.second)
+      exchange.putAttachment(CLIENT_JWT_ID, token)
 
       // Attach resolved JWT to this exchange and allow others to access it.
       exchange.putAttachment(SERVER_JWT_ID, jwt)
 
       // We'll listen to when the exchange is finished so we can either resend the header,
       // or rearm it if needed.
-      exchange.addExchangeCompleteListener(JwtExchangeCompletionListener(authorization, jwt))
+      possiblyRearm(exchange, token, jwt)
     } else if (enforced) {
       throw JwtVerificationException("Authorization token is invalid.")
     }
@@ -119,62 +119,57 @@ class JwtAuthenticationHandler constructor(
         BEARER_PREFIX_LENGTH < it.length &&
         BEARER_PREFIX.equals(it.substring(0, BEARER_PREFIX_LENGTH), ignoreCase = true)
       ) {
-        BEARER_PREFIX to it.substring(BEARER_PREFIX_LENGTH)
+        it.substring(BEARER_PREFIX_LENGTH)
       } else {
         null
       }
     }
 
-  private inner class JwtExchangeCompletionListener constructor(
-    val authentication: JwtAuthentication,
-    val jwt: Jwt
-  ) : ExchangeCompletionListener {
-    override fun exchangeEvent(
-      exchange: HttpServerExchange,
-      nextListener: ExchangeCompletionListener.NextListener
-    ) {
-      try {
-        exchangeEvent(exchange)
-      } finally {
-        nextListener.proceed()
-      }
-    }
+  private fun possiblyRearm(exchange: HttpServerExchange, token: JwtAuthentication, jwt: Jwt) {
+    val prefix = if (prependBearer) BEARER_PREFIX else ""
 
-    private fun exchangeEvent(exchange: HttpServerExchange) {
-      // Specify the type in Kotlin as expiration date is never null.
-      val expiresAt: java.util.Date = jwt.expiresAt ?: return
-      val expiresMillis = expiresAt.time
+    // Specify the type in Kotlin as expiration date is never null.
+    val expiresAt: java.util.Date = jwt.expiresAt ?: return
+    val expiresMillis = expiresAt.time
 
-      // Needs to rearm or resent?
-      val nowMillis = java.util.Date().time
-      if (expiresMillis - rearmThreshold.toMillis() <= nowMillis) {
-        // Rearming client with a new JWT.
-        sendHeader(
-          exchange,
-          authentication.first to creator(
-            jwt.id,
-            jwt.subject,
-            jwt.issuer,
-            java.util.Date(nowMillis + rearmDuration.toMillis())
-          )
+    // Needs to rearm or resent?
+    val nowMillis = java.util.Date().time
+    if (expiresMillis - rearmThreshold.toMillis() <= nowMillis) {
+      // Rearming client with a new JWT.
+      sendHeader(
+        exchange,
+        prefix,
+        creator(
+          jwt.id,
+          jwt.subject,
+          jwt.issuer,
+          java.util.Date(nowMillis + rearmDuration.toMillis())
         )
-      } else if (sendAlways) {
-        // Resending the same authorization to client.
-        sendHeader(exchange, authentication)
-      }
-    }
-
-    private fun sendHeader(exchange: HttpServerExchange, authentication: JwtAuthentication) {
-      exchange.responseHeaders.put(
-        Headers.AUTHORIZATION,
-        "${authentication.first}${authentication.second}"
       )
+    } else if (sendAlways) {
+      // Resending the same authorization to client.
+      sendHeader(exchange, prefix, token)
     }
   }
 
+  private fun sendHeader(
+    exchange: HttpServerExchange,
+    prefix: String,
+    token: JwtAuthentication
+  ) {
+    exchange.responseHeaders.put(Headers.AUTHORIZATION, "$prefix$token")
+  }
+
   companion object {
-    private const val BEARER_PREFIX: String = "bearer "
-    private const val BEARER_PREFIX_LENGTH: Int = BEARER_PREFIX.length
+    /**
+     * The JWT authorization type we support.
+     */
+    const val BEARER_PREFIX: String = "Bearer "
+
+    /**
+     * Length of [BEARER_PREFIX] in bytes.
+     */
+    const val BEARER_PREFIX_LENGTH: Int = BEARER_PREFIX.length
 
     /**
      * The attachment key to fetch the client-provided JWT from a [HttpServerExchange].
