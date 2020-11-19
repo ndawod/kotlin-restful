@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+1.5.12 (Nov 19 2020)
+    Fix rearming a JWT that's going to expire soon.
+
 1.5.11 (Nov 17 2020)
     Enable reading an access token but not enforcing it.
 
