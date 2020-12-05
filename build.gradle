@@ -22,7 +22,7 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '1.5.13'
+version = '2.0.0'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 buildscript {
@@ -62,4 +62,5 @@ dependencies {
     implementation "com.squareup.moshi:moshi-adapters:${versions.moshi}"
     implementation "com.auth0:java-jwt:${versions.auth0_jwt}"
     implementation "com.squareup.okio:okio:${versions.okio}"
+    implementation "org.apache.commons:commons-collections4:${versions.commons_collections4}"
 }

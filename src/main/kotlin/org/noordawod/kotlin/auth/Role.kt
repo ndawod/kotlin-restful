@@ -21,18 +21,36 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_1_8,
-    ndawod_kotlin_core: '2.2.9',
-    kotlin: '1.3.72',
-    kotlinx: '1.3.9',
-    detekt: '1.14.1',
-    jackson: '2.11.3',
-    moshi: '1.9.2',
-    okio: '2.6.0',
-    undertow: '2.2.0.Final',
-    freemarker: '2.3.30',
-    auth0_jwt: '3.11.0',
-    commons_collections4: '4.4'
-]
+@file:Suppress("unused")
+
+package org.noordawod.kotlin.auth
+
+/**
+ * A role combines many [permissions][Permission] and [resources][Resource] to simplify
+ * administration of users.
+ *
+ * Roles are defined in the database and an operator with enough privileges can manipulate
+ * them in the control panel.
+ *
+ * @param R type of a [Role]’s unique identifier
+ * @param identifier a unique identifier for this role
+ * @param label a human-readable label (in English) for this role
+ * @param description a short description of this role
+ * @param privileges the list of [resources][Resource] and the associated
+ * [permissions][Permission] this role has
+ */
+@Suppress("MemberVisibilityCanBePrivate")
+open class Role<R> constructor(
+  val identifier: R,
+  val label: String,
+  val description: String?,
+  val privileges: Privileges
+) {
+  override fun toString(): String =
+    "${javaClass.simpleName}[identifier=$identifier, privileges=$privileges, label=$label]"
+
+  final override fun equals(other: Any?): Boolean =
+    other is Role<*> && other.identifier == identifier
+
+  final override fun hashCode(): Int = identifier.hashCode()
+}
