@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.0 (Dec 6 2020)
+    Bump Kotlin plugin and libraries versions.
+
 2.0.0 (Dec 5 2020)
     Introduced a new generic authorization package for granting clients access to resources
     based on roles and permissions.
