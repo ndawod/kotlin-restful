@@ -21,8 +21,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
-
 package org.noordawod.kotlin.restful.undertow.handler
 
 import io.undertow.server.HttpHandler

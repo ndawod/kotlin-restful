@@ -21,11 +21,17 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused")
-
 package org.noordawod.kotlin.restful.util
 
 import com.auth0.jwt.algorithms.Algorithm
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 /**
  * Lists the three most used algorithms when creating a JWT, just for making things a
@@ -34,14 +40,10 @@ import com.auth0.jwt.algorithms.Algorithm
  * @param method the encryption algorithm method
  * @param bits how many bits this encryption algorithm has
  */
-@Suppress("UnderscoresInNumericLiterals", "MagicNumber")
-enum class EncryptionAlgorithm constructor(
-  @Suppress("MemberVisibilityCanBePrivate")
-  val method: String,
-
-  @Suppress("MemberVisibilityCanBePrivate")
-  val bits: Int
-) {
+@ExperimentalSerializationApi
+@Suppress("UnderscoresInNumericLiterals", "MagicNumber", "MemberVisibilityCanBePrivate")
+@Serializable(with = EncryptionAlgorithmSerializer::class)
+enum class EncryptionAlgorithm constructor(val method: String, val bits: Int) {
   /**
    * A moderate-length algorithm suitable for development.
    */
@@ -76,4 +78,21 @@ enum class EncryptionAlgorithm constructor(
   ): Algorithm = Algorithm::class.java.getMethod(algorithm.method, klass).let { method ->
     method.invoke(null, secret) as Algorithm
   }
+}
+
+/**
+ * Helper object for (de)serializing the [EncryptionAlgorithm] enum.
+ */
+@ExperimentalSerializationApi
+@Serializer(forClass = EncryptionAlgorithm::class)
+object EncryptionAlgorithmSerializer {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("EncryptionAlgorithm", PrimitiveKind.STRING)
+
+  override fun serialize(encoder: Encoder, value: EncryptionAlgorithm) {
+    encoder.encodeString(value.name.toUpperCase(java.util.Locale.ENGLISH))
+  }
+
+  override fun deserialize(decoder: Decoder): EncryptionAlgorithm =
+    EncryptionAlgorithm.valueOf(decoder.decodeString().toUpperCase(java.util.Locale.ENGLISH))
 }

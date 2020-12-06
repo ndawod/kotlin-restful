@@ -22,8 +22,10 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '2.1.0'
+version = '2.1.1'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
+
+apply plugin: 'kotlinx-serialization'
 
 buildscript {
     apply from: 'gradle/config.gradle'
@@ -36,8 +38,8 @@ buildscript {
     }
 
     dependencies {
-        // noinspection DifferentKotlinGradleVersion
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:${versions.detekt}"
     }
 }
