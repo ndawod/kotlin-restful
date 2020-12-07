@@ -48,8 +48,8 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
 
   @Suppress("ReturnCount")
   override fun has(client: Client<ID, R>, requiredPrivileges: Privileges): Boolean {
-    // Quickest path is to check if the client is a super user.
-    if (!client.isSuper) {
+    // Quickest path is to check if the client is an administrator.
+    if (!client.isAdmin) {
       // This map contains all known privileges of the client, based on defined roles
       // and any runtime privileges for the incoming request.
       val clientPrivileges: MutablePrivileges = LinkedHashMap(DEFAULT_ENTRIES)
