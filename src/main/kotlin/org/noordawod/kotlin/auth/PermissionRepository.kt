@@ -69,7 +69,7 @@ interface PermissionRepository {
   /**
    * Returns a copy of all defined [permissions][Permission].
    */
-  fun getAll(): Collection<Permission>
+  fun getAll(): Permissions
 
   /**
    * Retrieves a permission by its unique [identifier][permissionId]. If the permission isn’t found,
@@ -124,8 +124,8 @@ class PermissionRepositoryImpl : PermissionRepository {
 
   override fun isDefined(permissionId: PermissionId): Boolean = cache.containsKey(permissionId)
 
-  override fun getAll(): Collection<Permission> =
-    ArrayList<Permission>(cache.size).apply {
+  override fun getAll(): Permissions =
+    LinkedHashSet<Permission>(cache.size).apply {
       cache.forEach { (_, permission) ->
         add(permission)
       }

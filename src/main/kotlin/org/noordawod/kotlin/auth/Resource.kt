@@ -29,6 +29,11 @@ package org.noordawod.kotlin.auth
 typealias ResourceId = Int
 
 /**
+ * Signature of an [immutable set][Set] of [resources][Resource].
+ */
+typealias Resources = Set<Resource>
+
+/**
  * The grammatical English article that may precede a noun (either "a" or "an").
  *
  * @param word the actual English word

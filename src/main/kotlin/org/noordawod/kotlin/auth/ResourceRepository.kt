@@ -69,7 +69,7 @@ interface ResourceRepository {
   /**
    * Returns a copy of all defined [resources][Resource].
    */
-  fun getAll(): Collection<Resource>
+  fun getAll(): Resources
 
   /**
    * Retrieves a resource by its unique [identifier][resourceId]. If the resource isn’t found,
@@ -124,8 +124,8 @@ class ResourceRepositoryImpl : ResourceRepository {
 
   override fun isDefined(resourceId: ResourceId): Boolean = cache.containsKey(resourceId)
 
-  override fun getAll(): Collection<Resource> =
-    ArrayList<Resource>(cache.size).apply {
+  override fun getAll(): Resources =
+    LinkedHashSet<Resource>(cache.size).apply {
       cache.forEach { (_, resource) ->
         add(resource)
       }

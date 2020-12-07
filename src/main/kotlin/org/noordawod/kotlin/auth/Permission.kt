@@ -29,7 +29,7 @@ package org.noordawod.kotlin.auth
 typealias PermissionId = Int
 
 /**
- * Signature of a [mutable set][Set] of [permissions][Permission].
+ * Signature of a [immutable set][Set] of [permissions][Permission].
  */
 typealias Permissions = Set<Permission>
 

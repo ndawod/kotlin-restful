@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.2 (Dec 7 2020)
+    Enable a privileged Client to be a super user.
+
 2.1.0-2.1.1 (Dec 6 2020)
     Bump Kotlin plugin and libraries versions.
 
