@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.4 (Dec 7 2020)
+    Roll back and remove the super user concept, it’s out of scope for this library.
+
 2.1.2-2.1.3 (Dec 7 2020)
     Enable a privileged Client to be a super user.
 

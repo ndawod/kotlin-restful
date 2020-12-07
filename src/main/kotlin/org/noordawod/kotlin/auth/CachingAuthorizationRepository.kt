@@ -48,33 +48,30 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
 
   @Suppress("ReturnCount")
   override fun has(client: Client<ID, R>, requiredPrivileges: Privileges): Boolean {
-    // Quickest path is to check if the client is an administrator.
-    if (!client.isAdmin) {
-      // This map contains all known privileges of the client, based on defined roles
-      // and any runtime privileges for the incoming request.
-      val clientPrivileges: MutablePrivileges = LinkedHashMap(DEFAULT_ENTRIES)
+    // This map contains all known privileges of the client, based on defined roles
+    // and any runtime privileges for the incoming request.
+    val clientPrivileges: MutablePrivileges = LinkedHashMap(DEFAULT_ENTRIES)
 
-      // Add all permissions defined by the different roles this client has.
-      client.roles.forEach { role ->
-        combinePrivileges(role.privileges, clientPrivileges)
+    // Add all permissions defined by the different roles this client has.
+    client.roles.forEach { role ->
+      combinePrivileges(role.privileges, clientPrivileges)
+    }
+
+    // Add any additional privileges that are resolved at runtime based on the request.
+    combinePrivileges(client.privileges, clientPrivileges)
+
+    for (privilege in requiredPrivileges) {
+      val resource = privilege.key
+      val clientPermissions = clientPrivileges[resource]
+
+      @Suppress("FoldInitializerAndIfToElvis")
+      if (null == clientPermissions) {
+        return false
       }
 
-      // Add any additional privileges that are resolved at runtime based on the request.
-      combinePrivileges(client.privileges, clientPrivileges)
-
-      for (privilege in requiredPrivileges) {
-        val resource = privilege.key
-        val clientPermissions = clientPrivileges[resource]
-
-        @Suppress("FoldInitializerAndIfToElvis")
-        if (null == clientPermissions) {
-          return false
-        }
-
-        val resourcePermissions = privilege.value
-        if (!clientPermissions.containsAll(resourcePermissions)) {
-          return false
-        }
+      val resourcePermissions = privilege.value
+      if (!clientPermissions.containsAll(resourcePermissions)) {
+        return false
       }
     }
 

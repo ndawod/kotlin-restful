@@ -55,19 +55,17 @@ infix fun Privileges.mergeWith(privileges: Privileges): Privileges = toMutableMa
  * @param ID type of the unique [identifier] of this client
  * @param R type of the unique identifier of [roles]
  * @param identifier a unique identifier for this client
- * @param isAdmin whether this client is an administrator (able to do anything)
  * @param roles a list [Roles][Role] this client is associated with
  * @param privileges additional privileges for this client based on the incoming request
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class Client<ID : Any, R : Any> constructor(
   val identifier: ID,
-  val isAdmin: Boolean,
   val roles: Set<Role<R>>,
   val privileges: Privileges
 ) {
   override fun toString(): String = javaClass.simpleName +
-    "[identifier=$identifier, isAdmin=$isAdmin, roles=$roles], privileges=$privileges]"
+    "[identifier=$identifier, roles=$roles], privileges=$privileges]"
 
   final override fun equals(other: Any?): Boolean =
     other is Client<*, *> && other.identifier == identifier
