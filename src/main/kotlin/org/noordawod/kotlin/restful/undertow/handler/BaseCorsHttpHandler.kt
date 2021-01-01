@@ -44,7 +44,7 @@ typealias HostsCollection = Collection<String>
  * to allow JavaScript code to access such headers in the xhr.responseHeaders
  * @param maxAge how long, in seconds, to allow browsers to cache CORS headers
  */
-@Suppress("UnnecessaryAbstractClass")
+@Suppress("UnnecessaryAbstractClass", "MemberVisibilityCanBePrivate")
 abstract class BaseCorsHttpHandler protected constructor(
   val next: HttpHandler,
   val hosts: HostsCollection,
@@ -57,7 +57,8 @@ abstract class BaseCorsHttpHandler protected constructor(
    * @param exchange the HTTP request/response exchange
    * @param originHost value of "Origin:" request header
    */
-  protected fun setCorsResponseHeaders(exchange: HttpServerExchange, originHost: String) {
+  @Suppress("unused")
+  protected open fun setCorsResponseHeaders(exchange: HttpServerExchange, originHost: String) {
     // Allowed headers are usually supplied by the client.
     val allowedMethod = exchange.requestHeaders[ACCESS_CONTROL_REQUEST_METHOD]?.firstOrNull()
       ?: "*"
