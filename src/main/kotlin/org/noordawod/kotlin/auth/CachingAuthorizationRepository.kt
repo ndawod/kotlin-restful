@@ -79,20 +79,29 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
   }
 
   @Synchronized
-  override fun getRoles(): Set<Role<R>> {
-    if (rolesCache.isEmpty) {
-      persister.getRoles().onEach {
-        rolesCache[it.identifier] = it
+  override fun getRoles(permissions: Permissions?): Set<Role<R>> =
+    // When restricting the list of roles, do not cache the result.
+    if (permissions.isNullOrEmpty()) {
+      if (rolesCache.isEmpty) {
+        persister.getRoles().onEach {
+          rolesCache[it.identifier] = it
+        }
       }
+      rolesCache.values.toSet()
+    } else {
+      persister.getRoles(permissions)
     }
-    return rolesCache.values.toSet()
-  }
 
   @Synchronized
-  override fun getRoles(clientId: ID): Set<Role<R>> =
-    clientRolesCache.getOrPut(clientId) {
-      persister.getRoles(clientId)
-    }.toSet()
+  override fun getRoles(clientId: ID, permissions: Permissions?): Set<Role<R>> =
+    // When restricting the list of roles, do not cache the result.
+    if (permissions.isNullOrEmpty()) {
+      clientRolesCache.getOrPut(clientId) {
+        persister.getRoles(clientId)
+      }.toSet()
+    } else {
+      persister.getRoles(clientId, permissions)
+    }
 
   @Synchronized
   override fun getRole(roleId: R): Role<R>? {

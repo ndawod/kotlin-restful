@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.6 (Jan 13 2021)
+    Allow getRoles() to accept a list of permissions to filter by.
+
 2.1.5 (Jan 1 2021)
     Allow setCorsResponseHeaders() to be overridden.
 

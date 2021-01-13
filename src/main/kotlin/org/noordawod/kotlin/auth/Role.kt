@@ -44,8 +44,7 @@ open class Role<R> constructor(
   val description: String?,
   val privileges: Privileges
 ) {
-  override fun toString(): String =
-    "${javaClass.simpleName}[identifier=$identifier, privileges=$privileges, label=$label]"
+  override fun toString(): String = "$identifier"
 
   final override fun equals(other: Any?): Boolean =
     other is Role<*> && other.identifier == identifier

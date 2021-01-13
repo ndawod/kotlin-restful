@@ -34,16 +34,19 @@ interface AuthorizationPersister<ID : Any, R : Any> {
   /**
    * Retrieves the list of [roles][Role] defined in the system. If no roles are found, then
    * an empty list is returned.
+   *
+   * @param permissions if provided, return only [roles][Role] having these permissions
    */
-  fun getRoles(): Set<Role<R>>
+  fun getRoles(permissions: Permissions? = null): Set<Role<R>>
 
   /**
    * Retrieves the [roles][Role] of a [Client] identified by their
    * [unique identifier][clientId].
    *
    * @param clientId unique identifier of [Client]
+   * @param permissions if provided, return only [roles][Role] having these permissions
    */
-  fun getRoles(clientId: ID): Set<Role<R>>
+  fun getRoles(clientId: ID, permissions: Permissions? = null): Set<Role<R>>
 
   /**
    * Retrieves the details of a [Role] identified by its [unique identifier][roleId].
