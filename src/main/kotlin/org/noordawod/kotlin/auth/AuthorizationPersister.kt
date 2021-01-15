@@ -68,37 +68,35 @@ interface AuthorizationPersister<ID : Any, R : Any> {
   /**
    * Deletes a [Role] identified by its [unique identifier][roleId] from the system.
    *
+   * @param operator the operator (user) who’s deleting the role
    * @param roleId unique identifier of the [Role]
    */
-  fun deleteRole(roleId: R)
+  fun deleteRole(operator: ID, roleId: R)
 
   /**
    * Updates a [Role]’s [label] and [description] in the system.
    *
+   * @param operator the operator (user) who’s updating the role
    * @param roleId unique identifier of the [Role]
    * @param label the [Role]’s label
    * @param description the [Role]’s description
    */
-  fun updateRole(roleId: R, label: String, description: String?): Role<R>?
+  fun updateRole(operator: ID, roleId: R, label: String, description: String?): Role<R>?
 
   /**
    * Adds new [privileges] for a [Role] identified by its [unique identifier][roleId].
    *
-   * @param operator the operator (user) who’s adding the permissions
+   * @param operator the operator (user) who’s setting the privileges
    * @param roleId unique identifier of the [Role]
    * @param privileges the resources and their permissions to add for a role
    */
-  fun addPrivileges(
-    operator: ID,
-    roleId: R,
-    privileges: Privileges
-  )
+  fun setPrivileges(operator: ID, roleId: R, privileges: Privileges)
 
   /**
    * Deletes all [Permissions] associated with a [Role] identified by its
    * [unique identifier][roleId].
    *
-   * @param operator the operator (user) who’s deleting the permissions
+   * @param operator the operator (user) who’s clearing the privileges
    * @param roleId unique identifier of the [Role]
    */
   fun clearPrivileges(operator: ID, roleId: R)

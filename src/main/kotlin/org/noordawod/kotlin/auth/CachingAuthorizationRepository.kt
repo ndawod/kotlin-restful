@@ -122,8 +122,8 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     }
 
   @Synchronized
-  override fun deleteRole(roleId: R) {
-    persister.deleteRole(roleId)
+  override fun deleteRole(operator: ID, roleId: R) {
+    persister.deleteRole(operator, roleId)
     rolesCache.remove(roleId)
     clientRolesCache.clone().apply {
       clientRolesCache.clear()
@@ -134,8 +134,8 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
   }
 
   @Synchronized
-  override fun updateRole(roleId: R, label: String, description: String?): Role<R>? =
-    persister.updateRole(roleId, label, description)?.also { updatedRole ->
+  override fun updateRole(operator: ID, roleId: R, label: String, description: String?): Role<R>? =
+    persister.updateRole(operator, roleId, label, description)?.also { updatedRole ->
       rolesCache[roleId] = updatedRole
       clientRolesCache.forEach { (clientId, roles) ->
         val updatedRoles = ArrayList<Role<R>>(roles.size)
@@ -147,12 +147,8 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     }
 
   @Synchronized
-  override fun addPrivileges(
-    operator: ID,
-    roleId: R,
-    privileges: Privileges
-  ) {
-    persister.addPrivileges(operator, roleId, privileges)
+  override fun setPrivileges(operator: ID, roleId: R, privileges: Privileges) {
+    persister.setPrivileges(operator, roleId, privileges)
   }
 
   @Synchronized

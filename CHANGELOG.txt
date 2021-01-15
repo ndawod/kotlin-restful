@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.8 (Jan 15 2021)
+    Add "operator" argument to few methods in AuthorizationPersister interface.
+
 2.1.7 (Jan 15 2021)
     Rename deletePermissions() to clearPrivileges(), remove updatePermissions().
 
