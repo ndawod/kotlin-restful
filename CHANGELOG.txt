@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.7 (Jan 15 2021)
+    Rename deletePermissions() to clearPrivileges(), remove updatePermissions().
+
 2.1.6 (Jan 13 2021)
     Allow getRoles() to accept a list of permissions to filter by.
 

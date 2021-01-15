@@ -82,43 +82,24 @@ interface AuthorizationPersister<ID : Any, R : Any> {
   fun updateRole(roleId: R, label: String, description: String?): Role<R>?
 
   /**
-   * Adds new [resource] [permissions] for a [Role] identified by its
-   * [unique identifier][roleId].
+   * Adds new [privileges] for a [Role] identified by its [unique identifier][roleId].
    *
    * @param operator the operator (user) who’s adding the permissions
    * @param roleId unique identifier of the [Role]
-   * @param resource the resource to add permissions for
-   * @param permissions list of permissions to set for the resource
+   * @param privileges the resources and their permissions to add for a role
    */
-  fun addPermissions(
+  fun addPrivileges(
     operator: ID,
     roleId: R,
-    resource: ResourceId,
-    permissions: Permissions
+    privileges: Privileges
   )
 
   /**
-   * Modifies [permissions] for a [resource] in a [Role] identified by its
+   * Deletes all [Permissions] associated with a [Role] identified by its
    * [unique identifier][roleId].
-   *
-   * @param operator the operator (user) who’s modifying the permissions
-   * @param roleId unique identifier of the [Role]
-   * @param resource the resource to update its permissions
-   * @param permissions list of permissions to set for the resource
-   */
-  fun updatePermissions(
-    operator: ID,
-    roleId: R,
-    resource: ResourceId,
-    permissions: Permissions
-  )
-
-  /**
-   * Deletes [Permissions] for a [resource].
    *
    * @param operator the operator (user) who’s deleting the permissions
    * @param roleId unique identifier of the [Role]
-   * @param resource the resource to delete permissions from
    */
-  fun deletePermissions(operator: ID, roleId: R, resource: ResourceId)
+  fun clearPrivileges(operator: ID, roleId: R)
 }

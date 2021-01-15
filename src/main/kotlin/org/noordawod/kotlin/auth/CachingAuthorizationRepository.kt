@@ -147,32 +147,17 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     }
 
   @Synchronized
-  override fun addPermissions(
+  override fun addPrivileges(
     operator: ID,
     roleId: R,
-    resource: ResourceId,
-    permissions: Permissions
+    privileges: Privileges
   ) {
-    persister.addPermissions(operator, roleId, resource, permissions)
+    persister.addPrivileges(operator, roleId, privileges)
   }
 
   @Synchronized
-  override fun updatePermissions(
-    operator: ID,
-    roleId: R,
-    resource: ResourceId,
-    permissions: Permissions
-  ) {
-    persister.updatePermissions(operator, roleId, resource, permissions)
-  }
-
-  @Synchronized
-  override fun deletePermissions(
-    operator: ID,
-    roleId: R,
-    resource: ResourceId
-  ) {
-    persister.deletePermissions(operator, roleId, resource)
+  override fun clearPrivileges(operator: ID, roleId: R) {
+    persister.clearPrivileges(operator, roleId)
   }
 
   private fun combinePrivileges(from: Privileges?, to: MutablePrivileges) {
