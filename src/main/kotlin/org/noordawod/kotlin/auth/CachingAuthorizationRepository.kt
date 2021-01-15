@@ -41,7 +41,7 @@ import org.apache.commons.collections4.map.LRUMap
 @Suppress("TooManyFunctions")
 class CachingAuthorizationRepository<ID : Any, R : Any>(
   private val persister: AuthorizationPersister<ID, R>,
-  maxEntries: Int = DEFAULT_CACHE_ENTRIES
+  private val maxEntries: Int = DEFAULT_CACHE_ENTRIES
 ) : AuthorizationChecker<ID, R>, AuthorizationPersister<ID, R> {
   private val clientRolesCache = LRUMap<ID, Collection<Role<R>>>(maxEntries)
   private val rolesCache = LRUMap<R, Role<R>>(maxEntries)
@@ -125,35 +125,57 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
   override fun deleteRole(operator: ID, roleId: R) {
     persister.deleteRole(operator, roleId)
     rolesCache.remove(roleId)
-    clientRolesCache.clone().apply {
-      clientRolesCache.clear()
-      forEach { (clientId, roles) ->
-        clientRolesCache[clientId] = roles.filterNot { it.identifier == roleId }
-      }
+    val clientRolesCacheReplacement = LRUMap<ID, Collection<Role<R>>>(maxEntries)
+    clientRolesCache.forEach { (clientId, roles) ->
+      clientRolesCacheReplacement[clientId] = roles.filterNot { it.identifier == roleId }
     }
+    clientRolesCache.clear()
+    clientRolesCache.putAll(clientRolesCacheReplacement)
   }
 
   @Synchronized
   override fun updateRole(operator: ID, roleId: R, label: String, description: String?): Role<R>? =
     persister.updateRole(operator, roleId, label, description)?.also { updatedRole ->
-      rolesCache[roleId] = updatedRole
-      clientRolesCache.forEach { (clientId, roles) ->
-        val updatedRoles = ArrayList<Role<R>>(roles.size)
-        roles.forEach { role ->
-          updatedRoles.add(if (role.identifier == roleId) updatedRole else role)
-        }
-        clientRolesCache[clientId] = updatedRoles
-      }
+      updateRoleImpl(roleId, updatedRole)
     }
 
   @Synchronized
   override fun setPrivileges(operator: ID, roleId: R, privileges: Privileges) {
     persister.setPrivileges(operator, roleId, privileges)
+    val role = rolesCache[roleId]
+    if (null != role) {
+      updateRoleImpl(
+        roleId,
+        Role(roleId, role.label, role.description, if (privileges.isEmpty()) null else privileges)
+      )
+    }
   }
 
   @Synchronized
   override fun clearPrivileges(operator: ID, roleId: R) {
-    persister.clearPrivileges(operator, roleId)
+    getRole(roleId)?.also { role ->
+      persister.clearPrivileges(operator, roleId)
+      updateRoleImpl(
+        roleId,
+        Role(roleId, role.label, role.description, null)
+      )
+    }
+  }
+
+  private fun updateRoleImpl(roleId: R, updatedRole: Role<R>) {
+    rolesCache[roleId] = updatedRole
+    clientRolesCache.keys.forEach { clientId ->
+      ArrayList<Role<R>>(maxEntries).also { updatedRoles ->
+        clientRolesCache[clientId]?.apply {
+          val filteredRoles = filterNot { it.identifier == roleId }
+          if (filteredRoles.isNotEmpty()) {
+            updatedRoles.addAll(filteredRoles)
+          }
+        }
+        updatedRoles.add(updatedRole)
+        clientRolesCache[clientId] = updatedRoles
+      }
+    }
   }
 
   private fun combinePrivileges(from: Privileges?, to: MutablePrivileges) {

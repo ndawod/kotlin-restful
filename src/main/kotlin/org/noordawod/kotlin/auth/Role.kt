@@ -42,7 +42,7 @@ open class Role<R> constructor(
   val identifier: R,
   val label: String,
   val description: String?,
-  val privileges: Privileges
+  val privileges: Privileges?
 ) {
   override fun toString(): String = "$identifier"
 
