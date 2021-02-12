@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.1.10 (Feb 12 2021)
+    Bump dependencies versions, minor refinements to existing functions.
+
 2.1.9 (Jan 15 2021)
     Fix a caching bug in CachingAuthorizationRepository.
 

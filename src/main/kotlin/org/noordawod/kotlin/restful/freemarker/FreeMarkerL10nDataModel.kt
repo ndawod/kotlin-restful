@@ -46,12 +46,12 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   /**
    * Returns the base [java.util.Locale].
    */
-  val baseLocale: java.util.Locale get() = baseL10n.locale
+  open val baseLocale: java.util.Locale get() = baseL10n.locale
 
   /**
    * Returns the client's preferred [java.util.Locale].
    */
-  val locale: java.util.Locale get() = clientL10n.locale
+  open val locale: java.util.Locale get() = clientL10n.locale
 
   /**
    * Returns the requested language in this request, if provided, or reverts back to the base,
