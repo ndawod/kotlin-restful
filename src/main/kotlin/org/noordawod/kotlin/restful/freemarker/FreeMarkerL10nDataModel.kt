@@ -98,7 +98,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
       ""
     } else {
       @Suppress("SpreadOperator")
-      java.lang.String.format(locale, text, *args.map { it.toString() }.toTypedArray())
+      java.lang.String.format(locale, text, *args.map { "$it" }.toTypedArray())
     }
   }
 
@@ -126,7 +126,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param count the count of items to pluralize
    */
   @Suppress("StringLiteralDuplication")
-  fun pluralize(key: String, count: Int): String {
+  fun l10n(key: String, count: Int): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
     val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
     return l10n("$key.$rule")
@@ -141,44 +141,44 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param count the count of items to pluralize
    */
   @Suppress("StringLiteralDuplication")
-  fun pluralize(key: String, count: Int, args: Iterable<Any>): String {
+  fun l10n(key: String, count: Int, args: Iterable<Any>): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
     val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
     return l10n("$key.$rule", args)
   }
 
-  /**
-   * Localizes a quantity text identified by its [key] using only rules for zero, one, two
-   * and other.
-   *
-   * @param key the localization key to localize
-   * @param quantity the quantity value
-   */
-  @Suppress("StringLiteralDuplication")
-  fun quantify(key: String, quantity: Int): String {
-    val rule = quantifyRule(quantity)
-    return l10n("$key.$rule")
-  }
-
-  /**
-   * Localizes a quantity text identified by its [key] using only rules for zero, one, two
-   * and other and with the specified arguments to replace any placeholders in the
-   * translation (%1$d, %2$s, …).
-   *
-   * @param key the localization key to localize
-   * @param args list of arguments to substitute in the localized text
-   * @param quantity the quantity value
-   */
-  @Suppress("StringLiteralDuplication")
-  fun quantify(key: String, quantity: Int, args: Iterable<Any>): String {
-    val rule = quantifyRule(quantity)
-    return l10n("$key.$rule", args)
-  }
-
-  private fun quantifyRule(quantity: Int): String = when (quantity) {
-    0 -> PluralRules.KEYWORD_ZERO
-    1 -> PluralRules.KEYWORD_ONE
-    2 -> PluralRules.KEYWORD_TWO
-    else -> PluralRules.KEYWORD_OTHER
-  }
+//  /**
+//   * Localizes a quantity text identified by its [key] using only rules for zero, one, two
+//   * and other.
+//   *
+//   * @param key the localization key to localize
+//   * @param quantity the quantity value
+//   */
+//  @Suppress("StringLiteralDuplication")
+//  fun quantify(key: String, quantity: Int): String {
+//    val rule = quantifyRule(quantity)
+//    return l10n("$key.$rule")
+//  }
+//
+//  /**
+//   * Localizes a quantity text identified by its [key] using only rules for zero, one, two
+//   * and other and with the specified arguments to replace any placeholders in the
+//   * translation (%1$d, %2$s, …).
+//   *
+//   * @param key the localization key to localize
+//   * @param args list of arguments to substitute in the localized text
+//   * @param quantity the quantity value
+//   */
+//  @Suppress("StringLiteralDuplication")
+//  fun quantify(key: String, quantity: Int, args: Iterable<Any>): String {
+//    val rule = quantifyRule(quantity)
+//    return l10n("$key.$rule", args)
+//  }
+//
+//  private fun quantifyRule(quantity: Int): String = when (quantity) {
+//    0 -> PluralRules.KEYWORD_ZERO
+//    1 -> PluralRules.KEYWORD_ONE
+//    2 -> PluralRules.KEYWORD_TWO
+//    else -> PluralRules.KEYWORD_OTHER
+//  }
 }
