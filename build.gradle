@@ -22,7 +22,7 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '2.1.10'
+version = '2.2.0'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 apply plugin: 'kotlinx-serialization'
@@ -65,4 +65,5 @@ dependencies {
     implementation "com.auth0:java-jwt:${versions.auth0_jwt}"
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "org.apache.commons:commons-collections4:${versions.commons_collections4}"
+    implementation "com.ibm.icu:icu4j:${versions.icu4j}"
 }

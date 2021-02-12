@@ -23,6 +23,7 @@
 
 package org.noordawod.kotlin.restful.freemarker
 
+import com.ibm.icu.text.PluralRules
 import org.noordawod.kotlin.core.extension.direction
 import org.noordawod.kotlin.core.extension.endAlignment
 import org.noordawod.kotlin.core.extension.getNewLanguage
@@ -92,13 +93,12 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param args list of arguments to substitute in the localized text
    */
   open fun l10n(key: String, args: Iterable<Any>): String {
-    val text: String? = l10n(key, true)
-
-    @Suppress("SpreadOperator")
-    return when {
-      null == text -> key
-      text.isEmpty() -> ""
-      else -> java.lang.String.format(locale, text, *args.map { it.toString() }.toTypedArray())
+    val text: String = l10n(key, true)
+    return if (text.isEmpty()) {
+      ""
+    } else {
+      @Suppress("SpreadOperator")
+      java.lang.String.format(locale, text, *args.map { it.toString() }.toTypedArray())
     }
   }
 
@@ -117,5 +117,68 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
       text = baseL10n.translation[key]
     }
     return text?.trim() ?: key
+  }
+
+  /**
+   * Localizes a plural text identified by its [key].
+   *
+   * @param key the localization key to localize
+   * @param count the count of items to pluralize
+   */
+  @Suppress("StringLiteralDuplication")
+  fun pluralize(key: String, count: Int): String {
+    val pluralRules = PluralRules.forLocale(clientL10n.locale)
+    val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
+    return l10n("$key.$rule")
+  }
+
+  /**
+   * Localizes a plural text identified by its [key] with the specified arguments to replace
+   * any placeholders in the translation (%1$d, %2$s, …).
+   *
+   * @param key the localization key to localize
+   * @param args list of arguments to substitute in the localized text
+   * @param count the count of items to pluralize
+   */
+  @Suppress("StringLiteralDuplication")
+  fun pluralize(key: String, count: Int, args: Iterable<Any>): String {
+    val pluralRules = PluralRules.forLocale(clientL10n.locale)
+    val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
+    return l10n("$key.$rule", args)
+  }
+
+  /**
+   * Localizes a quantity text identified by its [key] using only rules for zero, one, two
+   * and other.
+   *
+   * @param key the localization key to localize
+   * @param quantity the quantity value
+   */
+  @Suppress("StringLiteralDuplication")
+  fun quantify(key: String, quantity: Int): String {
+    val rule = quantifyRule(quantity)
+    return l10n("$key.$rule")
+  }
+
+  /**
+   * Localizes a quantity text identified by its [key] using only rules for zero, one, two
+   * and other and with the specified arguments to replace any placeholders in the
+   * translation (%1$d, %2$s, …).
+   *
+   * @param key the localization key to localize
+   * @param args list of arguments to substitute in the localized text
+   * @param quantity the quantity value
+   */
+  @Suppress("StringLiteralDuplication")
+  fun quantify(key: String, quantity: Int, args: Iterable<Any>): String {
+    val rule = quantifyRule(quantity)
+    return l10n("$key.$rule", args)
+  }
+
+  private fun quantifyRule(quantity: Int): String = when (quantity) {
+    0 -> PluralRules.KEYWORD_ZERO
+    1 -> PluralRules.KEYWORD_ONE
+    2 -> PluralRules.KEYWORD_TWO
+    else -> PluralRules.KEYWORD_OTHER
   }
 }
