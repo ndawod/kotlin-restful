@@ -95,7 +95,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   open fun l(key: String, args: Iterable<Any>): String {
     val text: String = l(key, true)
-    return if (text.isEmpty()) "" else java.lang.String.format(locale, text, args)
+    return if (text.isEmpty()) "" else java.lang.String.format(locale, text, args.map { "$it" })
   }
 
   /**
