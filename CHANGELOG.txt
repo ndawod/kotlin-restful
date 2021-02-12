@@ -3,8 +3,8 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
-2.2.0-2.2.1 (Feb 13 2021)
-    Add new methods to pluralize localization text.
+2.2.0-2.2.2 (Feb 13 2021)
+    Add new methods to pluralize/quantify localization texts.
 
 2.1.10 (Feb 12 2021)
     Bump dependencies versions, minor refinements to existing functions.
