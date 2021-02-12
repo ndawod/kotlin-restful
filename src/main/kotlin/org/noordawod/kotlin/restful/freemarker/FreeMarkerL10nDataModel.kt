@@ -83,7 +83,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    *
    * @param key the localization key to localize
    */
-  open fun l(key: String): String = l10n(key, false)
+  open fun l(key: String): String = l(key, false)
 
   /**
    * Localizes the specified text [key] based on the client's preferred [java.util.Locale]
@@ -95,7 +95,11 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   open fun l(key: String, args: Iterable<Any>): String {
     val text: String = l(key, true)
-    return if (text.isEmpty()) "" else java.lang.String.format(locale, text, args.map { "$it" })
+    return if (text.isEmpty()) {
+      ""
+    } else {
+      java.lang.String.format(locale, text, args.map { it.toString() })
+    }
   }
 
   /**
@@ -122,7 +126,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param count the count of items to pluralize
    */
   @Suppress("StringLiteralDuplication")
-  fun l(key: String, count: Int): String {
+  open fun l(key: String, count: Int): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
     val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
     return l("$key.$rule")
@@ -137,7 +141,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param count the count of items to pluralize
    */
   @Suppress("StringLiteralDuplication")
-  fun l(key: String, count: Int, args: Iterable<Any>): String {
+  open fun l(key: String, count: Int, args: Iterable<Any>): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
     val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
     return l("$key.$rule", args)
@@ -151,7 +155,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param quantity the quantity value
    */
   @Suppress("StringLiteralDuplication")
-  fun lq(key: String, quantity: Int): String {
+  open fun lq(key: String, quantity: Int): String {
     val rule = quantifyRule(quantity)
     return l("$key.$rule")
   }
@@ -166,7 +170,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    * @param quantity the quantity value
    */
   @Suppress("StringLiteralDuplication")
-  fun lq(key: String, quantity: Int, args: Iterable<Any>): String {
+  open fun lq(key: String, quantity: Int, args: Iterable<Any>): String {
     val rule = quantifyRule(quantity)
     return l("$key.$rule", args)
   }
@@ -221,7 +225,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
     "Use the method l(key, count) instead.",
     ReplaceWith("l(key, count)")
   )
-  fun l10n(key: String, count: Int): String = l(key, count)
+  open fun l10n(key: String, count: Int): String = l(key, count)
 
   /**
    * Localizes a plural text identified by its [key] with the specified arguments to replace
@@ -235,7 +239,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
     "Use the method l(key, count, args) instead.",
     ReplaceWith("l(key, count, args)")
   )
-  fun l10n(key: String, count: Int, args: Iterable<Any>): String = l(key, count, args)
+  open fun l10n(key: String, count: Int, args: Iterable<Any>): String = l(key, count, args)
 
   /**
    * Localizes a quantity text identified by its [key] using only rules for zero, one, two
@@ -248,7 +252,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
     "Use the method lq(key, quantity) instead.",
     ReplaceWith("lq(key, quantity)")
   )
-  fun l10nq(key: String, quantity: Int): String = lq(key, quantity)
+  open fun l10nq(key: String, quantity: Int): String = lq(key, quantity)
 
   /**
    * Localizes a quantity text identified by its [key] using only rules for zero, one, two
@@ -263,7 +267,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
     "Use the method lq(key, quantity, args) instead.",
     ReplaceWith("lq(key, quantity, args)")
   )
-  fun l10nq(key: String, quantity: Int, args: Iterable<Any>): String = lq(key, quantity, args)
+  open fun l10nq(key: String, quantity: Int, args: Iterable<Any>): String = lq(key, quantity, args)
 
   private fun quantifyRule(quantity: Int): String = when (quantity) {
     0 -> PluralRules.KEYWORD_ZERO
