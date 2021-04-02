@@ -3,75 +3,78 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.3.0 (April 2 2021)
+    Include removed Java EE libraries necessary for Java 11 and beyond.
+
 2.2.6 (March 21 2021)
     Bump up dependencies versions.
 
-2.2.0-2.2.5 (Feb 13 2021)
+2.2.0-2.2.5 (February 13 2021)
     Add new methods to pluralize/quantify localization texts.
 
-2.1.10 (Feb 12 2021)
+2.1.10 (February 12 2021)
     Bump dependencies versions, minor refinements to existing functions.
 
-2.1.9 (Jan 15 2021)
+2.1.9 (January 15 2021)
     Fix a caching bug in CachingAuthorizationRepository.
 
-2.1.8 (Jan 15 2021)
+2.1.8 (January 15 2021)
     Add "operator" argument to few methods in AuthorizationPersister interface.
 
-2.1.7 (Jan 15 2021)
+2.1.7 (January 15 2021)
     Rename deletePermissions() to clearPrivileges(), remove updatePermissions().
 
-2.1.6 (Jan 13 2021)
+2.1.6 (January 13 2021)
     Allow getRoles() to accept a list of permissions to filter by.
 
-2.1.5 (Jan 1 2021)
+2.1.5 (January 1 2021)
     Allow setCorsResponseHeaders() to be overridden.
 
-2.1.4 (Dec 7 2020)
+2.1.4 (December 7 2020)
     Roll back and remove the super user concept, it’s out of scope for this library.
 
-2.1.2-2.1.3 (Dec 7 2020)
+2.1.2-2.1.3 (December 7 2020)
     Enable a privileged Client to be a super user.
 
-2.1.0-2.1.1 (Dec 6 2020)
+2.1.0-2.1.1 (December 6 2020)
     Bump Kotlin plugin and libraries versions.
 
-2.0.0 (Dec 5 2020)
+2.0.0 (December 5 2020)
     Introduced a new generic authorization package for granting clients access to resources
     based on roles and permissions.
 
-1.5.12-1.5.13 (Nov 19 2020)
+1.5.12-1.5.13 (November 19 2020)
     Fix rearming a JWT that's going to expire soon.
 
-1.5.11 (Nov 17 2020)
+1.5.11 (November 17 2020)
     Enable reading an access token but not enforcing it.
 
-1.5.10 (Oct 22 2020)
+1.5.10 (October 22 2020)
     Fixed a bug with storing HttpServerExchange's inputStream to a file.
 
-1.5.8-1.5.9 (Oct 17 2020)
+1.5.8-1.5.9 (October 17 2020)
     Added a couple of functions to store a request body as a binary file.
 
-1.5.7 (Oct 11 2020)
+1.5.7 (October 11 2020)
     Fix a bug when encoding dates as a (milli)seconds since the epoch.
 
-1.5.6 (Oct 7 2020)
+1.5.6 (October 7 2020)
     Revert back to using older Kotlin version due to problems with serialization.
 
-1.5.5 (Oct 7 2020)
+1.5.5 (October 7 2020)
     Include HttpServerExchange when calling modelProvider method.
 
-1.5.3-1.5.4 (Oct 6 2020)
+1.5.3-1.5.4 (October 6 2020)
     Bump up versions of dependencies.
 
-1.5.2 (Oct 6 2020)
+1.5.2 (October 6 2020)
     Added a new Moshi adapter for OffsetDateTime instances.
 
-1.5.0-1.5.1 (Oct 4 2020)
+1.5.0-1.5.1 (October 4 2020)
     Added a couple of Runnable classes to deal with FreeMarker templates without the need
     for an Undertow HttpExchange.
 
-1.4.9 (Aug 11 2020)
+1.4.9 (August 11 2020)
     Make JWT creator accept an id and the issuer.
 
 1.4.7-1.4.8 (July 28 2020)
@@ -111,65 +114,65 @@ This documents the changes between versions:
 1.1.8 (May 12 2020)
     Bump versions of some dependencies and Kotlin plugin.
 
-1.1.7 (Apr 8 2020)
+1.1.7 (April 8 2020)
     Make sure l10n() methods do not return null.
 
-1.1.6 (Apr 1 2020)
+1.1.6 (April 1 2020)
     Added a new property "allowedQueryParameters" to "FreeMarkerDataModel" interface to
     limit the parameters that can be used in query() method.
 
-1.1.5 (Apr 1 2020)
+1.1.5 (April 1 2020)
     Rename "hostName" to "ipAddr" in Configuration.
 
-1.1.3-1.1.4 (Mar 29 2020)
+1.1.3-1.1.4 (March 29 2020)
     Added a SecurityAlgorithm helper class that includes the 3 most widely used encryption
     algorithms for JWT.
 
-1.1.1-1.1.2 (Mar 28 2020)
+1.1.1-1.1.2 (March 28 2020)
     Added a JwtHttpHandler to easily handle JWT resending and rearming.
 
-1.1.0 (Mar 27 2020)
+1.1.0 (March 27 2020)
     After numerous attempts to have coroutines play friends with Undertow, it's been scrapped
     and instead introduced WorkerHttpHandler which offloads its work to an XNIO worker thread,
     always.
 
-1.0.12-1.0.19 (Mar 26 2020)
+1.0.12-1.0.19 (March 26 2020)
     Added SuspendHttpHandler and fixed Detekt linter issues.
 
-1.0.11 (Feb 11 2020)
+1.0.11 (February 11 2020)
     Add a new extension function to return the path to FreeMarker's templates directory for
     a specific Environment.
 
-1.0.10 (Feb 9 2020)
+1.0.10 (February 9 2020)
     Fix a small issue when calling Java with a vararg parameter.
 
-1.0.9 (Feb 9 2020)
+1.0.9 (February 9 2020)
     Add another localization method to support a key with placeholder parameters.
 
-1.0.8 (Feb 9 2020)
+1.0.8 (February 9 2020)
     Add a couple of methods to the FreeMarker query-aware base model to aid in retrieving a value
     for a query parameter.
 
-1.0.7 (Feb 9 2020)
+1.0.7 (February 9 2020)
     Make FreeMarker's localization model extend the model that supports query parameters.
 
-1.0.6 (Feb 9 2020)
+1.0.6 (February 9 2020)
     Make FreeMarker's base model support query parameters.
 
-1.0.5 (Feb 7 2020)
+1.0.5 (February 7 2020)
     When a coroutine fails to execute properly, always end the exchange.
 
-1.0.4 (Feb 7 2020)
+1.0.4 (February 7 2020)
     Rename the JsonEncode method to reflect that it's actually a method.
 
-1.0.3 (Feb 7 2020)
+1.0.3 (February 7 2020)
     Introduce a FreeMarker method to encode any object to a JSON string.
 
-1.0.2 (Feb 5 2020)
+1.0.2 (February 5 2020)
     Used the new Localization class to simplify the new data model for localizing FreeMarker.
 
-1.0.1 (Feb 5 2020)
+1.0.1 (February 5 2020)
     New FreeMarker data model that adds support for localization and directionality (ltr / rtl).
 
-1.0.0 (Feb 4 2020)
+1.0.0 (February 4 2020)
     Initial public release with few extensions and support classes.

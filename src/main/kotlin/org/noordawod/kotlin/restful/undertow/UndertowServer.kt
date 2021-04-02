@@ -21,6 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:Suppress("unused")
+
 package org.noordawod.kotlin.restful.undertow
 
 import io.undertow.Handlers
@@ -29,7 +31,6 @@ import io.undertow.server.HttpHandler
 import io.undertow.server.XnioByteBufferPool
 import io.undertow.server.protocol.http.HttpOpenListener
 import org.xnio.BufferAllocator
-import org.xnio.ByteBufferSlicePool
 import org.xnio.ChannelListeners
 import org.xnio.OptionMap
 import org.xnio.Options
@@ -44,7 +45,9 @@ import org.xnio.channels.AcceptingChannel
  *
  * @param config configuration required to start this Undertow server
  */
-open class UndertowServer constructor(val config: Configuration) {
+open class UndertowServer constructor(
+  @Suppress("MemberVisibilityCanBePrivate") val config: Configuration
+) {
   private val mainThread = Thread.currentThread()
   private var hook: Thread? = null
   private lateinit var channel: HttpOpenListener
@@ -59,14 +62,14 @@ open class UndertowServer constructor(val config: Configuration) {
   /**
    * Allows sub classes to set the initial handler for this [server]'s [channel].
    */
+  @Suppress("DEPRECATION")
   protected fun setHandler(handler: HttpHandler) {
-    val buffers = ByteBufferSlicePool(
+    val buffers = org.xnio.ByteBufferSlicePool(
       BufferAllocator.DIRECT_BYTE_BUFFER_ALLOCATOR,
       config.bufferSize,
       config.bufferSize * config.buffersPerRegion
     )
 
-    @Suppress("DEPRECATION")
     channel = HttpOpenListener(
       XnioByteBufferPool(buffers),
       OptionMap.builder()
@@ -110,6 +113,7 @@ open class UndertowServer constructor(val config: Configuration) {
   /**
    * Allows children classes to use the same logic to start the server.
    */
+  @Suppress("MemberVisibilityCanBePrivate")
   protected fun startImpl(dieDuration: Long = 5000L) {
     if (null == hook) {
       val worker: XnioWorker = Xnio.getInstance().createWorker(
@@ -155,6 +159,7 @@ open class UndertowServer constructor(val config: Configuration) {
   /**
    * Allows children classes to use the same logic to shut down the server.
    */
+  @Suppress("MemberVisibilityCanBePrivate")
   protected fun stopImpl() {
     if (null != hook) {
       hook = null
