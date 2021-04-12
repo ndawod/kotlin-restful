@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.3.1 (April 12 2021)
+    For preflight CORS requests, return 204 instead of 200.
+
 2.3.0 (April 2 2021)
     Include removed Java EE libraries necessary for Java 11 and beyond.
 

@@ -80,11 +80,13 @@ abstract class BaseCorsHttpHandler protected constructor(
       headers.joinToString(separator = ", ")
     )
 
-    // If this is a preflight method, we're done.
+    // If this is a preflight method, just send the necessary headers and end transmission.
     if (exchange.requestMethod == Methods.OPTIONS) {
       // Allowed headers are usually supplied by the client.
       val allowedHeaders = exchange.requestHeaders[ACCESS_CONTROL_REQUEST_HEADERS]?.firstOrNull()
         ?: mutableListOf(
+          Headers.ACCEPT_ENCODING_STRING,
+          Headers.ACCEPT_LANGUAGE_STRING,
           Headers.AUTHORIZATION_STRING,
           Headers.ORIGIN_STRING,
           Headers.CONTENT_TYPE_STRING,
@@ -93,7 +95,7 @@ abstract class BaseCorsHttpHandler protected constructor(
         ).joinToString(separator = ", ")
 
       exchange.responseHeaders.put(ACCESS_CONTROL_ALLOW_HEADERS, allowedHeaders)
-      exchange.statusCode = StatusCodes.OK
+      exchange.statusCode = StatusCodes.NO_CONTENT
       exchange.endExchange()
     }
   }
