@@ -92,9 +92,9 @@ object EncryptionAlgorithmSerializer {
     PrimitiveSerialDescriptor("EncryptionAlgorithm", PrimitiveKind.STRING)
 
   override fun serialize(encoder: Encoder, value: EncryptionAlgorithm) {
-    encoder.encodeString(value.name.toUpperCase(java.util.Locale.ENGLISH))
+    encoder.encodeString(value.name.uppercase(java.util.Locale.ENGLISH))
   }
 
   override fun deserialize(decoder: Decoder): EncryptionAlgorithm =
-    EncryptionAlgorithm.valueOf(decoder.decodeString().toUpperCase(java.util.Locale.ENGLISH))
+    EncryptionAlgorithm.valueOf(decoder.decodeString().uppercase(java.util.Locale.ENGLISH))
 }

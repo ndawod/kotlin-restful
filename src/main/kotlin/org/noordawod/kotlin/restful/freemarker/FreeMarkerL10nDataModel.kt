@@ -131,7 +131,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   @Suppress("StringLiteralDuplication")
   open fun l(key: String, count: Int): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
-    val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
+    val rule = pluralRules.select(count.toDouble()).lowercase(java.util.Locale.ENGLISH)
     return l("$key.$rule")
   }
 
@@ -146,7 +146,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   @Suppress("StringLiteralDuplication")
   open fun l(key: String, count: Int, args: Iterable<Any>): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
-    val rule = pluralRules.select(count.toDouble()).toLowerCase(java.util.Locale.ENGLISH)
+    val rule = pluralRules.select(count.toDouble()).lowercase(java.util.Locale.ENGLISH)
     return l("$key.$rule", args)
   }
 
