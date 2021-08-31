@@ -25,8 +25,6 @@
 
 package org.noordawod.kotlin.restful.undertow
 
-import org.xnio.ByteBufferSlicePool
-
 /**
  * Configuration necessary to start up an [UndertowServer].
  */
@@ -69,8 +67,7 @@ interface Configuration {
   val bufferSize: Int
 
   /**
-   * How many buffers to allocate per region, this is used when instantiating a new
-   * [ByteBufferSlicePool] instance.
+   * How many buffers to allocate per region.
    */
   val buffersPerRegion: Int
 }
