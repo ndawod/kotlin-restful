@@ -148,7 +148,7 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     if (null != role) {
       updateRoleImpl(
         roleId,
-        Role(roleId, role.label, role.description, if (privileges.isEmpty()) null else privileges)
+        Role(roleId, role.label, role.description, privileges.ifEmpty { null })
       )
     }
   }
@@ -182,7 +182,7 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
 
   private fun combinePrivileges(from: Privileges?, to: MutablePrivileges) {
     from?.forEach { (resource, permissions) ->
-      val resourcePermissions = (to[resource] ?: mutableSetOf()).toMutableSet()
+      val resourcePermissions = (to[resource] ?: emptySet()).toMutableSet()
       resourcePermissions.addAll(permissions)
       to[resource] = resourcePermissions
     }

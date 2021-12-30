@@ -25,6 +25,7 @@
 
 package org.noordawod.kotlin.restful.freemarker
 
+import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.restful.extension.appendQueryParameter
 import org.noordawod.kotlin.restful.util.QuerySeparator
 
@@ -101,13 +102,17 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
     @Suppress("MagicNumber")
     val builder = StringBuilder(128)
     val sep = QuerySeparator()
-    val overriddenKeys = mutableListOf<String>()
+    val overriddenKeys: MutableList<String> = if (params.isNullOrEmpty()) {
+      mutableListOf()
+    } else {
+      mutableListWith(params.size)
+    }
 
     val allowedQueryParameters = this.allowedQueryParameters
     val queryParameters = this.queryParameters
 
     // Add the new query parameters first.
-    if (true == params?.isNotEmpty()) {
+    if (!params.isNullOrEmpty()) {
       params.forEach { (key, values) ->
         if (null == allowedQueryParameters || allowedQueryParameters.contains(key)) {
           if (values is String || values is Number || values is Boolean) {
