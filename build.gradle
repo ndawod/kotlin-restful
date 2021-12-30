@@ -22,7 +22,7 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '2.3.7'
+version = '2.3.8'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 
 apply plugin: 'kotlinx-serialization'
