@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused", "MagicNumber")
+@file:Suppress("unused", "MagicNumber", "MemberVisibilityCanBePrivate")
 
 package org.noordawod.kotlin.restful.undertow.handler
 
@@ -101,7 +101,7 @@ class JwtAuthenticationHandler constructor(
       // Attach resolved JWT to this exchange and allow others to access it.
       exchange.putAttachment(SERVER_JWT_ID, jwt)
 
-      // We'll listen to when the exchange is finished so we can either resend the header,
+      // We'll listen to when the exchange is finished, so we can either resend the header,
       // or rearm it if needed.
       possiblyRearm(exchange, token, jwt)
     } else if (enforced) {

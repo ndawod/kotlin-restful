@@ -65,7 +65,7 @@ abstract class BaseCorsHttpHandler protected constructor(
     val allowedMethod = exchange.requestHeaders[ACCESS_CONTROL_REQUEST_METHOD]?.firstOrNull()
       ?: "*"
 
-    // For now we'll allow all such requests.
+    // For now, we'll allow all such requests.
     exchange.responseHeaders.put(Headers.CONNECTION, "keep-alive")
     exchange.responseHeaders.put(ACCESS_CONTROL_ALLOW_ORIGIN, originHost)
     exchange.responseHeaders.put(ACCESS_CONTROL_ALLOW_METHODS, allowedMethod)

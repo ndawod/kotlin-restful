@@ -36,8 +36,8 @@ import org.noordawod.kotlin.security.ByteUtils
  * Used to [annotate][Annotation] those properties of a class that need to be converted from or to
  * Base62 using [Base62JsonAdapter].
  */
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-@kotlin.annotation.Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FIELD)
 @MustBeDocumented
 @JsonQualifier
 annotation class Base62Json

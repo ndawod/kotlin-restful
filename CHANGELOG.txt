@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.4.0 (February 8, 2022)
+    Bump up dependencies versions, and fix a few grammatical errors.
+
 2.3.8-2.3.9 (December 30, 2021)
     Bump up dependencies versions.
 
@@ -43,7 +46,7 @@ This documents the changes between versions:
     Fix a caching bug in CachingAuthorizationRepository.
 
 2.1.8 (January 15, 2021)
-    Add "operator" argument to few methods in AuthorizationPersister interface.
+    Add "operator" argument to a few methods in AuthorizationPersister interface.
 
 2.1.7 (January 15, 2021)
     Rename deletePermissions() to clearPrivileges(), remove updatePermissions().
@@ -55,10 +58,10 @@ This documents the changes between versions:
     Allow setCorsResponseHeaders() to be overridden.
 
 2.1.4 (December 7, 2020)
-    Roll back and remove the super user concept, it’s out of scope for this library.
+    Roll back and remove the superuser concept, it’s out of scope for this library.
 
 2.1.2-2.1.3 (December 7, 2020)
-    Enable a privileged Client to be a super user.
+    Enable a privileged Client to be a superuser.
 
 2.1.0-2.1.1 (December 6, 2020)
     Bump Kotlin plugin and libraries versions.
@@ -83,7 +86,7 @@ This documents the changes between versions:
     Fix a bug when encoding dates as a (milli)seconds since the epoch.
 
 1.5.6 (October 7, 2020)
-    Revert back to using older Kotlin version due to problems with serialization.
+    Revert to using older Kotlin version due to problems with serialization.
 
 1.5.5 (October 7, 2020)
     Include HttpServerExchange when calling modelProvider method.
@@ -129,7 +132,7 @@ This documents the changes between versions:
     Fixed a small bug in Base62JsonAdapter.
 
 1.3.0-1.3.1 (May 23, 2020)
-    Upgraded Detekt to latest version, added a new CORS HTTP handler, added extensions for
+    Upgraded Detekt to the latest version, added a new CORS HTTP handler, added extensions for
     Undertow's HttpServerExchange.
 
 1.2.0-1.2.1 (May 16, 2020)

@@ -60,7 +60,7 @@ open class UndertowServer constructor(
     get() = null != hook
 
   /**
-   * Allows sub classes to set the initial handler for this [server]'s [channel].
+   * Allows subclasses to set the initial handler for this [server]'s [channel].
    */
   @Suppress("DEPRECATION")
   protected fun setHandler(handler: HttpHandler) {

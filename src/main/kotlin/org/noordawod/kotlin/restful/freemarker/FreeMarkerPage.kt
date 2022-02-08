@@ -40,12 +40,12 @@ interface FreeMarkerPage {
   val absolutePath: String get() = "/$path"
 
   /**
-   * The file name in the templates directory, excluding the trailing extension.
+   * The file name in the templates' directory, excluding the trailing extension.
    */
   val file: String
 
   /**
-   * The file name in the templates directory, including the trailing extension.
+   * The file name in the templates' directory, including the trailing extension.
    */
   val absoluteFile: String get() = "$file.ftl"
 }
@@ -65,7 +65,7 @@ interface FreeMarkerHtmlPage : FreeMarkerPage {
   override val absolutePath: String get() = "/$pathWithExtension"
 
   /**
-   * The file name in the templates directory, including the trailing extension.
+   * The file name in the templates' directory, including the trailing extension.
    */
   override val absoluteFile: String get() = "$file.ftlh"
 }
