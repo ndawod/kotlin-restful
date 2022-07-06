@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.5.1 (July 6, 2022)
+    Bump up dependencies versions.
+
 2.5.0 (July 4, 2022)
     Rename project id (`project.group`).
 
