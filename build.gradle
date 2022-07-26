@@ -22,8 +22,9 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '2.5.2'
+version = '2.5.3'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
+buildDir = 'build'
 
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.github.ben-manes.versions'
@@ -36,7 +37,7 @@ buildscript {
         google()
         gradlePluginPortal()
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url 'https://plugins.gradle.org/m2/'
         }
     }
 
@@ -51,6 +52,7 @@ buildscript {
 repositories {
     mavenCentral()
     google()
+    gradlePluginPortal()
     maven {
         url 'https://jitpack.io'
     }

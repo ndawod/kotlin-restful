@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.5.3 (July 26, 2022)
+    Bump up dependencies versions.
+
 2.5.2 (July 25, 2022)
     Bump up dependencies versions.
 
