@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.5.4 (July 28, 2022)
+    Upgrade Gradle wrapper to v7.5.
+
 2.5.3 (July 26, 2022)
     Bump up dependencies versions.
 
