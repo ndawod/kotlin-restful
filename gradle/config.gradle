@@ -33,7 +33,7 @@ ext.versions = [
     ndawod_kotlin_core: '2.7.4',
     moshi: '1.13.0',
     okio: '3.2.0',
-    undertow: '2.2.17.Final',
+    undertow: '2.2.18.Final',
     freemarker: '2.3.31',
     auth0_jwt: '4.0.0',
     commons_collections4: '4.4',
