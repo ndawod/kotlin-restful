@@ -31,9 +31,6 @@ import io.undertow.util.Headers
 import io.undertow.util.StatusCodes
 import okio.BufferedSink
 import okio.BufferedSource
-import okio.buffer
-import okio.sink
-import okio.source
 
 /**
  * A signature for a callback function that provides a [JsonAdapter].
@@ -44,13 +41,13 @@ typealias JsonAdapterProvider<T> = (T) -> JsonAdapter<T>
  * Returns a new [BufferedSource] that buffers reads from this [HttpServerExchange]'s
  * [InputStream][java.io.InputStream].
  */
-fun HttpServerExchange.bufferedInput(): BufferedSource = inputStream.source().buffer()
+fun HttpServerExchange.bufferedInput(): BufferedSource = inputStream.bufferedInput()
 
 /**
  * Returns a new [BufferedSink] that buffers writes from this [HttpServerExchange]'s
  * [OutputStream][java.io.OutputStream].
  */
-fun HttpServerExchange.bufferedOutput(): BufferedSink = outputStream.sink().buffer()
+fun HttpServerExchange.bufferedOutput(): BufferedSink = outputStream.bufferedOutput()
 
 /**
  * Returns a new [BufferedSink] that buffers writes from this [HttpServerExchange]'s
