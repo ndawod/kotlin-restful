@@ -120,6 +120,7 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
           } else if (values is Iterable<*> && values.iterator().hasNext()) {
             builder.appendQueryParameter(sep, key, values)
           } else {
+            @Suppress("UseRequire")
             throw IllegalArgumentException("Received an unsupported value for parameter '$key'.")
           }
           overriddenKeys.add(key)
