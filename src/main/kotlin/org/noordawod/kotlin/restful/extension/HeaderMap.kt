@@ -21,21 +21,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_11,
-    versions_outdated: '0.44.0',
-    detekt: '1.22.0-RC3',
-    kotlin: '1.7.20', // https://kotlinlang.org/docs/releases.html#release-details
-    kotlin_coroutines: '1.6.4',
-    kotlin_serialization: '1.4.1',
-    java_ee: '2.3.0', // Keep it at this version!
-    ndawod_kotlin_core: '2.7.6',
-    moshi: '1.14.0',
-    okio: '3.2.0',
-    undertow: '2.3.0.Final',
-    freemarker: '2.3.31',
-    auth0_jwt: '4.2.1',
-    commons_collections4: '4.4',
-    icu4j: '72.1'
-]
+package org.noordawod.kotlin.restful.extension
+
+import io.undertow.util.HeaderMap
+import io.undertow.util.Headers
+
+/**
+ * Returns the list of preferred languages (as a list of [Locale][java.util.Locale]s)
+ * from this [HeaderMap], null if no preferred languages were provided by the
+ * remote client.
+ */
+fun HeaderMap?.acceptLocales(): Iterable<java.util.Locale>? =
+  this?.get(Headers.ACCEPT_LANGUAGE).acceptLocales()

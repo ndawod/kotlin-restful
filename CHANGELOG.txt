@@ -3,10 +3,13 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+2.5.7 (November 14, 2022)
+    Add extension functions to retrieve the preferred, client-provided languages.
+
 2.5.6 (August 7, 2022)
     Add a couple of extension functions for encoding JSON via streams.
 
-2.5.5 (July 30, 2022)
+2.5.5 (August 6, 2022)
     Upgrade version of Undertow.
 
 2.5.4 (July 28, 2022)
