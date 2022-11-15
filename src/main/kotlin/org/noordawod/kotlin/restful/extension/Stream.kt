@@ -30,27 +30,25 @@ import okio.BufferedSource
 import okio.buffer
 import okio.sink
 import okio.source
-import java.io.InputStream
-import java.io.OutputStream
 
 /**
  * Returns a new [BufferedSource] that buffers the input from this
  * [InputStream][java.io.InputStream].
  */
-fun InputStream.bufferedInput(): BufferedSource = source().buffer()
+fun java.io.InputStream.bufferedInput(): BufferedSource = source().buffer()
 
 /**
  * Returns a new [BufferedSink] that buffers the output from this
  * [OutputStream][java.io.OutputStream].
  */
-fun OutputStream.bufferedOutput(): BufferedSink = sink().buffer()
+fun java.io.OutputStream.bufferedOutput(): BufferedSink = sink().buffer()
 
 /**
  * Returns a new [BufferedSink] that buffers writes of the encoded [model].
  *
  * @param model the native model to encode as JSON
  */
-fun <T> OutputStream.jsonOutput(model: T, adapterProvider: JsonAdapterProvider<T>) {
+fun <T> java.io.OutputStream.jsonOutput(model: T, adapterProvider: JsonAdapterProvider<T>) {
   bufferedOutput().use {
     adapterProvider(model).toJson(it, model)
     it.flush()
@@ -62,7 +60,7 @@ fun <T> OutputStream.jsonOutput(model: T, adapterProvider: JsonAdapterProvider<T
  *
  * @param stream the output stream to write to
  */
-fun <T> T.jsonOutput(stream: OutputStream, adapterProvider: JsonAdapterProvider<T>) {
+fun <T> T.jsonOutput(stream: java.io.OutputStream, adapterProvider: JsonAdapterProvider<T>) {
   stream.bufferedOutput().use {
     adapterProvider(this).toJson(it, this)
     it.flush()
