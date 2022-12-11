@@ -23,7 +23,7 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.auth
+package org.noordawod.kotlin.restful.auth
 
 import org.apache.commons.collections4.map.LRUMap
 
@@ -32,10 +32,10 @@ import org.apache.commons.collections4.map.LRUMap
  *
  * It has few internal LRU caches to speed up retrieval of [roles][Role] and
  * [permissions][Permissions], and will properly update both roles and permissions
- * when they’re changed, deleted or added.
+ * when they're changed, deleted or added.
  *
- * @param ID type of a [Client]’s unique identifier
- * @param R type of a [Role]’s unique identifier
+ * @param ID type of a [Client]'s unique identifier
+ * @param R type of a [Role]'s unique identifier
  * @param persister the [AuthorizationPersister] to use
  * @param maxEntries maximum number of entries to keep in the LRU cache, defaults to
  * [DEFAULT_CACHE_ENTRIES]
@@ -49,7 +49,7 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
   private val rolesCache = LRUMap<R, Role<R>>(maxEntries)
 
   @Suppress("ReturnCount")
-  override fun has(client: Client<ID, R>, requiredPrivileges: Privileges): Boolean {
+  override fun has(client: Client<ID>, requiredPrivileges: Privileges): Boolean {
     // This map contains all known privileges of the client, based on defined roles
     // and any runtime privileges for the incoming request.
     val clientPrivileges: MutablePrivileges = LinkedHashMap(DEFAULT_ENTRIES)
@@ -148,7 +148,12 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     if (null != role) {
       updateRoleImpl(
         roleId,
-        Role(roleId, role.label, role.description, privileges.ifEmpty { null })
+        Role(
+          identifier = roleId,
+          label = role.label,
+          description = role.description,
+          privileges = privileges
+        )
       )
     }
   }
@@ -159,7 +164,12 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
       persister.clearPrivileges(operator, roleId)
       updateRoleImpl(
         roleId,
-        Role(roleId, role.label, role.description, null)
+        Role(
+          identifier = roleId,
+          label = role.label,
+          description = role.description,
+          privileges = emptyMap()
+        )
       )
     }
   }

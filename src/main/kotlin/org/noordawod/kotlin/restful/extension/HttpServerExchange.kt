@@ -28,14 +28,58 @@ package org.noordawod.kotlin.restful.extension
 import com.squareup.moshi.JsonAdapter
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
+import io.undertow.util.HttpString
 import io.undertow.util.StatusCodes
 import okio.BufferedSink
 import okio.BufferedSource
 
 /**
+ * A magic string to signal that the authorization should be deleted at the client side.
+ */
+const val HTTP_HEADER_DELETE: String = "delete"
+
+/**
  * A signature for a callback function that provides a [JsonAdapter].
  */
 typealias JsonAdapterProvider<T> = (T) -> JsonAdapter<T>
+
+/**
+ * A helper extension function to set the value of [headerName] to [HTTP_HEADER_DELETE].
+ *
+ * @param headerName the header to delete
+ */
+fun HttpServerExchange.setDeleteHeader(headerName: String) {
+  setDeleteHeader(HttpString(headerName))
+}
+
+/**
+ * A helper extension function to set the value of [headerName] to [HTTP_HEADER_DELETE].
+ *
+ * @param headerName the header to delete
+ */
+fun HttpServerExchange.setDeleteHeader(headerName: HttpString) {
+  setHeader(headerName, HTTP_HEADER_DELETE)
+}
+
+/**
+ * A helper extension function to set the value of [headerName] to the specified value.
+ *
+ * @param headerName the header to set
+ * @param headerValue the header value to set
+ */
+fun HttpServerExchange.setHeader(headerName: String, headerValue: String) {
+  responseHeaders.put(HttpString(headerName), headerValue)
+}
+
+/**
+ * A helper extension function to set the value of [headerName] to the specified value.
+ *
+ * @param headerName the header to set
+ * @param headerValue the header value to set
+ */
+fun HttpServerExchange.setHeader(headerName: HttpString, headerValue: String) {
+  responseHeaders.put(headerName, headerValue)
+}
 
 /**
  * Returns a new [BufferedSource] that buffers reads from this [HttpServerExchange]'s

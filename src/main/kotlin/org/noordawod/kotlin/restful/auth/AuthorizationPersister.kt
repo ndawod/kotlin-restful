@@ -23,13 +23,13 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.auth
+package org.noordawod.kotlin.restful.auth
 
 /**
  * A contract that describes the persistence layer necessary to access and manipulate
  * [roles][Role].
  *
- * @param ID type of a [Client]’s unique identifier
+ * @param ID type of a [Client]'s unique identifier
  */
 @Suppress("TooManyFunctions")
 interface AuthorizationPersister<ID : Any, R : Any> {
@@ -58,37 +58,37 @@ interface AuthorizationPersister<ID : Any, R : Any> {
   fun getRole(roleId: R): Role<R>?
 
   /**
-   * Adds a new [Role] in the system. The [role’s unique identifier][Role.identifier]
+   * Adds a new [Role] in the system. The [role's unique identifier][Role.identifier]
    * is automatically generated to ensure its uniqueness.
    *
-   * @param operator the operator (user) who’s adding the role
-   * @param label the [Role]’s label
-   * @param description the [Role]’s description
+   * @param operator the operator (user) who's adding the role
+   * @param label the [Role]'s label
+   * @param description the [Role]'s description
    */
   fun addRole(operator: ID, label: String, description: String?): Role<R>
 
   /**
    * Deletes a [Role] identified by its [unique identifier][roleId] from the system.
    *
-   * @param operator the operator (user) who’s deleting the role
+   * @param operator the operator (user) who's deleting the role
    * @param roleId unique identifier of the [Role]
    */
   fun deleteRole(operator: ID, roleId: R)
 
   /**
-   * Updates a [Role]’s [label] and [description] in the system.
+   * Updates a [Role]'s [label] and [description] in the system.
    *
-   * @param operator the operator (user) who’s updating the role
+   * @param operator the operator (user) who's updating the role
    * @param roleId unique identifier of the [Role]
-   * @param label the [Role]’s label
-   * @param description the [Role]’s description
+   * @param label the [Role]'s label
+   * @param description the [Role]'s description
    */
   fun updateRole(operator: ID, roleId: R, label: String, description: String?): Role<R>?
 
   /**
    * Adds new [privileges] for a [Role] identified by its [unique identifier][roleId].
    *
-   * @param operator the operator (user) who’s setting the privileges
+   * @param operator the operator (user) who's setting the privileges
    * @param roleId unique identifier of the [Role]
    * @param privileges the resources and their permissions to add for a role
    */
@@ -98,7 +98,7 @@ interface AuthorizationPersister<ID : Any, R : Any> {
    * Deletes all [Permissions] associated with a [Role] identified by its
    * [unique identifier][roleId].
    *
-   * @param operator the operator (user) who’s clearing the privileges
+   * @param operator the operator (user) who's clearing the privileges
    * @param roleId unique identifier of the [Role]
    */
   fun clearPrivileges(operator: ID, roleId: R)

@@ -21,30 +21,34 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_11,
-    versions_outdated: '0.44.0',
-    detekt: '1.22.0',
-    dagger: '2.44.2',
-    kotlin: '1.7.21', // https://kotlinlang.org/docs/releases.html#release-details
-    kotlin_coroutines: '1.6.4',
-    kotlin_serialization: '1.4.1',
-    uribuilder_tiny: '2.7.1',
-    seruco_base62: '0.1.3',
-    auth0_jwt: '4.2.1',
-    aelstad_keccakj: '1.1.0',
-    icu4j: '72.1',
-    guava: '31.1-jre',
-    ndawod_kotlin_core: '3.0.5',
-    moshi: '1.14.0',
-    okio: '3.2.0',
-    undertow: '2.3.0.Final',
-    htmlcompressor: '1.5.2',
-    simplemail: '7.5.0',
-    jmail: '1.4.1',
-    freemarker: '2.3.31',
-    commons_collections4: '4.4',
-    apache_httpclient5: '5.2',
-    trbl_blurhash: '1.0.0'
-]
+@file:Suppress("unused")
+
+package org.noordawod.kotlin.restful.di
+
+import dagger.Module
+import dagger.Provides
+import kotlinx.serialization.ExperimentalSerializationApi
+import org.noordawod.kotlin.restful.config.SecurityConfiguration
+import org.noordawod.kotlin.restful.repository.JwtAuthenticationRepository
+import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryImpl
+
+/**
+ * Security-focused singleton instances accessible via dependency injection.
+ *
+ * @param security the current [SecurityConfiguration] to use
+ * @param issuer the value used in JWT's "iss" (issuer) property
+ */
+@ExperimentalSerializationApi
+@Module
+class SecurityModule constructor(
+  private val security: SecurityConfiguration,
+  private val issuer: String
+) {
+  /**
+   * The [JwtAuthenticationRepository] singleton.
+   */
+  @javax.inject.Singleton
+  @Provides
+  fun jwtAuthorizationRepository(): JwtAuthenticationRepository =
+    JwtAuthenticationRepositoryImpl(security.jwt, issuer)
+}

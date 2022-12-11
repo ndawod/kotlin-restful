@@ -23,31 +23,39 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.restful.freemarker
+package org.noordawod.kotlin.restful.di
 
-import freemarker.template.Version
+import dagger.Module
+import dagger.Provides
+import org.noordawod.kotlin.core.config.SmtpConfiguration
+import org.noordawod.kotlin.core.extension.timeoutInMilliseconds
+import org.noordawod.kotlin.core.util.Environment
+import org.noordawod.kotlin.restful.repository.SendmailRepository
+import org.noordawod.kotlin.restful.repository.impl.SendmailRepositoryImpl
+import org.simplejavamail.api.mailer.Mailer
 
 /**
- * Encapsulates a common configuration for the FreeMarker processor.
+ * Mail-focused singleton instances accessible via dependency injection.
+ *
+ * @param smtp the current [SmtpConfiguration] to use
  */
-open class FreeMarkerConfiguration constructor(
-  version: Version = DEFAULT_VERSION,
-  charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
-) : freemarker.template.Configuration(version) {
-  init {
-    defaultEncoding = charset.name()
-    urlEscapingCharset = charset.name()
-    fallbackOnNullLoopVariable = false
-    recognizeStandardFileExtensions = true
-    logTemplateExceptions = false
-    wrapUncheckedExceptions = true
-    localizedLookup = false
-  }
+@Module
+class SendmailModule constructor(private val smtp: SmtpConfiguration) {
+  /**
+   * The [Mailer] singleton instance.
+   *
+   * @param environment the [Environment] instance to use
+   */
+  @javax.inject.Singleton
+  @Provides
+  fun mailer(environment: Environment): Mailer =
+    SendmailRepository.createMailer(smtp, environment.timeoutInMilliseconds())
 
-  companion object {
-    /**
-     * The [Version] of FreeMarker we're targeting.
-     */
-    val DEFAULT_VERSION: Version = VERSION_2_3_29
-  }
+  /**
+   * The [SendmailRepository] singleton instance.
+   */
+  @javax.inject.Singleton
+  @Provides
+  fun sendmailRepository(environment: Environment): SendmailRepository =
+    SendmailRepositoryImpl(smtp, environment.timeoutInMilliseconds())
 }

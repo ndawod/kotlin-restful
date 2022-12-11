@@ -23,7 +23,7 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.auth
+package org.noordawod.kotlin.restful.auth
 
 /**
  * Defines a contract to maintain a list of [resources][Resource] and make it easy
@@ -34,7 +34,7 @@ interface ResourceRepository {
    * Define all available [resources][Resource] in the app. This is usually called once
    * when the app is starting up.
    *
-   * It’s not possible to clear the list of resources, but only to re-define them again. So
+   * It's not possible to clear the list of resources, but only to re-define them again. So
    * calling this method a second time would clear the previous list and define a totally new
    * one, as specified.
    *
@@ -46,7 +46,7 @@ interface ResourceRepository {
    * Define all available [resources][Resource] in the app. This is usually called once
    * when the app is starting up.
    *
-   * It’s not possible to clear the list of resources, but only to re-define them again. So
+   * It's not possible to clear the list of resources, but only to re-define them again. So
    * calling this method a second time would clear the previous list and define a totally new
    * one, as specified.
    *
@@ -74,7 +74,7 @@ interface ResourceRepository {
   fun getAll(): Resources
 
   /**
-   * Retrieves a resource by its unique [identifier][resourceId]. If the resource isn’t found,
+   * Retrieves a resource by its unique [identifier][resourceId]. If the resource isn't found,
    * an Exception is thrown.
    *
    * @param resourceId the unique resource identifier to retrieve

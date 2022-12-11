@@ -21,30 +21,42 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_11,
-    versions_outdated: '0.44.0',
-    detekt: '1.22.0',
-    dagger: '2.44.2',
-    kotlin: '1.7.21', // https://kotlinlang.org/docs/releases.html#release-details
-    kotlin_coroutines: '1.6.4',
-    kotlin_serialization: '1.4.1',
-    uribuilder_tiny: '2.7.1',
-    seruco_base62: '0.1.3',
-    auth0_jwt: '4.2.1',
-    aelstad_keccakj: '1.1.0',
-    icu4j: '72.1',
-    guava: '31.1-jre',
-    ndawod_kotlin_core: '3.0.5',
-    moshi: '1.14.0',
-    okio: '3.2.0',
-    undertow: '2.3.0.Final',
-    htmlcompressor: '1.5.2',
-    simplemail: '7.5.0',
-    jmail: '1.4.1',
-    freemarker: '2.3.31',
-    commons_collections4: '4.4',
-    apache_httpclient5: '5.2',
-    trbl_blurhash: '1.0.0'
-]
+@file:Suppress("unused")
+
+package org.noordawod.kotlin.restful
+
+/**
+ * Common constants and values that can be used throughout the module and beyond.
+ */
+object Constants {
+  /**
+   * Top level directory name holding the configuration files.
+   */
+  const val CONFIG_DIR_NAME: String = "config"
+
+  /**
+   * Crude, reusable defaults for this module.
+   */
+  const val LANGUAGE_QUERY_PARAM: String = "lang"
+
+  /**
+   * Location of FreeMarker page templates.
+   */
+  const val FTL_PAGE_PATH: String = "templates"
+
+  /**
+   * Location of FreeMarker email templates.
+   */
+  const val FTL_EMAIL_PATH: String = "email"
+
+  /**
+   * Extension used for all template files.
+   */
+  const val FTL_EXTENSION: String = "ftlh"
+
+  /**
+   * A regular expression pattern that matches a cache-buster URI base path.
+   */
+  val CACHE_BUSTER_PATTERN: java.util.regex.Pattern =
+    java.util.regex.Pattern.compile("/(\\+| |v\\d+)/")
+}

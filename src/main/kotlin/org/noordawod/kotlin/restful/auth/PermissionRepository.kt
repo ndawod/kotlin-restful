@@ -23,7 +23,7 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.auth
+package org.noordawod.kotlin.restful.auth
 
 /**
  * Defines a contract to maintain a list of [permissions][Permission] and make it easy
@@ -34,7 +34,7 @@ interface PermissionRepository {
    * Define all available [permissions][Permission] in the app. This is usually called once
    * when the app is starting up.
    *
-   * It’s not possible to clear the list of permissions, but only to re-define them again. So
+   * It's not possible to clear the list of permissions, but only to re-define them again. So
    * calling this method a second time would clear the previous list and define a totally new
    * one, as specified.
    *
@@ -46,7 +46,7 @@ interface PermissionRepository {
    * Define all available [permissions][Permission] in the app. This is usually called once
    * when the app is starting up.
    *
-   * It’s not possible to clear the list of permissions, but only to re-define them again. So
+   * It's not possible to clear the list of permissions, but only to re-define them again. So
    * calling this method a second time would clear the previous list and define a totally new
    * one, as specified.
    *
@@ -74,7 +74,7 @@ interface PermissionRepository {
   fun getAll(): Permissions
 
   /**
-   * Retrieves a permission by its unique [identifier][permissionId]. If the permission isn’t found,
+   * Retrieves a permission by its unique [identifier][permissionId]. If the permission isn't found,
    * an Exception is thrown.
    *
    * @param permissionId the unique permission identifier to retrieve

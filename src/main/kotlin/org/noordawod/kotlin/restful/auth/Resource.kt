@@ -23,21 +23,39 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.auth
+package org.noordawod.kotlin.restful.auth
 
 /**
- * A contract for checking authorization of a [Client] having an identifier of type [ID].
- *
- * @param ID type of a [Client]’s unique identifier
- * @param R type of a [Role]’s unique identifier
+ * An alias for the unique identifier of an [Resource].
  */
-interface AuthorizationChecker<ID : Any, R : Any> {
+typealias ResourceId = Int
+
+/**
+ * Signature of an [immutable set][Set] of [resources][Resource].
+ */
+typealias Resources = Set<Resource>
+
+/**
+ * A [Resource] is data that a [Client] requests to access or operate on. The required
+ * [permissions][Permission] necessary to operate on a specific resource are defined in the
+ * database, and an operator (via the control panel) may change those permissions at will.
+ *
+ * The list of available resources are app-bound and a developer must edit the source code in
+ * order to add, remove or update them.
+ */
+interface Resource {
   /**
-   * Returns true if the [client] have same or more [privileges][requiredPrivileges] than
-   * the specified ones, false otherwise.
-   *
-   * @param client the [Client] to check access for
-   * @param requiredPrivileges required [Privileges] to check access for
+   * A unique identifier for this resource.
    */
-  fun has(client: Client<ID, R>, requiredPrivileges: Privileges): Boolean
+  val identifier: ResourceId
+
+  /**
+   * A human-readable label (in English) for this resource.
+   */
+  val label: String
+
+  /**
+   * An optional short description for this resource.
+   */
+  val description: String?
 }

@@ -48,7 +48,10 @@ fun java.io.OutputStream.bufferedOutput(): BufferedSink = sink().buffer()
  *
  * @param model the native model to encode as JSON
  */
-fun <T> java.io.OutputStream.jsonOutput(model: T, adapterProvider: JsonAdapterProvider<T>) {
+fun <T> java.io.OutputStream.jsonOutput(
+  model: T,
+  adapterProvider: JsonAdapterProvider<T>
+) {
   bufferedOutput().use {
     adapterProvider(model).toJson(it, model)
     it.flush()
@@ -60,7 +63,10 @@ fun <T> java.io.OutputStream.jsonOutput(model: T, adapterProvider: JsonAdapterPr
  *
  * @param stream the output stream to write to
  */
-fun <T> T.jsonOutput(stream: java.io.OutputStream, adapterProvider: JsonAdapterProvider<T>) {
+fun <T> T.jsonOutput(
+  stream: java.io.OutputStream,
+  adapterProvider: JsonAdapterProvider<T>
+) {
   stream.bufferedOutput().use {
     adapterProvider(this).toJson(it, this)
     it.flush()

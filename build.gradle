@@ -22,7 +22,7 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '2.6.0'
+version = '3.0.0'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
 buildDir = 'build'
 
@@ -60,7 +60,9 @@ repositories {
 
 apply from: "$rootDir/gradle/jvm.gradle"
 apply from: "$rootDir/gradle/kotlin.gradle"
+apply from: "$rootDir/gradle/kapt.gradle"
 apply from: "$rootDir/gradle/detekt.gradle"
+apply from: "$rootDir/gradle/dagger.gradle"
 
 dependencies {
     implementation "com.github.ndawod:kotlin-core:${versions.ndawod_kotlin_core}"
@@ -68,8 +70,13 @@ dependencies {
     implementation "org.freemarker:freemarker:${versions.freemarker}"
     implementation "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
     implementation "com.squareup.moshi:moshi-adapters:${versions.moshi}"
-    implementation "com.auth0:java-jwt:${versions.auth0_jwt}"
     implementation "com.squareup.okio:okio:${versions.okio}"
+    implementation "com.googlecode.htmlcompressor:htmlcompressor:${versions.htmlcompressor}"
+    implementation "com.auth0:java-jwt:${versions.auth0_jwt}"
     implementation "org.apache.commons:commons-collections4:${versions.commons_collections4}"
+    implementation "org.apache.httpcomponents.client5:httpclient5:${versions.apache_httpclient5}"
     implementation "com.ibm.icu:icu4j:${versions.icu4j}"
+    implementation "org.simplejavamail:simple-java-mail:${versions.simplemail}"
+    implementation "com.sanctionco.jmail:jmail:${versions.jmail}"
+    implementation "io.trbl:blurhash:${versions.trbl_blurhash}"
 }

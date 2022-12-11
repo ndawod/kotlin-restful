@@ -23,33 +23,47 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.auth
+package org.noordawod.kotlin.restful.di
+
+import dagger.Component
+import kotlinx.serialization.ExperimentalSerializationApi
+import org.noordawod.kotlin.core.di.BaseComponent
 
 /**
- * A role combines many [permissions][Permission] and [resources][Resource] to simplify
- * administration of users.
- *
- * Roles are defined in the database and an operator with enough privileges can manipulate
- * them in the control panel.
- *
- * @param R type of a [Role]’s unique identifier
- * @param identifier a unique identifier for this role
- * @param label a human-readable label (in English) for this role
- * @param description a short description of this role
- * @param privileges the list of [resources][Resource] and the associated
- * [permissions][Permission] this role has
+ * The app-wide Dagger II [Component].
  */
-@Suppress("MemberVisibilityCanBePrivate")
-open class Role<R> constructor(
-  val identifier: R,
-  val label: String,
-  val description: String?,
-  val privileges: Privileges?
-) {
-  override fun toString(): String = "$identifier"
+@ExperimentalSerializationApi
+@javax.inject.Singleton
+@Component(
+  modules = [
+    RepositoryModule::class,
+    SecurityModule::class,
+    SendmailModule::class
+  ]
+)
+abstract class CoreComponent : BaseComponent {
+  /**
+   * Attaches the singleton instance of this component and make it accessible through the
+   * static [instance] variable.
+   */
+  final override fun attach() {
+    if (null == privateInstance) {
+      privateInstance = this
+    } else {
+      error("The component singleton instance has already been set.")
+    }
+  }
 
-  final override fun equals(other: Any?): Boolean =
-    other is Role<*> && other.identifier == identifier
+  companion object {
+    private var privateInstance: CoreComponent? = null
 
-  final override fun hashCode(): Int = identifier.hashCode()
+    /**
+     * The app-wide [CoreComponent] singleton instance.
+     */
+    val instance: CoreComponent
+      get() {
+        return privateInstance
+          ?: error("The component singleton instance has not been attached yet.")
+      }
+  }
 }

@@ -21,30 +21,30 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_11,
-    versions_outdated: '0.44.0',
-    detekt: '1.22.0',
-    dagger: '2.44.2',
-    kotlin: '1.7.21', // https://kotlinlang.org/docs/releases.html#release-details
-    kotlin_coroutines: '1.6.4',
-    kotlin_serialization: '1.4.1',
-    uribuilder_tiny: '2.7.1',
-    seruco_base62: '0.1.3',
-    auth0_jwt: '4.2.1',
-    aelstad_keccakj: '1.1.0',
-    icu4j: '72.1',
-    guava: '31.1-jre',
-    ndawod_kotlin_core: '3.0.5',
-    moshi: '1.14.0',
-    okio: '3.2.0',
-    undertow: '2.3.0.Final',
-    htmlcompressor: '1.5.2',
-    simplemail: '7.5.0',
-    jmail: '1.4.1',
-    freemarker: '2.3.31',
-    commons_collections4: '4.4',
-    apache_httpclient5: '5.2',
-    trbl_blurhash: '1.0.0'
-]
+@file:Suppress("unused")
+
+package org.noordawod.kotlin.restful.config
+
+/**
+ * Configuration for how and where uploaded files will be stored, which will always be renamed
+ * to a very long file name.
+ *
+ * @param logicalPath directory path to where to store files
+ * @param alphabet which characters to use when creating file names
+ * @param length maximum length of file names
+ * @param depth depth of subdirectories structure for storing files in [path]
+ */
+@kotlinx.serialization.Serializable
+data class FilerConfiguration constructor(
+  private val logicalPath: String,
+  val alphabet: String,
+  val length: Int,
+  val depth: Int
+) {
+  /**
+   * Absolute path to where to store files. This is the canonical path which does not include
+   * `.` or `..` in its path.
+   */
+  @kotlinx.serialization.Transient
+  val path: String = java.io.File(logicalPath).canonicalPath
+}

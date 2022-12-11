@@ -25,7 +25,9 @@
 
 package org.noordawod.kotlin.restful.extension
 
+import freemarker.template.Version
 import org.noordawod.kotlin.core.util.Environment
+import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
 
 /**
  * Returns the base directory for this [Environment] where configuration files are stored.
@@ -74,3 +76,31 @@ fun Environment.l10nDirectory() =
  */
 fun Environment.l10nFile(file: String) =
   "${l10nDirectory()}${java.io.File.separatorChar}$file"
+
+/**
+ * Generates a compatible [FreeMarkerConfiguration] based on this [Environment].
+ *
+ * @param version which version of FreeMarker templating to use, defaults to
+ * [FreeMarkerConfiguration.DEFAULT_VERSION]
+ * @param charset character set of templates files, defaults to
+ * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
+ */
+fun Environment.freeMarkerConfiguration(
+  version: Version = FreeMarkerConfiguration.DEFAULT_VERSION,
+  charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+): FreeMarkerConfiguration {
+  val freeMarker = FreeMarkerConfiguration(version, charset)
+
+  // Files are always loaded from a directory inspired by the running environment.
+  freeMarker.setDirectoryForTemplateLoading(java.io.File(htmlDirectory()))
+
+  // Use a different handler based on the running environment.
+  freeMarker.templateExceptionHandler = when (this) {
+    Environment.LOCAL,
+    Environment.DEVEL -> freemarker.template.TemplateExceptionHandler.HTML_DEBUG_HANDLER
+    Environment.BETA -> freemarker.template.TemplateExceptionHandler.DEBUG_HANDLER
+    Environment.PRODUCTION -> freemarker.template.TemplateExceptionHandler.RETHROW_HANDLER
+  }
+
+  return freeMarker
+}
