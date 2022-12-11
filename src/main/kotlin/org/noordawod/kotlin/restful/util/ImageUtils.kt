@@ -29,19 +29,8 @@ import io.trbl.blurhash.BlurHash
 import org.noordawod.kotlin.core.Constants
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.util.FileSystem
-
-/**
- * Contains the details of a single image file.
- *
- * @param file path to the image file
- * @param width width of the image, in pixels
- * @param height height of the image, in pixels
- */
-data class ImageDetails constructor(
-  val file: java.io.File,
-  val width: Int,
-  val height: Int
-)
+import org.noordawod.kotlin.core.util.ImageDetails
+import org.noordawod.kotlin.core.util.ImageDimension
 
 /**
  * Utility functions for image manipulation.
@@ -55,7 +44,10 @@ object ImageUtils {
    */
   fun getDetails(sourceFile: java.io.File): ImageDetails {
     val dimension = getDimension(sourceFile)
-    return ImageDetails(sourceFile, dimension.first, dimension.second)
+    return ImageDetails(
+      sourceFile,
+      ImageDimension(dimension.first, dimension.second)
+    )
   }
 
   /**
@@ -233,7 +225,10 @@ object ImageUtils {
     // Write resized image.
     javax.imageio.ImageIO.write(resizedImage, FORMAT_NAME, targetFile)
 
-    return ImageDetails(targetFile, newWidth, newHeight)
+    return ImageDetails(
+      targetFile,
+      ImageDimension(newWidth, newHeight)
+    )
   }
 
   /**

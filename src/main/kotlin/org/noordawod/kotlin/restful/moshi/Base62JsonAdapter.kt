@@ -30,7 +30,7 @@ import com.squareup.moshi.JsonQualifier
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
-import org.noordawod.kotlin.security.ByteUtils
+import org.noordawod.kotlin.core.security.ByteUtils
 
 /**
  * Used to [annotate][Annotation] those properties of a class that need to be converted from or to
