@@ -24,3 +24,8 @@
 apply from: "$rootDir/gradle/config.gradle"
 
 apply plugin: 'kotlin-kapt'
+
+// Annotation processors discovery from compile classpath is deprecated.
+kapt {
+    includeCompileClasspath = false
+}
