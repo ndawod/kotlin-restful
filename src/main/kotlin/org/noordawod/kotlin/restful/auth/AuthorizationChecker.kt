@@ -39,5 +39,5 @@ interface AuthorizationChecker<ID : Any, R : Any> {
    * @param client the [Client] to check access for
    * @param requiredPrivileges required [Privileges] to check access for
    */
-  fun has(client: Client<ID>, requiredPrivileges: Privileges): Boolean
+  fun has(client: Client<ID, R>, requiredPrivileges: Privileges): Boolean
 }

@@ -39,7 +39,7 @@ interface AuthorizationPersister<ID : Any, R : Any> {
    *
    * @param permissions if provided, return only [roles][Role] having these permissions
    */
-  fun getRoles(permissions: Permissions? = null): Set<Role<R>>
+  fun getRoles(permissions: Permissions? = null): Roles<R>
 
   /**
    * Retrieves the [roles][Role] of a [Client] identified by their
@@ -48,7 +48,7 @@ interface AuthorizationPersister<ID : Any, R : Any> {
    * @param clientId unique identifier of [Client]
    * @param permissions if provided, return only [roles][Role] having these permissions
    */
-  fun getRoles(clientId: ID, permissions: Permissions? = null): Set<Role<R>>
+  fun getRoles(clientId: ID, permissions: Permissions? = null): Roles<R>
 
   /**
    * Retrieves the details of a [Role] identified by its [unique identifier][roleId].

@@ -43,13 +43,14 @@ import org.apache.commons.collections4.map.LRUMap
 @Suppress("TooManyFunctions")
 class CachingAuthorizationRepository<ID : Any, R : Any>(
   private val persister: AuthorizationPersister<ID, R>,
-  private val maxEntries: Int = DEFAULT_CACHE_ENTRIES
+  private val maxEntries: Int = DEFAULT_CACHE_ENTRIES,
+  private val roleCreator: RoleCreator<R>
 ) : AuthorizationChecker<ID, R>, AuthorizationPersister<ID, R> {
   private val clientRolesCache = LRUMap<ID, Collection<Role<R>>>(maxEntries)
   private val rolesCache = LRUMap<R, Role<R>>(maxEntries)
 
   @Suppress("ReturnCount")
-  override fun has(client: Client<ID>, requiredPrivileges: Privileges): Boolean {
+  override fun has(client: Client<ID, R>, requiredPrivileges: Privileges): Boolean {
     // This map contains all known privileges of the client, based on defined roles
     // and any runtime privileges for the incoming request.
     val clientPrivileges: MutablePrivileges = LinkedHashMap(DEFAULT_ENTRIES)
@@ -81,7 +82,7 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
   }
 
   @Synchronized
-  override fun getRoles(permissions: Permissions?): Set<Role<R>> =
+  override fun getRoles(permissions: Permissions?): Roles<R> =
     // When restricting the list of roles, do not cache the result.
     if (permissions.isNullOrEmpty()) {
       if (rolesCache.isEmpty) {
@@ -95,7 +96,7 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     }
 
   @Synchronized
-  override fun getRoles(clientId: ID, permissions: Permissions?): Set<Role<R>> =
+  override fun getRoles(clientId: ID, permissions: Permissions?): Roles<R> =
     // When restricting the list of roles, do not cache the result.
     if (permissions.isNullOrEmpty()) {
       clientRolesCache.getOrPut(clientId) {
@@ -148,11 +149,11 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
     if (null != role) {
       updateRoleImpl(
         roleId,
-        Role(
-          identifier = roleId,
-          label = role.label,
-          description = role.description,
-          privileges = privileges
+        roleCreator(
+          roleId,
+          role.label,
+          role.description,
+          privileges
         )
       )
     }
@@ -164,11 +165,11 @@ class CachingAuthorizationRepository<ID : Any, R : Any>(
       persister.clearPrivileges(operator, roleId)
       updateRoleImpl(
         roleId,
-        Role(
-          identifier = roleId,
-          label = role.label,
-          description = role.description,
-          privileges = emptyMap()
+        roleCreator(
+          roleId,
+          role.label,
+          role.description,
+          emptyMap()
         )
       )
     }

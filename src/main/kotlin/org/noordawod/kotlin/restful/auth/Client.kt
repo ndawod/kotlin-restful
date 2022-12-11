@@ -29,6 +29,7 @@ package org.noordawod.kotlin.restful.auth
  * A remote user connecting to us and requesting to perform a certain operation.
  *
  * @param ID type of the unique [identifier] of this client
+ * @param R type of [Role]s this client accommodates
  * @param identifier a unique identifier for this client
  * @param administrator whether this client is an administrator
  * @param roles a list [Roles][Role] this client is associated with
@@ -36,10 +37,10 @@ package org.noordawod.kotlin.restful.auth
  * @param restrictions an optional set of restrictions to impose on this user
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class Client<ID : Any> constructor(
+open class Client<ID : Any, R : Any> constructor(
   val identifier: ID,
   val administrator: Boolean,
-  roles: Roles<ID>?,
+  roles: Roles<R>?,
   privileges: Privileges?,
   restrictions: Permissions?
 ) {
@@ -53,7 +54,7 @@ open class Client<ID : Any> constructor(
   /**
    * The list of [Roles][Role] this client is associated with.
    */
-  val roles: Roles<ID>
+  val roles: Roles<R>
 
   /**
    * An optional, additional [privileges][Privileges] to consider.
@@ -75,14 +76,14 @@ open class Client<ID : Any> constructor(
   override fun toString(): String = "$identifier"
 
   final override fun equals(other: Any?): Boolean =
-    other is Client<*> && other.identifier == identifier
+    other is Client<*, *> && other.identifier == identifier
 
   final override fun hashCode(): Int = toString().hashCode()
 
   init {
     val mutablePermissions = Permission.mutableSetOf()
 
-    val mutableRoles = Role.mutableSetOf<ID>(roles?.size)
+    val mutableRoles = Role.mutableSetOf<R>(roles?.size)
     if (!roles.isNullOrEmpty()) {
       mutableRoles.addAll(roles)
 

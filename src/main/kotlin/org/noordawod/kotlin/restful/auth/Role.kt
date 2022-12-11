@@ -31,17 +31,12 @@ import org.noordawod.kotlin.core.extension.mutableSetWith
 /**
  * An alias for a set of [roles][Role].
  */
-typealias Roles<ID> = Set<Role<ID>>
+typealias Roles<R> = Set<Role<R>>
 
 /**
  * An alias for a mutable set of [roles][Role].
  */
-typealias MutableRoles<ID> = MutableSet<Role<ID>>
-
-/**
- * An alias for a set of [role identifiers][Role.identifier].
- */
-typealias RolesIds<ID> = Set<ID>
+typealias MutableRoles<R> = MutableSet<Role<R>>
 
 /**
  * An alias for a map that maintains a [mutable set of permissions][MutablePermissions]
@@ -56,30 +51,43 @@ typealias RolePermissionsMap<ID> =
 typealias RolesCount = Pair<Roles<*>, Int>
 
 /**
+ * Creates a new [Role] from an arbitrary data.
+ *
+ * @param R type of a [Role]'s unique identifier
+ */
+typealias RoleCreator<R> = (
+  identifier: R,
+  label: String,
+  description: String?,
+  privileges: Privileges
+) -> Role<R>
+
+/**
  * A role combines many [permissions][Permission] and [resources][Resource] to simplify
  * administration of users.
  *
- * Roles are defined in the database and an operator with enough privileges can manipulate
- * them in the control panel.
- *
  * @param R type of the [Role]'s unique identifier
- * @param identifier a unique identifier for this role
- * @param label a human-readable label (in English) for this role
- * @param description a short description of this role
- * @param privileges a map of [resources][Resource] and their [permissions][Permissions]
  */
-open class Role<R> constructor(
-  val identifier: R,
-  val label: String,
-  val description: String?,
+interface Role<R> {
+  /**
+   * The unique identifier for this role.
+   */
+  val identifier: R
+
+  /**
+   * The human-readable label (in English) for this role.
+   */
+  val label: String
+
+  /**
+   * Optional short description of this role.
+   */
+  val description: String?
+
+  /**
+   * The map of [resources][Resource] and their [permissions][Permissions].
+   */
   val privileges: Privileges
-) {
-  override fun toString(): String = "$identifier"
-
-  final override fun equals(other: Any?): Boolean =
-    other is Role<*> && other.identifier == identifier
-
-  final override fun hashCode(): Int = identifier.hashCode()
 
   companion object {
     /**

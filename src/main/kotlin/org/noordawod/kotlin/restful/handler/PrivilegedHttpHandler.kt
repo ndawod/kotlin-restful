@@ -36,7 +36,7 @@ import org.noordawod.kotlin.restful.auth.impersonate
  * [PrivilegedHttpHandler] to determine whether the incoming request is accessible
  * by the remote [Client].
  */
-internal interface PrivilegedUserHttpHandler<ID : Any> : HttpHandler {
+internal interface PrivilegedUserHttpHandler<ID : Any, R : Any> : HttpHandler {
   /**
    * Returns the required [Permissions] to access this action.
    *
@@ -53,7 +53,7 @@ internal interface PrivilegedUserHttpHandler<ID : Any> : HttpHandler {
    *
    * @param exchange the HTTP I/O exchange
    */
-  fun client(exchange: HttpServerExchange): Client<ID>?
+  fun client(exchange: HttpServerExchange): Client<ID, R>?
 }
 
 /**
@@ -90,8 +90,8 @@ internal class InsufficientPermissionsException constructor(
  * @param debugSession whether to debug the session details on every request
  * @param nextHandler HTTP handler to run if the user's privileges allow it
  */
-internal class PrivilegedHttpHandler<ID : Any> constructor(
-  private val privilegedHandler: PrivilegedUserHttpHandler<ID>,
+internal class PrivilegedHttpHandler<ID : Any, R : Any> constructor(
+  private val privilegedHandler: PrivilegedUserHttpHandler<ID, R>,
   private val logger: Logger,
   private val debugSession: Boolean,
   private val nextHandler: HttpHandler
