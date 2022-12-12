@@ -32,13 +32,13 @@ import org.noordawod.kotlin.restful.model.HttpResponse
 /**
  * The base of loggable interfaces, namely: [NoPayloadHttpHandler] and [PayloadHttpHandler].
  */
-internal interface LoggableHttpHandler : HttpHandler
+interface LoggableHttpHandler : HttpHandler
 
 /**
  * All actions that expect no payload and that wish to log their work must extend
  * this base class.
  */
-internal interface NoPayloadHttpHandler : LoggableHttpHandler {
+interface NoPayloadHttpHandler : HttpHandler {
   /**
    * Handles the incoming HTTP request and returns a compatible [HttpResponse].
    *
@@ -53,7 +53,7 @@ internal interface NoPayloadHttpHandler : LoggableHttpHandler {
  *
  * @param T the payload's type
  */
-internal interface PayloadHttpHandler<T> : LoggableHttpHandler {
+interface PayloadHttpHandler<T> : HttpHandler {
   /**
    * Returns the expected payload's [Class] for this action.
    */
@@ -83,7 +83,7 @@ internal interface PayloadHttpHandler<T> : LoggableHttpHandler {
  *
  * @param T the payload List's type
  */
-internal interface ListPayloadHttpHandler<T> : LoggableHttpHandler {
+interface ListPayloadHttpHandler<T> : HttpHandler {
   /**
    * Returns the expected payload's [Class] for this action.
    */
@@ -113,7 +113,7 @@ internal interface ListPayloadHttpHandler<T> : LoggableHttpHandler {
  *
  * @param T the payload Set's type
  */
-internal interface SetPayloadHttpHandler<T> : LoggableHttpHandler {
+interface SetPayloadHttpHandler<T> : HttpHandler {
   /**
    * Returns the expected payload's [Class] for this action.
    */
