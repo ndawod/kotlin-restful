@@ -26,11 +26,12 @@
 package org.noordawod.kotlin.restful.config
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import org.noordawod.kotlin.core.config.JwtConfiguration
 
 /**
  * Configuration to encrypt and decrypt data with clients.
  *
- * @param sip private key for use in [SipHash][org.noordawod.kotlin.security.SipHash]
+ * @param sip private key for use in [SipHash][org.noordawod.kotlin.core.security.SipHash]
  * @param salt random salt to use in encryption
  * @param cipher the encryption cypher to use (normally a CBC one)
  * @param key the primary key in a block [cipher]

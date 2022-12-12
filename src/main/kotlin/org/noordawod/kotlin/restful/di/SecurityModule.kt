@@ -28,7 +28,7 @@ package org.noordawod.kotlin.restful.di
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.ExperimentalSerializationApi
-import org.noordawod.kotlin.restful.config.SecurityConfiguration
+import org.noordawod.kotlin.core.config.SecurityConfiguration
 import org.noordawod.kotlin.restful.repository.JwtAuthenticationRepository
 import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryImpl
 
