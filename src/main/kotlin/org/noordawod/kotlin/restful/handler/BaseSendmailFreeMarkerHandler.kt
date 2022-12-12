@@ -40,7 +40,7 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
  * @param htmlCompressor the [HtmlCompressorRepository] instance to use
  */
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseSendmailFreeMarkerRunnable<M : Any> protected constructor(
+abstract class BaseSendmailFreeMarkerHandler<M : Any> protected constructor(
   protected val file: String,
   protected var environment: Environment,
   basePath: String?,

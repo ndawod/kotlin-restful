@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+3.1.3 (December 12, 2022)
+    Rename FreeMarker handler.
+
 3.1.2 (December 12, 2022)
     Add few extension functions pertaining to `HttpServerExchange`.
 
