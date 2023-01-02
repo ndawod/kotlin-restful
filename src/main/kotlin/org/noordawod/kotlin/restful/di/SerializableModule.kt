@@ -23,36 +23,22 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.restful.freemarker
+package org.noordawod.kotlin.restful.di
+
+import com.squareup.moshi.Moshi
+import dagger.Module
+import dagger.Provides
+import org.noordawod.kotlin.restful.util.buildDefaultMoshi
 
 /**
- * A [BaseByteArrayFreeMarkerRunnable] that orchestrates preparing an email message based on
- * a FreeMarker template, and sending the email. The output is considered to be UTF-8 always.
- *
- * Note: after the method [sendEmail] is executed, the contents of the [bytes] buffer is
- * emptied.
- *
- * @param T type of the data model
- * @param config configuration for FreeMarker
- * @param basePath where template files reside, excluding the trailing slash
- * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
+ * Core singleton instances accessible via dependency injection.
  */
-abstract class BaseSendmailFreeMarkerRunnable<T : Any> constructor(
-  config: FreeMarkerConfiguration,
-  basePath: String,
-  bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : BaseByteArrayFreeMarkerRunnable<T>(config, basePath, bufferSize) {
+@Module
+class SerializableModule {
   /**
-   * Perform the sendmail operation.
-   *
-   * @param contents the FreeMarker+[model] output
+   * Returns the singleton [Moshi] instance.
    */
-  abstract fun sendEmail(contents: String)
-
-  override fun run() {
-    super.run()
-    bytes.use {
-      sendEmail(it.toString(FreeMarkerDataModel.CHARSET_NAME))
-    }
-  }
+  @javax.inject.Singleton
+  @Provides
+  fun moshi(): Moshi = buildDefaultMoshi()
 }

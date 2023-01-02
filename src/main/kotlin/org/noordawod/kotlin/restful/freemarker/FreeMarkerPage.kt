@@ -25,6 +25,8 @@
 
 package org.noordawod.kotlin.restful.freemarker
 
+import org.noordawod.kotlin.restful.Constants
+
 /**
  * Defines a page to render with FreeMarker.
  */
@@ -45,9 +47,9 @@ interface FreeMarkerPage {
   val file: String
 
   /**
-   * The file name in the templates' directory, including the trailing extension.
+   * The file name in the templates' directory with the trailing extension.
    */
-  val absoluteFile: String get() = "$file.ftl"
+  val fileWithExtension: String get() = "$file.${Constants.FTL_EXTENSION}"
 }
 
 /**
@@ -65,7 +67,7 @@ interface FreeMarkerHtmlPage : FreeMarkerPage {
   override val absolutePath: String get() = "/$pathWithExtension"
 
   /**
-   * The file name in the templates' directory, including the trailing extension.
+   * The file name in the templates' directory with the trailing extension.
    */
-  override val absoluteFile: String get() = "$file.ftlh"
+  override val fileWithExtension: String get() = "$file.${Constants.FTLH_EXTENSION}"
 }

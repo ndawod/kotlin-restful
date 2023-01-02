@@ -21,32 +21,52 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
-package org.noordawod.kotlin.restful.undertow.handler
+package org.noordawod.kotlin.restful.freemarker
 
-import io.undertow.server.HttpServerExchange
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
-import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
+import org.noordawod.kotlin.restful.Constants
+import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
 
 /**
- * A [BaseFreeMarkerHttpHandler] that prepare a writer using
- * [HttpServerExchange.outputStream][HttpServerExchange.getOutputStream]. The output is
- * considered to be UTF-8 always.
+ * A [BaseByteArrayFreeMarkerRunnable] that orchestrates preparing the contents of a
+ * a FreeMarker template, and optionally compressing the resulting HTML.
+ *
+ * The output is considered to be UTF-8 always.
+ *
+ * Note: after the method [handleContents] is executed, the contents of the
+ * [bytes] buffer is emptied.
  *
  * @param T type of the data model
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
+ * @param compressor the [HtmlCompressorRepository] instance to use
  */
-abstract class BaseExchangeFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseHtmlFreeMarkerRunnable<T : Any> constructor(
   config: FreeMarkerConfiguration,
-  basePath: String,
-  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : BaseFreeMarkerHttpHandler<T>(config, basePath) {
-  override fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
-    java.io.BufferedWriter(
-      java.io.OutputStreamWriter(exchange.outputStream, FreeMarkerDataModel.CHARSET),
-      bufferSize
-    )
+  basePath: String = Constants.FTL_EMAIL_FOLDER,
+  bufferSize: Int = DEFAULT_BUFFER_SIZE,
+  protected val compressor: HtmlCompressorRepository? = null
+) : BaseByteArrayFreeMarkerRunnable<T>(config, basePath, bufferSize) {
+  /**
+   * Perform the sendmail operation.
+   *
+   * @param contents the FreeMarker+[model] output
+   */
+  abstract fun handleContents(contents: String)
+
+  override fun run() {
+    super.run()
+
+    bytes.use {
+      var contents = it.toString(FreeMarkerDataModel.CHARSET)
+
+      if (null != compressor) {
+        contents = compressor.compress(contents)
+      }
+
+      handleContents(contents)
+    }
+  }
 }

@@ -43,7 +43,7 @@ abstract class BaseByteArrayFreeMarkerHttpHandler<T : Any> constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
   bufferSize: Int = DEFAULT_BUFFER_SIZE
-) : BaseExchangeFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
+) : BaseFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
   /**
    * A memory-based, [ByteArray]-backed writer to use for preparing the content.
    */

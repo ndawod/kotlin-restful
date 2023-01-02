@@ -35,24 +35,34 @@ object Constants {
   const val CONFIG_DIR_NAME: String = "config"
 
   /**
-   * Crude, reusable defaults for this module.
+   * Default query parameter name used to select the default [Locale][java.util.Locale].
    */
-  const val LANGUAGE_QUERY_PARAM: String = "lang"
+  const val LOCALE_QUERY_PARAM: String = "loc"
 
   /**
-   * Location of FreeMarker page templates.
+   * Default logical path to the FreeMarker templates.
    */
-  const val FTL_PAGE_PATH: String = "templates"
+  const val FTL_PAGE_PATH: String = "src/main/freemarker"
 
   /**
-   * Location of FreeMarker email templates.
+   * Default name of folder holding the FreeMarker email templates.
    */
-  const val FTL_EMAIL_PATH: String = "email"
+  const val FTL_EMAIL_FOLDER: String = "email"
 
   /**
-   * Extension used for all template files.
+   * Extension used for FreeMarker textual template files.
    */
-  const val FTL_EXTENSION: String = "ftlh"
+  const val FTL_EXTENSION: String = "ftl"
+
+  /**
+   * Extension used for FreeMarker HTML template files.
+   */
+  const val FTLH_EXTENSION: String = "ftlh"
+
+  /**
+   * An agreed-upon string value to signal that a resource is marked as deleted.
+   */
+  const val RESOURCE_DELETED: String = "deleted"
 
   /**
    * A regular expression pattern that matches a cache-buster URI base path.

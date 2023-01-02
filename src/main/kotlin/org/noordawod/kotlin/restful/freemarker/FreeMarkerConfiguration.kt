@@ -25,6 +25,7 @@
 
 package org.noordawod.kotlin.restful.freemarker
 
+import freemarker.cache.CacheStorage
 import freemarker.template.Version
 
 /**
@@ -32,7 +33,8 @@ import freemarker.template.Version
  */
 open class FreeMarkerConfiguration constructor(
   version: Version = DEFAULT_VERSION,
-  charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+  charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
+  cache: CacheStorage? = null
 ) : freemarker.template.Configuration(version) {
   init {
     defaultEncoding = charset.name()
@@ -42,12 +44,15 @@ open class FreeMarkerConfiguration constructor(
     logTemplateExceptions = false
     wrapUncheckedExceptions = true
     localizedLookup = false
+    if (null != cache) {
+      cacheStorage = cache
+    }
   }
 
   companion object {
     /**
      * The [Version] of FreeMarker we're targeting.
      */
-    val DEFAULT_VERSION: Version = VERSION_2_3_29
+    val DEFAULT_VERSION: Version = VERSION_2_3_31
   }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Noor Dawod. All rights reserved.
+ * Copyright 2023 Noor Dawod. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,15 +23,13 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.restful.handler
+package org.noordawod.kotlin.restful.undertow.handler
 
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
 import org.noordawod.kotlin.core.extension.SECONDS_IN_1_HOUR
 import org.noordawod.kotlin.core.util.Environment
-import org.noordawod.kotlin.restful.undertow.handler.BaseCorsHttpHandler
-import org.noordawod.kotlin.restful.undertow.handler.HostsCollection
 
 /**
  * An [HttpHandler] that implements a simple CORS contract.

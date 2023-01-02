@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Noor Dawod. All rights reserved.
+ * Copyright 2023 Noor Dawod. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,16 +23,15 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.restful.handler
+package org.noordawod.kotlin.restful.undertow.handler
 
 import com.squareup.moshi.JsonAdapter
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.restful.extension.JsonAdapterProvider
 import org.noordawod.kotlin.restful.extension.jsonOutput
-import org.noordawod.kotlin.restful.undertow.handler.WorkerHttpHandler
 
-private const val DASHES =
+internal const val DASHES =
   "--------------------------------------------------------------------------------"
 
 /**

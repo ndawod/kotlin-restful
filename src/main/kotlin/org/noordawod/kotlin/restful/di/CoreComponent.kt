@@ -36,9 +36,10 @@ import org.noordawod.kotlin.core.di.BaseComponent
 @javax.inject.Singleton
 @Component(
   modules = [
-    RepositoryModule::class,
+    HttpHtmlModule::class,
     SecurityModule::class,
-    SendmailModule::class
+    SendmailModule::class,
+    SerializableModule::class
   ]
 )
 abstract class CoreComponent : BaseComponent {

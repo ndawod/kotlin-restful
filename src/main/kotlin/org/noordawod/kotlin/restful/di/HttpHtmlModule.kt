@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Noor Dawod. All rights reserved.
+ * Copyright 2023 Noor Dawod. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -25,38 +25,27 @@
 
 package org.noordawod.kotlin.restful.di
 
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import org.apache.hc.client5.http.classic.HttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
-import org.noordawod.kotlin.core.logger.Logger
-import org.noordawod.kotlin.core.repository.ExecutorRepository
 import org.noordawod.kotlin.core.util.Environment
 import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
 import org.noordawod.kotlin.restful.repository.impl.HtmlCompressorRepositoryImpl
-import org.noordawod.kotlin.restful.util.buildDefaultMoshi
 
 /**
- * Core singleton instances accessible via dependency injection.
+ * Singleton instances related to HTTP/HTML accessible via dependency injection.
  *
  * @param environment the [Environment] this app is running in
- * @param logger the current [Logger] to use
- * @param executorThreads number of threads to use for [ExecutorRepository]
+ * @param compressCss whether to compress inline styles, default is true
+ * @param compressJs whether to compress inline JavaScript, default is true
  */
 @Module
-class RepositoryModule constructor(
+class HttpHtmlModule constructor(
   private val environment: Environment,
-  private val logger: Logger,
-  private val executorThreads: Int
+  private val compressCss: Boolean = true,
+  private val compressJs: Boolean = true
 ) {
-  /**
-   * Returns the singleton [Moshi] instance.
-   */
-  @javax.inject.Singleton
-  @Provides
-  fun moshi(): Moshi = buildDefaultMoshi()
-
   /**
    * Returns the singleton [HtmlCompressorRepository] instance.
    */
@@ -64,7 +53,12 @@ class RepositoryModule constructor(
   @Provides
   fun htmlCompressor(): HtmlCompressorRepository {
     val enabled = environment.isBeta || environment.isProduction
-    return HtmlCompressorRepositoryImpl(enabled)
+
+    return HtmlCompressorRepositoryImpl(
+      enabled = enabled,
+      compressCss = compressCss,
+      compressJs = compressJs
+    )
   }
 
   /**

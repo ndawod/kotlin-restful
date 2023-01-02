@@ -60,5 +60,5 @@ interface HtmlCompressorRepository {
    *
    * @param js source code to compress
    */
-  fun compressJavaScriptStyles(js: String): String
+  fun compressJavaScript(js: String): String
 }

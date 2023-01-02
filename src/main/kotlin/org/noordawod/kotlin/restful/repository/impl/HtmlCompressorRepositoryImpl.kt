@@ -30,25 +30,44 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
  * Implementation class for [HtmlCompressorRepository].
  *
  * @param enabled whether to automatically enable the compressor
+ * @param compressCss whether to automatically compress styles, default is true
+ * @param compressJs whether to automatically compress JavaScript code, default is true
  */
 internal class HtmlCompressorRepositoryImpl constructor(
-  enabled: Boolean
+  enabled: Boolean,
+  compressCss: Boolean = true,
+  compressJs: Boolean = true
 ) : HtmlCompressorRepository {
-  private val compressor = buildDefaultHtmlCompressor(enabled)
+  private val delegate = HtmlCompressor().apply {
+    isEnabled = enabled
+    isCompressCss = compressCss
+    isCompressJavaScript = compressJs
+    isGenerateStatistics = false
+    isRemoveComments = true
+    isPreserveLineBreaks = false
+    isRemoveFormAttributes = false
+    isRemoveIntertagSpaces = true
+    isRemoveMultiSpaces = true
+    isRemoveQuotes = true
+    isRemoveScriptAttributes = true
+    isRemoveStyleAttributes = true
+    isYuiJsNoMunge = true
+    isYuiJsPreserveAllSemiColons = false
+  }
 
-  override val isEnabled: Boolean get() = compressor.isEnabled
+  override val isEnabled: Boolean get() = delegate.isEnabled
 
   override fun setEnabled(enabled: Boolean) {
-    compressor.isEnabled = enabled
+    delegate.isEnabled = enabled
   }
 
   override fun compress(html: String): String =
-    // We'll check to see if there are special IE tags that need special attention.
+    // We'll check to see if there are special IE tags that require special attention.
     if (
       1 > html.indexOf("<![endif]-->", ignoreCase = true) &&
       1 > html.indexOf("<!--<![endif]-->", ignoreCase = true)
     ) {
-      compressor.compress(html)
+      delegate.compress(html)
     } else {
       // We shall retain all code before the starting <head> tag because that code may
       // container IE-specific code using <!--[if IE]> and <![endif]-->, which will fail
@@ -56,7 +75,7 @@ internal class HtmlCompressorRepositoryImpl constructor(
       val htmlTagStart = html.indexOf("<head", ignoreCase = true)
 
       // Compress from the correct position in the HTML.
-      val compressedHtml = compressor.compress(
+      val compressedHtml = delegate.compress(
         if (0 < htmlTagStart) {
           html.substring(htmlTagStart)
         } else {
@@ -73,30 +92,8 @@ internal class HtmlCompressorRepositoryImpl constructor(
     }
 
   override fun compressCssStyles(styles: String): String =
-    compressor.cssCompressor.compress(styles)
+    delegate.cssCompressor.compress(styles)
 
-  override fun compressJavaScriptStyles(js: String): String =
-    compressor.javaScriptCompressor.compress(js)
+  override fun compressJavaScript(js: String): String =
+    delegate.javaScriptCompressor.compress(js)
 }
-
-/**
- * Builds an [HtmlCompressor] instance configured with default configuration.
- *
- * @param enabled whether to automatically enable the compressor (default is true)
- */
-internal fun buildDefaultHtmlCompressor(enabled: Boolean): HtmlCompressor =
-  HtmlCompressor().apply {
-    isEnabled = enabled
-    isCompressCss = false
-    isCompressJavaScript = false
-    isGenerateStatistics = false
-    isRemoveComments = true
-    isPreserveLineBreaks = false
-    isRemoveFormAttributes = false
-    isRemoveIntertagSpaces = true
-    isRemoveMultiSpaces = true
-    isRemoveMultiSpaces = true
-    isRemoveQuotes = true
-    isRemoveScriptAttributes = true
-    isRemoveStyleAttributes = true
-  }

@@ -29,6 +29,7 @@ import freemarker.template.Template
 import freemarker.template.TemplateException
 import io.undertow.server.HttpHandler
 import org.noordawod.kotlin.core.extension.withExtension
+import org.noordawod.kotlin.restful.undertow.handler.DASHES
 
 /**
  * An [HttpHandler] that orchestrates the task to prepare a data model,
@@ -66,7 +67,7 @@ abstract class BaseFreeMarkerRunnable<T : Any> protected constructor(
   /**
    * The FreeMarker template file that resides under [basePath], excluding a leading slash.
    */
-  protected abstract fun getTemplateFile(): String
+  protected abstract fun templateFile(): String
 
   /**
    * Allow extended classes to modify the FreeMarker template before it's processed.
@@ -77,24 +78,44 @@ abstract class BaseFreeMarkerRunnable<T : Any> protected constructor(
     // NO-OP
   }
 
+  /**
+   * Logs an error that occurred during processing of the FreeMarker templace.
+   *
+   * @param error the error to log
+   */
+  protected open fun log(error: Throwable) {
+    println(DASHES)
+    @Suppress("PrintStackTrace")
+    error.printStackTrace()
+    println(DASHES)
+  }
+
   @Throws(TemplateException::class, java.io.IOException::class)
   override fun run() {
-    // Prepare the model so all other abstract or overloaded methods have access to it.
-    model = modelProvider()
+    var writer: java.io.BufferedWriter? = null
 
-    // Logical file path + configured template extension.
-    val filePath = getTemplateFile().withExtension(fileExtension)
+    try {
+      // Prepare the model so all other abstract or overloaded methods have access to it.
+      model = modelProvider()
 
-    // The location of the FreeMarker template is always under the configured base path.
-    val template = config.getTemplate("$basePath/$filePath")
+      // Logical file path + configured template extension.
+      val filePath = templateFile().withExtension(fileExtension)
 
-    // Allow extended classes to modify the FreeMarker template, if needed.
-    modifyTemplate(template)
+      // The location of the FreeMarker template is always under the configured base path.
+      val template = config.getTemplate("$basePath/$filePath")
 
-    // Prepare the writer buffer and generate the content into it.
-    prepareWriter().apply {
-      template.process(model, this)
-      flush()
+      // Allow extended classes to modify the FreeMarker template, if needed.
+      modifyTemplate(template)
+
+      // Prepare the writer buffer to accommodate the contents.
+      writer = prepareWriter()
+
+      template.process(model, writer)
+    } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+      log(error)
+      throw error
+    } finally {
+      writer?.flush()
     }
   }
 }

@@ -21,32 +21,36 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package org.noordawod.kotlin.restful.undertow.handler
 
-import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
+import org.noordawod.kotlin.restful.Constants
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerConfiguration
 import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
+import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
 
 /**
- * A [BaseByteArrayFreeMarkerHttpHandler] that orchestrates preparing an email message based on
- * a FreeMarker template, offloading to a worker thread, and sending the email in the
- * background. The output is considered to be UTF-8 always.
+ * A [BaseByteArrayFreeMarkerHttpHandler] that orchestrates preparing the contents of a
+ * a FreeMarker template, and optionally compressing the resulting HTML.
  *
- * Note: after the method [sendEmail] is executed, the contents of the [bytes] buffer is
- * emptied.
+ * The output is considered to be UTF-8 always.
+ *
+ * Note: after the method [handleContents] is executed, the contents of the
+ * [bytes] buffer is emptied.
  *
  * @param T type of the data model
  * @param config configuration for FreeMarker
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
+ * @param compressor the [HtmlCompressorRepository] instance to use
  */
-abstract class BaseSendmailFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseHtmlFreeMarkerHttpHandler<T : Any> constructor(
   config: FreeMarkerConfiguration,
-  basePath: String,
-  bufferSize: Int = DEFAULT_BUFFER_SIZE
+  basePath: String = Constants.FTL_EMAIL_FOLDER,
+  bufferSize: Int = DEFAULT_BUFFER_SIZE,
+  protected val compressor: HtmlCompressorRepository? = null
 ) : BaseByteArrayFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
   /**
    * Perform the sendmail operation.
@@ -54,16 +58,22 @@ abstract class BaseSendmailFreeMarkerHttpHandler<T : Any> constructor(
    * @param exchange the HTTP request/response exchange
    * @param contents the FreeMarker+[model] output
    */
-  abstract fun sendEmail(exchange: HttpServerExchange, contents: String)
+  abstract fun handleContents(
+    exchange: HttpServerExchange,
+    contents: String
+  )
 
   override fun handleRequest(exchange: HttpServerExchange) {
-    if (exchange.isInIoThread) {
-      exchange.dispatch(this as HttpHandler)
-    } else {
-      super.handleRequest(exchange)
-      bytes.use {
-        sendEmail(exchange, it.toString(FreeMarkerDataModel.CHARSET_NAME))
+    super.handleRequest(exchange)
+
+    bytes.use {
+      var contents = it.toString(FreeMarkerDataModel.CHARSET)
+
+      if (null != compressor) {
+        contents = compressor.compress(contents)
       }
+
+      handleContents(exchange, contents)
     }
   }
 }
