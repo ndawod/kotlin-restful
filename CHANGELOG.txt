@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+4.1.0 (January 18, 2023)
+    Upgrade to Kotlin 1.8.0.
+
 4.0.3 (January 16, 2023)
     Bump up dependencies versions.
 

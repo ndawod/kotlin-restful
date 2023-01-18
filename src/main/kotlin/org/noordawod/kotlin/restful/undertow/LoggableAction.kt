@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Noor Dawod. All rights reserved.
+ * Copyright 2023 Noor Dawod. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -23,11 +23,16 @@
 
 @file:Suppress("unused")
 
-package org.noordawod.kotlin.restful.undertow.handler
+package org.noordawod.kotlin.restful.undertow
 
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.restful.model.HttpResponse
+
+/**
+ * Contains metadata about an incoming HTTP request.
+ */
+interface BaseMetadata
 
 /**
  * The base of loggable interfaces, namely: [NoPayloadHttpHandler] and [PayloadHttpHandler].
@@ -38,13 +43,17 @@ interface LoggableHttpHandler : HttpHandler
  * All actions that expect no payload and that wish to log their work must extend
  * this base class.
  */
-interface NoPayloadHttpHandler : HttpHandler {
+interface NoPayloadHttpHandler<M : BaseMetadata> : HttpHandler {
   /**
    * Handles the incoming HTTP request and returns a compatible [HttpResponse].
    *
    * @param exchange the HTTP I/O exchange
+   * @param metadata the embedded metadata in the incoming HTTP request
    */
-  fun handleAction(exchange: HttpServerExchange): HttpResponse
+  fun handleAction(
+    exchange: HttpServerExchange,
+    metadata: M
+  ): HttpResponse
 }
 
 /**
@@ -53,7 +62,7 @@ interface NoPayloadHttpHandler : HttpHandler {
  *
  * @param T the payload's type
  */
-interface PayloadHttpHandler<T> : HttpHandler {
+interface PayloadHttpHandler<M : BaseMetadata, T> : HttpHandler {
   /**
    * Returns the expected payload's [Class] for this action.
    */
@@ -72,9 +81,14 @@ interface PayloadHttpHandler<T> : HttpHandler {
    * Handles the incoming HTTP request and returns a compatible [HttpResponse].
    *
    * @param exchange the HTTP I/O exchange
+   * @param metadata the embedded metadata in the incoming HTTP request
    * @param payload the expected payload
    */
-  fun handleAction(exchange: HttpServerExchange, payload: T): HttpResponse
+  fun handleAction(
+    exchange: HttpServerExchange,
+    metadata: M,
+    payload: T
+  ): HttpResponse
 }
 
 /**
@@ -83,7 +97,7 @@ interface PayloadHttpHandler<T> : HttpHandler {
  *
  * @param T the payload List's type
  */
-interface ListPayloadHttpHandler<T> : HttpHandler {
+interface ListPayloadHttpHandler<M : BaseMetadata, T> : HttpHandler {
   /**
    * Returns the expected payload's [Class] for this action.
    */
@@ -102,9 +116,14 @@ interface ListPayloadHttpHandler<T> : HttpHandler {
    * Handles the incoming HTTP request and returns a compatible [HttpResponse].
    *
    * @param exchange the HTTP I/O exchange
+   * @param metadata the embedded metadata in the incoming HTTP request
    * @param payload the expected List payload
    */
-  fun handleAction(exchange: HttpServerExchange, payload: List<T>): HttpResponse
+  fun handleAction(
+    exchange: HttpServerExchange,
+    metadata: M,
+    payload: List<T>
+  ): HttpResponse
 }
 
 /**
@@ -113,7 +132,7 @@ interface ListPayloadHttpHandler<T> : HttpHandler {
  *
  * @param T the payload Set's type
  */
-interface SetPayloadHttpHandler<T> : HttpHandler {
+interface SetPayloadHttpHandler<M : BaseMetadata, T> : HttpHandler {
   /**
    * Returns the expected payload's [Class] for this action.
    */
@@ -132,7 +151,12 @@ interface SetPayloadHttpHandler<T> : HttpHandler {
    * Handles the incoming HTTP request and returns a compatible [HttpResponse].
    *
    * @param exchange the HTTP I/O exchange
+   * @param metadata the embedded metadata in the incoming HTTP request
    * @param payload the expected Set payload
    */
-  fun handleAction(exchange: HttpServerExchange, payload: Set<T>): HttpResponse
+  fun handleAction(
+    exchange: HttpServerExchange,
+    metadata: M,
+    payload: Set<T>
+  ): HttpResponse
 }
