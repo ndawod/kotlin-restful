@@ -25,7 +25,6 @@
 
 package org.noordawod.kotlin.restful.freemarker
 
-import org.noordawod.kotlin.restful.Constants
 import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
 
 /**
@@ -45,7 +44,7 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
  */
 abstract class BaseHtmlFreeMarkerRunnable<T : Any> constructor(
   config: FreeMarkerConfiguration,
-  basePath: String = Constants.FTL_EMAIL_FOLDER,
+  basePath: String,
   bufferSize: Int = DEFAULT_BUFFER_SIZE,
   protected val compressor: HtmlCompressorRepository? = null
 ) : BaseByteArrayFreeMarkerRunnable<T>(config, basePath, bufferSize) {
