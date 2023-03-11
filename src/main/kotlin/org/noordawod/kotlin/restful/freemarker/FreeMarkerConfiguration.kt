@@ -53,6 +53,6 @@ open class FreeMarkerConfiguration constructor(
     /**
      * The [Version] of FreeMarker we're targeting.
      */
-    val DEFAULT_VERSION: Version = VERSION_2_3_31
+    val DEFAULT_VERSION: Version = VERSION_2_3_32
   }
 }
