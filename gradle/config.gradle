@@ -41,7 +41,7 @@ ext.versions = [
     okio: '3.3.0',
     undertow: '2.3.4.Final',
     htmlcompressor: '1.5.2',
-    simplemail: '7.9.1',
+    simplemail: '8.0.0',
     jmail: '1.4.1',
     freemarker: '2.3.32',
     commons_collections4: '4.4',

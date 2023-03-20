@@ -49,13 +49,33 @@ interface Configuration {
   val ioThreads: Int
 
   /**
-   * When performing blocking operations such as Servlet requests threads from this pool will be
-   * used. In general it is hard to give a reasonable default for this, as it depends on the server
-   * workload.
+   * When performing blocking operations, such as Servlet requests, threads from this pool
+   * will be used. In general it is hard to give a reasonable default for this, as it
+   * depends on the server workload.
    *
    * Generally this should be reasonably high, around 10 per CPU core.
    */
   val workerThreads: Int
+
+  /**
+   * The number of threads per a CPU core.
+   *
+   * The value is used to set the maximum number of worker threads by multiplying
+   * [workerThreads] with the value of this property.
+   */
+  val workerThreadsPerCore: Int?
+
+  /**
+   * The maximum number of tasks to allow before rejecting new ones.
+   *
+   * Set this to a relatively high number in order to support
+   */
+  val workerTasks: Int?
+
+  /**
+   * The duration, in milliseconds, to keep worker threads alive.
+   */
+  val workerTasksThreshold: Long?
 
   /**
    * These buffers are used for IO operations, and the buffer size has a big impact on application

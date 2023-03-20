@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+4.3.0 (March 20, 2023)
+    Enable clients to set optional Undertow options when starting the server.
+
 4.2.1 (March 11, 2023)
     Remove strict naming conventions for resource paths.
 

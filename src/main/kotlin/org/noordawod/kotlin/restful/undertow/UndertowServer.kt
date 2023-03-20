@@ -73,11 +73,26 @@ open class UndertowServer constructor(
     channel = HttpOpenListener(
       XnioByteBufferPool(buffers),
       OptionMap.builder()
-        .set(UndertowOptions.BUFFER_PIPELINED_DATA, true)
-        .set(UndertowOptions.ALWAYS_SET_KEEP_ALIVE, true)
-        .set(UndertowOptions.REQUIRE_HOST_HTTP11, true)
-        .set(UndertowOptions.ENABLE_SPDY, false)
-        .set(UndertowOptions.ENABLE_HTTP2, false)
+        .set(
+          UndertowOptions.BUFFER_PIPELINED_DATA,
+          true
+        )
+        .set(
+          UndertowOptions.ALWAYS_SET_KEEP_ALIVE,
+          true
+        )
+        .set(
+          UndertowOptions.REQUIRE_HOST_HTTP11,
+          true
+        )
+        .set(
+          UndertowOptions.ENABLE_SPDY,
+          false
+        )
+        .set(
+          UndertowOptions.ENABLE_HTTP2,
+          false
+        )
         .map
     )
 
@@ -103,37 +118,96 @@ open class UndertowServer constructor(
   /**
    * Binds the server to the configured host:port and starts it.
    */
-  open fun start(dieDuration: Long = 5000L) = startImpl(dieDuration)
+  open fun start(
+    dieDuration: Long = 5000L,
+    options: OptionMap? = null
+  ) {
+    startImpl(dieDuration, options)
+  }
 
   /**
    * Shuts down the server.
    */
-  open fun stop() = stopImpl()
+  open fun stop() {
+    stopImpl()
+  }
 
   /**
    * Allows children classes to use the same logic to start the server.
    */
-  @Suppress("MemberVisibilityCanBePrivate")
-  protected fun startImpl(dieDuration: Long = 5000L) {
+  @Suppress("MemberVisibilityCanBePrivate", "LongMethod")
+  protected fun startImpl(
+    dieDuration: Long = 5000L,
+    options: OptionMap?
+  ) {
     if (null == hook) {
-      val worker: XnioWorker = Xnio.getInstance().createWorker(
-        OptionMap.builder()
-          .set(Options.WORKER_IO_THREADS, config.ioThreads)
-          .set(Options.WORKER_TASK_CORE_THREADS, config.workerThreads)
-          .set(Options.WORKER_TASK_MAX_THREADS, config.workerThreads)
-          .set(Options.TCP_NODELAY, true)
-          .set(Options.BACKLOG, config.ioThreads * config.workerThreads)
-          .set(Options.RECEIVE_BUFFER, config.bufferSize)
-          .map
-      )
+      val builder = OptionMap.builder()
+
+      builder
+        .set(
+          Options.WORKER_IO_THREADS,
+          config.ioThreads
+        )
+        .set(
+          Options.WORKER_TASK_CORE_THREADS,
+          config.workerThreads
+        )
+        .set(
+          Options.WORKER_TASK_MAX_THREADS,
+          config.workerThreads * (config.workerThreadsPerCore ?: 1)
+        )
+        .set(
+          Options.TCP_NODELAY,
+          true
+        )
+        .set(
+          Options.BACKLOG,
+          config.ioThreads * config.workerThreads
+        )
+        .set(
+          Options.RECEIVE_BUFFER,
+          config.bufferSize
+        )
+
+      config.workerTasksThreshold?.apply {
+        builder.set(
+          Options.WORKER_TASK_KEEPALIVE,
+          toInt()
+        )
+      }
+
+      config.workerTasks?.apply {
+        builder.set(
+          Options.WORKER_TASK_LIMIT,
+          this
+        )
+      }
+
+      if (null != options) {
+        builder.addAll(options)
+      }
+
+      val worker: XnioWorker = Xnio.getInstance().createWorker(builder.map)
 
       server = worker.createStreamConnectionServer(
-        java.net.InetSocketAddress(java.net.Inet4Address.getByName(config.ipAddr), config.port),
+        java.net.InetSocketAddress(
+          java.net.Inet4Address.getByName(config.ipAddr),
+          config.port
+        ),
         ChannelListeners.openListenerAdapter(channel),
         OptionMap.builder()
-          .set(Options.WORKER_IO_THREADS, config.ioThreads)
-          .set(Options.TCP_NODELAY, true)
-          .set(Options.REUSE_ADDRESSES, true)
+          .set(
+            Options.WORKER_IO_THREADS,
+            config.ioThreads
+          )
+          .set(
+            Options.TCP_NODELAY,
+            true
+          )
+          .set(
+            Options.REUSE_ADDRESSES,
+            true
+          )
           .map
       )
 
