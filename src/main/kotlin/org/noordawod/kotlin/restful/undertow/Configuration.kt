@@ -68,14 +68,16 @@ interface Configuration {
   /**
    * The maximum number of tasks to allow before rejecting new ones.
    *
-   * Set this to a relatively high number in order to support
+   * If zero or negative, then the server is not configured with this value.
    */
   val workerTasks: Int?
 
   /**
    * The duration, in milliseconds, to keep worker threads alive.
+   *
+   * If zero or negative, then the server is not configured with this value.
    */
-  val workerTasksThreshold: Long?
+  val workerTasksThreshold: Int?
 
   /**
    * These buffers are used for IO operations, and the buffer size has a big impact on application

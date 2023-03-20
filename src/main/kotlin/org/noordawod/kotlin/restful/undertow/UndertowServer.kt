@@ -153,10 +153,6 @@ open class UndertowServer constructor(
           config.workerThreads
         )
         .set(
-          Options.WORKER_TASK_MAX_THREADS,
-          config.workerThreads * (config.workerThreadsPerCore ?: 1)
-        )
-        .set(
           Options.TCP_NODELAY,
           true
         )
@@ -169,17 +165,32 @@ open class UndertowServer constructor(
           config.bufferSize
         )
 
-      config.workerTasksThreshold?.apply {
+      val workerThreadsPerCore = config.workerThreadsPerCore
+      if (null != workerThreadsPerCore && 0 < workerThreadsPerCore) {
         builder.set(
-          Options.WORKER_TASK_KEEPALIVE,
-          toInt()
+          Options.WORKER_TASK_MAX_THREADS,
+          config.workerThreads * workerThreadsPerCore
+        )
+      } else {
+        builder.set(
+          Options.WORKER_TASK_MAX_THREADS,
+          config.workerThreads
         )
       }
 
-      config.workerTasks?.apply {
+      val workerTasksThreshold = config.workerTasksThreshold
+      if (null != workerTasksThreshold && 0 < workerTasksThreshold) {
+        builder.set(
+          Options.WORKER_TASK_KEEPALIVE,
+          workerTasksThreshold
+        )
+      }
+
+      val workerTasks = config.workerTasks
+      if (null != workerTasks && 0 < workerTasks) {
         builder.set(
           Options.WORKER_TASK_LIMIT,
-          this
+          workerTasks
         )
       }
 
