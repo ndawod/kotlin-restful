@@ -45,7 +45,7 @@ import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
  */
 @Suppress("MemberVisibilityCanBePrivate")
 @ExperimentalSerializationApi
-internal class JwtAuthenticationRepositoryImpl constructor(
+internal class JwtAuthenticationRepositoryImpl(
   override val config: JwtConfiguration,
   val issuer: String
 ) : JwtAuthenticationRepository {

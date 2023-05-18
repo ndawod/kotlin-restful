@@ -88,7 +88,7 @@ interface SendmailRepository {
  * @param lastName the last name of a user
  * @param fullName the full name of a user
  */
-data class SendmailPerson constructor(
+data class SendmailPerson(
   val email: String,
   val firstName: String?,
   val lastName: String?,
@@ -112,7 +112,7 @@ data class SendmailPerson constructor(
  * @param isHtml whether the [html] is HTML (true) or text-only (false)
  */
 @Suppress("LongParameterList")
-open class SendmailMessage constructor(
+open class SendmailMessage(
   val sender: String,
   val from: SendmailPerson,
   val replyTo: SendmailPerson?,

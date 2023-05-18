@@ -46,7 +46,7 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  * @param compressor the [HtmlCompressorRepository] instance to use
  */
-abstract class BaseHtmlFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseHtmlFreeMarkerHttpHandler<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String = Constants.FTL_EMAIL_FOLDER,
   bufferSize: Int = DEFAULT_BUFFER_SIZE,

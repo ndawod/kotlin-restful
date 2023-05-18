@@ -42,7 +42,7 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  * @param compressor the [HtmlCompressorRepository] instance to use
  */
-abstract class BaseHtmlFreeMarkerRunnable<T : Any> constructor(
+abstract class BaseHtmlFreeMarkerRunnable<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String,
   bufferSize: Int = DEFAULT_BUFFER_SIZE,

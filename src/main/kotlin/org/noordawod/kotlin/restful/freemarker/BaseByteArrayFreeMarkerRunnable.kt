@@ -36,7 +36,7 @@ import org.noordawod.kotlin.core.util.CloseableByteArrayOutputStream
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  */
-abstract class BaseByteArrayFreeMarkerRunnable<T : Any> constructor(
+abstract class BaseByteArrayFreeMarkerRunnable<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String,
   protected val bufferSize: Int = DEFAULT_BUFFER_SIZE

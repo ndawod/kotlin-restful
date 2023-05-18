@@ -37,7 +37,7 @@ import kotlinx.serialization.encoding.Encoder
 
 /**
  * Lists the three most used algorithms when creating a JWT, just for making things a
- * bit more easy.
+ * bit easier.
  *
  * @param method the encryption algorithm method
  * @param bits how many bits this encryption algorithm has
@@ -45,7 +45,7 @@ import kotlinx.serialization.encoding.Encoder
 @ExperimentalSerializationApi
 @Suppress("UnderscoresInNumericLiterals", "MagicNumber", "MemberVisibilityCanBePrivate")
 @Serializable(with = EncryptionAlgorithmSerializer::class)
-enum class EncryptionAlgorithm constructor(val method: String, val bits: Int) {
+enum class EncryptionAlgorithm(val method: String, val bits: Int) {
   /**
    * A moderate-length algorithm suitable for development.
    */

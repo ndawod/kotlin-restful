@@ -37,7 +37,7 @@ import org.simplejavamail.email.EmailBuilder
  * @param timeout the timeout, in milliseconds, before giving up send
  * @param config the [SmtpConfiguration] instance to use
  */
-internal class SendmailRepositoryImpl constructor(
+internal class SendmailRepositoryImpl(
   private val config: SmtpConfiguration,
   timeout: Long
 ) : SendmailRepository {

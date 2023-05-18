@@ -25,6 +25,9 @@
 
 package org.noordawod.kotlin.restful.config
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+
 /**
  * Defines configuration of a typical multithreaded server.
  *
@@ -37,8 +40,8 @@ package org.noordawod.kotlin.restful.config
  * @see <a href="https://tinyurl.com/t8yyhxm">Assembling a Server Manually</a>
  * @see <a href="https://tinyurl.com/wdrwhe7">Architecture Overview</a>
  */
-@kotlinx.serialization.Serializable
-open class ServerConfiguration constructor(
+@Serializable
+open class ServerConfiguration(
   val ipAddr: String,
   val host: String,
   val port: Int,
@@ -48,6 +51,7 @@ open class ServerConfiguration constructor(
   /**
    * Returns the combination of this server's hostname and port, separated by a colon.
    */
+  @Transient
   val hostAndPort: String = "$host:$port"
 
   override fun equals(other: Any?): Boolean = other is ServerConfiguration &&
@@ -77,8 +81,8 @@ open class ServerConfiguration constructor(
  * @see <a href="https://tinyurl.com/wdrwhe7">Architecture Overview</a>
  * @see <a href="http://xnio.jboss.org/">XNIO</a>
  */
-@kotlinx.serialization.Serializable
-open class ServerThreadsConfiguration constructor(
+@Serializable
+open class ServerThreadsConfiguration(
   val io: Int,
   val worker: Int,
   val perCore: Int = 1,
@@ -109,8 +113,8 @@ open class ServerThreadsConfiguration constructor(
  * @see <a href="https://tinyurl.com/v2c7p3u">Buffer Pool</a>
  * @see <a href="https://tinyurl.com/ww4xyct">Listeners</a>
  */
-@kotlinx.serialization.Serializable
-open class ServerBufferConfiguration constructor(
+@Serializable
+open class ServerBufferConfiguration(
   val size: Int,
   val perRegion: Int
 ) {

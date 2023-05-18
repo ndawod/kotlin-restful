@@ -40,7 +40,7 @@ import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
  * @param zeroAsNull whether this [JsonAdapter] should use the digit 0 to denote a null
  * when true, or null itself when false
  */
-class EpochDateAdapter constructor(
+class EpochDateAdapter(
   @Suppress("MemberVisibilityCanBePrivate")
   val usingSeconds: Boolean = true,
 

@@ -34,7 +34,7 @@ import io.undertow.server.HttpServerExchange
  * @param endExchangeOnError whether this [HttpHandler] should close end the exchange
  * when an error occurs executing the [handleWork] method
  */
-abstract class WorkerHttpHandler constructor(
+abstract class WorkerHttpHandler(
   private val endExchangeOnError: Boolean = true
 ) : HttpHandler {
   final override fun handleRequest(exchange: HttpServerExchange) {

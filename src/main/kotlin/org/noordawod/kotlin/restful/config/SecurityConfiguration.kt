@@ -26,6 +26,7 @@
 package org.noordawod.kotlin.restful.config
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
 import org.noordawod.kotlin.core.config.JwtConfiguration
 
 /**
@@ -39,8 +40,8 @@ import org.noordawod.kotlin.core.config.JwtConfiguration
  * @param jwt the JWT configuration
  */
 @ExperimentalSerializationApi
-@kotlinx.serialization.Serializable
-data class SecurityConfiguration constructor(
+@Serializable
+data class SecurityConfiguration(
   val sip: String,
   val salt: String,
   val cipher: String,

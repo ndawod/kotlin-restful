@@ -31,7 +31,7 @@ import freemarker.template.Version
 /**
  * Encapsulates a common configuration for the FreeMarker processor.
  */
-open class FreeMarkerConfiguration constructor(
+open class FreeMarkerConfiguration(
   version: Version = DEFAULT_VERSION,
   charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
   cache: CacheStorage? = null

@@ -39,7 +39,7 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
  * @param basePath where template files reside, excluding the trailing slash
  * @param bufferSize initial buffer size, defaults to [DEFAULT_BUFFER_SIZE]
  */
-abstract class BaseByteArrayFreeMarkerHttpHandler<T : Any> constructor(
+abstract class BaseByteArrayFreeMarkerHttpHandler<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String,
   bufferSize: Int = DEFAULT_BUFFER_SIZE

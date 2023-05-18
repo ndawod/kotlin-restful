@@ -33,7 +33,7 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
  * @param compressCss whether to automatically compress styles, default is true
  * @param compressJs whether to automatically compress JavaScript code, default is true
  */
-internal class HtmlCompressorRepositoryImpl constructor(
+internal class HtmlCompressorRepositoryImpl(
   enabled: Boolean,
   compressCss: Boolean = true,
   compressJs: Boolean = true

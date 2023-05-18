@@ -40,7 +40,7 @@ import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryI
  */
 @ExperimentalSerializationApi
 @Module
-class SecurityModule constructor(
+class SecurityModule(
   private val security: SecurityConfiguration,
   private val issuer: String
 ) {

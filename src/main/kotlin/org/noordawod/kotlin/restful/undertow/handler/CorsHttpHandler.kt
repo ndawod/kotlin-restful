@@ -34,7 +34,7 @@ import org.noordawod.kotlin.core.util.Environment
 /**
  * An [HttpHandler] that implements a simple CORS contract.
  */
-class CorsHttpHandler constructor(
+class CorsHttpHandler(
   next: HttpHandler,
   hosts: HostsCollection = listOf(),
   headers: Collection<String> = listOf(Headers.AUTHORIZATION_STRING),

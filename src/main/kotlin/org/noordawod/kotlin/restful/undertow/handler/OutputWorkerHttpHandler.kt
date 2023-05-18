@@ -46,7 +46,7 @@ typealias ThrowableHttpStatus<T> = Pair<T, Int>
  *
  * @param next the next handler to execute in the chain
  */
-abstract class ErrorWorkerHttpHandler constructor(
+abstract class ErrorWorkerHttpHandler(
   private val next: HttpHandler
 ) : WorkerHttpHandler() {
   /**
@@ -82,7 +82,7 @@ abstract class ErrorWorkerHttpHandler constructor(
  * @param next the next handler to execute in the chain
  * @param adapterProvider a provider function that returns a [JsonAdapter] with type [T]
  */
-abstract class OutputWorkerHttpHandler<T> constructor(
+abstract class OutputWorkerHttpHandler<T>(
   private val next: HttpHandler,
   private val adapterProvider: JsonAdapterProvider<T>
 ) : WorkerHttpHandler() {

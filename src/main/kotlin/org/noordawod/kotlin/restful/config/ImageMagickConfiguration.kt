@@ -25,12 +25,14 @@
 
 package org.noordawod.kotlin.restful.config
 
+import kotlinx.serialization.Serializable
+
 /**
  * Configuration for the ImageMagick suite of apps.
  *
  * @param convertPaths possible paths to ImageMagick's convert program
  */
-@kotlinx.serialization.Serializable
-data class ImageMagickConfiguration constructor(
+@Serializable
+data class ImageMagickConfiguration(
   val convertPaths: Collection<String>
 )

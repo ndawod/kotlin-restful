@@ -78,7 +78,7 @@ typealias JwtAuthentication = String
  * [Duration][java.time.Duration] in the future for the new expiration time
  */
 @Suppress("LongParameterList")
-class JwtAuthenticationHandler constructor(
+class JwtAuthenticationHandler(
   private val next: HttpHandler,
   val creator: JwtAuthenticationCreator,
   val verifier: JwtAuthenticationVerifier,

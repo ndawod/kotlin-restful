@@ -47,7 +47,7 @@ annotation class Base62Json
  *
  * @param rethrowOnError whether to rethrow the [Exception] when encoding/decoding Base62 data
  */
-class Base62JsonAdapter constructor(
+class Base62JsonAdapter(
   @Suppress("MemberVisibilityCanBePrivate")
   val rethrowOnError: Boolean
 ) : JsonAdapter<ByteArray>() {

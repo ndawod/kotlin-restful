@@ -41,7 +41,7 @@ import org.noordawod.kotlin.restful.repository.impl.HtmlCompressorRepositoryImpl
  * @param compressJs whether to compress inline JavaScript, default is true
  */
 @Module
-class HttpHtmlModule constructor(
+class HttpHtmlModule(
   private val environment: Environment,
   private val compressCss: Boolean = true,
   private val compressJs: Boolean = true

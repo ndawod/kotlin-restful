@@ -25,6 +25,9 @@
 
 package org.noordawod.kotlin.restful.config
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+
 /**
  * Configuration for how and where uploaded files will be stored, which will always be renamed
  * to a very long file name.
@@ -34,8 +37,8 @@ package org.noordawod.kotlin.restful.config
  * @param length maximum length of file names
  * @param depth depth of subdirectories structure for storing files in [path]
  */
-@kotlinx.serialization.Serializable
-data class FilerConfiguration constructor(
+@Serializable
+data class FilerConfiguration(
   private val logicalPath: String,
   val alphabet: String,
   val length: Int,
@@ -45,6 +48,6 @@ data class FilerConfiguration constructor(
    * Absolute path to where to store files. This is the canonical path which does not include
    * `.` or `..` in its path.
    */
-  @kotlinx.serialization.Transient
+  @Transient
   val path: String = java.io.File(logicalPath).canonicalPath
 }

@@ -25,14 +25,16 @@
 
 package org.noordawod.kotlin.restful.config
 
+import kotlinx.serialization.Serializable
+
 /**
  * Configuration for running a redis caching server.
  *
  * @param host which IP address to bind to when starting the Redis server
  * @param port which port to bind to when starting the Redis server
  */
-@kotlinx.serialization.Serializable
-data class RedisConfiguration constructor(
+@Serializable
+data class RedisConfiguration(
   val host: String,
   val port: Int
 )

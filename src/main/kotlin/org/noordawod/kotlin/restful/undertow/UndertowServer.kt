@@ -45,7 +45,7 @@ import org.xnio.channels.AcceptingChannel
  *
  * @param config configuration required to start this Undertow server
  */
-open class UndertowServer constructor(
+open class UndertowServer(
   @Suppress("MemberVisibilityCanBePrivate") val config: Configuration
 ) {
   private val mainThread = Thread.currentThread()
