@@ -558,22 +558,34 @@ fun HttpServerExchange.binaryOutput(file: java.io.File): Long =
  *
  * Note that if the [file] already exists in the file system, it will be overwritten.
  */
-fun HttpServerExchange.binaryOutput(file: java.io.File, bufferSize: Int): Long {
-  val inputStream = this.inputStream
-  var totalBytes = 0L
-  var hasBytes: Boolean
+fun HttpServerExchange.binaryOutput(
+  file: java.io.File,
+  bufferSize: Int
+): Long = java.io.BufferedOutputStream(
+  java.io.FileOutputStream(file),
+  bufferSize
+).use { fileStream ->
+  inputStream.bufferOutput(fileStream, bufferSize)
+}
 
-  java.io.BufferedOutputStream(java.io.FileOutputStream(file), bufferSize).use { fileStream ->
-    do {
-      val buffer = ByteArray(bufferSize)
-      val readBytes = inputStream.read(buffer, 0, buffer.size)
-      hasBytes = 0 < readBytes
-      if (hasBytes) {
-        fileStream.write(buffer, 0, readBytes)
-        totalBytes += readBytes
-      }
-    } while (hasBytes)
-  }
+internal fun java.io.InputStream.bufferOutput(
+  output: java.io.OutputStream,
+  bufferSize: Int
+): Long {
+  var hasBytes: Boolean
+  var totalBytes = 0L
+
+  do {
+    val buffer = ByteArray(bufferSize)
+    val readBytes = read(buffer, 0, buffer.size)
+
+    hasBytes = 0 < readBytes
+
+    if (hasBytes) {
+      output.write(buffer, 0, readBytes)
+      totalBytes += readBytes
+    }
+  } while (hasBytes)
 
   return totalBytes
 }

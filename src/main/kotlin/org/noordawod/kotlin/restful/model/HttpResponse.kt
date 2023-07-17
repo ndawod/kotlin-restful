@@ -27,6 +27,8 @@ package org.noordawod.kotlin.restful.model
 
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
+import org.noordawod.kotlin.core.extension.trimOrNull
+import org.noordawod.kotlin.restful.extension.bufferOutput
 
 /**
  * Defines the possible responses that this API server supports.
@@ -35,7 +37,7 @@ sealed class HttpResponse {
   /**
    * The response's content type.
    */
-  open val contentType: String? = null
+  abstract val contentType: String
 
   /**
    * Sends the content type of this response to the specified [exchange].
@@ -43,8 +45,9 @@ sealed class HttpResponse {
    * @param exchange the HTTP I/O exchange
    */
   fun setContentType(exchange: HttpServerExchange) {
-    contentType?.apply {
-      exchange.responseHeaders.put(Headers.CONTENT_TYPE, this)
+    val contentTypeNormalized = contentType.trimOrNull()
+    if (null != contentTypeNormalized) {
+      exchange.responseHeaders.put(Headers.CONTENT_TYPE, contentTypeNormalized)
     }
   }
 
@@ -53,7 +56,11 @@ sealed class HttpResponse {
    *
    * @param statusCode the HTTP status code to send with the response
    */
-  class NoContent(val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT) : HttpResponse() {
+  class NoContent(
+    val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT
+  ) : HttpResponse() {
+    override val contentType: String = ""
+
     override fun equals(other: Any?): Boolean =
       other is NoContent && statusCode == other.statusCode
 
@@ -75,6 +82,8 @@ sealed class HttpResponse {
    * The requested operation isn't implemented yet.
    */
   object NotImplemented : HttpResponse() {
+    override val contentType: String = ""
+
     override fun equals(other: Any?): Boolean = other is NotImplemented
 
     override fun hashCode(): Int = contentType.hashCode()
@@ -94,15 +103,12 @@ sealed class HttpResponse {
   /**
    * The response body is JSON.
    *
-   * The body itself can be any Kotlin object which can be converted to JSON using the
-   * configured encoder, f.ex: Moshi, or Kotlin Serialization.
-   *
+   * @param body the actual JSON body
    * @param charset the character set of [body], defaults to
    * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
-   * @param body the actual JSON body
    */
   class Json(
-    val body: Any,
+    val body: String,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
@@ -121,11 +127,12 @@ sealed class HttpResponse {
      * Sends the correct headers and body content, if any, to the remote client.
      *
      * @param exchange the HTTP I/O exchange
-     * @param body the body content to send
+     * @param outputStream output stream to use, otherwise the exchange's one is used
      */
-    fun send(exchange: HttpServerExchange, body: String?) {
-      if (null != body) {
-        exchange.responseSender.send(body)
+    fun send(exchange: HttpServerExchange, outputStream: java.io.OutputStream?) {
+      val outputStreamNormalized = outputStream ?: exchange.outputStream
+      outputStreamNormalized.writer(charset).use {
+        it.write(body)
       }
     }
   }
@@ -381,21 +388,9 @@ sealed class HttpResponse {
 private fun HttpServerExchange.sendBinaryResponse(
   inputStream: java.io.InputStream,
   bufferSize: Int
-): Long {
-  var writtenBytes = 0L
-  var hasBytes: Boolean
-
-  java.io.BufferedOutputStream(outputStream, bufferSize).use { outputStream ->
-    do {
-      val buffer = ByteArray(bufferSize)
-      val readBytes = inputStream.read(buffer, 0, buffer.size)
-      hasBytes = 0 < readBytes
-      if (hasBytes) {
-        outputStream.write(buffer, 0, readBytes)
-        writtenBytes += readBytes
-      }
-    } while (hasBytes)
-  }
-
-  return writtenBytes
+): Long = java.io.BufferedOutputStream(
+  outputStream,
+  bufferSize
+).use { outputStream ->
+  inputStream.bufferOutput(outputStream, bufferSize)
 }
