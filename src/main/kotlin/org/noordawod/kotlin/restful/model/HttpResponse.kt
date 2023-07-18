@@ -47,7 +47,10 @@ sealed class HttpResponse {
   fun setContentType(exchange: HttpServerExchange) {
     val contentTypeNormalized = contentType.trimOrNull()
     if (null != contentTypeNormalized) {
-      exchange.responseHeaders.put(Headers.CONTENT_TYPE, contentTypeNormalized)
+      exchange.responseHeaders.put(
+        Headers.CONTENT_TYPE,
+        contentTypeNormalized
+      )
     }
   }
 
@@ -107,15 +110,15 @@ sealed class HttpResponse {
    * @param charset the character set of [body], defaults to
    * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
    */
-  class Json(
-    val body: String,
+  class Json<T>(
+    val body: T,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String =
       if ("$charset".isBlank()) JSON else "$JSON; $CHARSET$charset".lowercase()
 
-    override fun equals(other: Any?): Boolean = other is Json &&
+    override fun equals(other: Any?): Boolean = other is Json<*> &&
       body == other.body &&
       charset == other.charset
 
@@ -127,11 +130,47 @@ sealed class HttpResponse {
      * Sends the correct headers and body content, if any, to the remote client.
      *
      * @param exchange the HTTP I/O exchange
-     * @param outputStream output stream to use, otherwise the exchange's one is used
+     * @param encoder converts the T value to a String
      */
-    fun send(exchange: HttpServerExchange, outputStream: java.io.OutputStream?) {
-      val outputStreamNormalized = outputStream ?: exchange.outputStream
-      outputStreamNormalized.writer(charset).use {
+    fun send(exchange: HttpServerExchange, encoder: (T) -> String) {
+      setContentType(exchange)
+      exchange.outputStream.writer(charset).use {
+        it.write(encoder(body))
+      }
+    }
+  }
+
+  /**
+   * The response body is a JSON String.
+   *
+   * @param body the actual JSON body as a String
+   * @param charset the character set of [body], defaults to
+   * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
+   */
+  class JsonString(
+    val body: String,
+    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+  ) : HttpResponse() {
+    @Suppress("StringLiteralDuplication")
+    override val contentType: String =
+      if ("$charset".isBlank()) JSON else "$JSON; $CHARSET$charset".lowercase()
+
+    override fun equals(other: Any?): Boolean = other is JsonString &&
+      body == other.body &&
+      charset == other.charset
+
+    override fun hashCode(): Int = 179 * body.hashCode() + 109 * charset.hashCode()
+
+    override fun toString(): String = "Json<$CHARSET$charset, $BODY$body>"
+
+    /**
+     * Sends the correct headers and body content, if any, to the remote client.
+     *
+     * @param exchange the HTTP I/O exchange
+     */
+    fun send(exchange: HttpServerExchange) {
+      setContentType(exchange)
+      exchange.outputStream.writer(charset).use {
         it.write(body)
       }
     }
@@ -151,7 +190,7 @@ sealed class HttpResponse {
     override val contentType: String =
       if ("$charset".isBlank()) TEXT_PLAIN else "$TEXT_PLAIN; $CHARSET$charset".lowercase()
 
-    override fun equals(other: Any?): Boolean = other is Json &&
+    override fun equals(other: Any?): Boolean = other is Text &&
       body == other.body &&
       charset == other.charset
 
@@ -163,9 +202,22 @@ sealed class HttpResponse {
      * Sends the correct headers and body content, if any, to the remote client.
      *
      * @param exchange the HTTP I/O exchange
+     */
+    fun send(exchange: HttpServerExchange) {
+      setContentType(exchange)
+      exchange.outputStream.writer(charset).use {
+        it.write(body)
+      }
+    }
+
+    /**
+     * Sends the correct headers and body content, if any, to the remote client.
+     *
+     * @param exchange the HTTP I/O exchange
      * @param body the body content to send
      */
     fun send(exchange: HttpServerExchange, body: String) {
+      setContentType(exchange)
       exchange.responseSender.send(body)
     }
   }
@@ -218,14 +270,15 @@ sealed class HttpResponse {
      * @param exchange the HTTP I/O exchange
      */
     fun send(exchange: HttpServerExchange) {
+      setContentType(exchange)
       java.io.ByteArrayInputStream(bytes).use { inputStream ->
         exchange.sendBinaryResponse(
-          if (bufferSize < bytes.size) {
+          inputStream = if (bufferSize < bytes.size) {
             java.io.BufferedInputStream(inputStream, bufferSize)
           } else {
             inputStream
           },
-          bufferSize
+          bufferSize = bufferSize
         )
       }
     }
@@ -262,11 +315,15 @@ sealed class HttpResponse {
      * @param exchange the HTTP I/O exchange
      */
     fun send(exchange: HttpServerExchange) {
+      setContentType(exchange)
       java.io.BufferedInputStream(
         java.io.FileInputStream(file),
         bufferSize
       ).use { inputStream ->
-        exchange.sendBinaryResponse(inputStream, bufferSize)
+        exchange.sendBinaryResponse(
+          inputStream = inputStream,
+          bufferSize = bufferSize
+        )
       }
     }
   }
