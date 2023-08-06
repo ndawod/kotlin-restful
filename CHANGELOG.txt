@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+4.4.8 (August 6, 2023)
+    Add a couple of new extension functions.
+
 4.4.7 (July 18, 2023)
     Revert changes to JSON response class.
 

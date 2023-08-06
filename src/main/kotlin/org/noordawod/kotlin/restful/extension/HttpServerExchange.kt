@@ -187,6 +187,43 @@ fun <T> HttpServerExchange.decodeSetOrThrow(
 ): Set<T> = decodeSet(moshi, klass) ?: throw provider(null)
 
 /**
+ * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
+ * as a [Map] on success, null otherwise.
+ *
+ * Note: Keys in the Map must be strings.
+ *
+ * @param moshi the [Moshi] instance used to decode the data
+ * @param klass which JVM object type this JSON array maps to
+ */
+@ExperimentalSerializationApi
+fun <T> HttpServerExchange.decodeMap(
+  moshi: Moshi,
+  klass: Class<T>
+): Map<String, T>? = try {
+  val mapType = Types.newParameterizedType(Map::class.java, String::class.java, klass)
+  moshi.adapter<Map<String, T>>(mapType).fromJson(bufferedInput())
+} catch (ignored: java.io.EOFException) {
+  null
+}
+
+/**
+ * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
+ * as a [Map] on success, throwing an exception otherwise.
+ *
+ * Note: Keys in the Map must be strings.
+ *
+ * @param moshi the [Moshi] instance used to decode the data
+ * @param klass which JVM object type this JSON array maps to
+ * @param provider the function that creates a [Throwable]
+ */
+@ExperimentalSerializationApi
+fun <T> HttpServerExchange.decodeMapOrThrow(
+  moshi: Moshi,
+  klass: Class<T>,
+  provider: ThrowableProvider
+): Map<String, T> = decodeMap(moshi, klass) ?: throw provider(null)
+
+/**
  * Notifies the client that there will be no content in the response, finally this will also
  * close this [HttpServerExchange]’s send channel.
  */
