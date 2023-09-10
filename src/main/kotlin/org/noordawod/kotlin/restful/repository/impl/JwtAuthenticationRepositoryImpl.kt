@@ -28,7 +28,6 @@ package org.noordawod.kotlin.restful.repository.impl
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
-import kotlinx.serialization.ExperimentalSerializationApi
 import org.noordawod.kotlin.core.config.JwtConfiguration
 import org.noordawod.kotlin.restful.extension.createJwt
 import org.noordawod.kotlin.restful.extension.verifyJwt
@@ -44,7 +43,6 @@ import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
  * @param config the [JwtConfiguration] instance to use
  */
 @Suppress("MemberVisibilityCanBePrivate")
-@ExperimentalSerializationApi
 internal class JwtAuthenticationRepositoryImpl(
   override val config: JwtConfiguration,
   val issuer: String

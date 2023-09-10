@@ -25,7 +25,6 @@ package org.noordawod.kotlin.restful.repository
 
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
-import kotlinx.serialization.ExperimentalSerializationApi
 import org.noordawod.kotlin.core.config.JwtConfiguration
 import org.noordawod.kotlin.restful.undertow.handler.Jwt
 import org.noordawod.kotlin.restful.undertow.handler.JwtAuthentication
@@ -72,7 +71,6 @@ interface JwtAuthenticationRepository {
    * Returns the [configuration][JwtConfiguration] associated with this
    * [JwtAuthenticationRepository].
    */
-  @ExperimentalSerializationApi
   val config: JwtConfiguration
 
   /**

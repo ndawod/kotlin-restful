@@ -26,9 +26,8 @@
 package org.noordawod.kotlin.restful.util
 
 import com.auth0.jwt.algorithms.Algorithm
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -42,7 +41,6 @@ import kotlinx.serialization.encoding.Encoder
  * @param method the encryption algorithm method
  * @param bits how many bits this encryption algorithm has
  */
-@ExperimentalSerializationApi
 @Suppress("UnderscoresInNumericLiterals", "MagicNumber", "MemberVisibilityCanBePrivate")
 @Serializable(with = EncryptionAlgorithmSerializer::class)
 enum class EncryptionAlgorithm(val method: String, val bits: Int) {
@@ -85,9 +83,7 @@ enum class EncryptionAlgorithm(val method: String, val bits: Int) {
 /**
  * Helper object for (de)serializing the [EncryptionAlgorithm] enum.
  */
-@ExperimentalSerializationApi
-@Serializer(forClass = EncryptionAlgorithm::class)
-object EncryptionAlgorithmSerializer {
+class EncryptionAlgorithmSerializer : KSerializer<EncryptionAlgorithm> {
   override val descriptor: SerialDescriptor =
     PrimitiveSerialDescriptor("EncryptionAlgorithm", PrimitiveKind.STRING)
 

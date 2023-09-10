@@ -32,7 +32,6 @@ import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
 import io.undertow.util.HttpString
 import io.undertow.util.StatusCodes
-import kotlinx.serialization.ExperimentalSerializationApi
 import okio.BufferedSink
 import okio.BufferedSource
 import org.noordawod.kotlin.core.extension.mutableListWith
@@ -66,7 +65,6 @@ typealias ThrowableProvider = (cause: Throwable?) -> Throwable
  * @param moshi the [Moshi] instance used to encode the data
  * @param model the data model to encode as JSON
  */
-@ExperimentalSerializationApi
 fun HttpServerExchange.encode(moshi: Moshi, model: Any) {
   jsonOutput(model) {
     moshi.adapter(it.javaClass.simplifyType())
@@ -81,7 +79,6 @@ fun HttpServerExchange.encode(moshi: Moshi, model: Any) {
  * @param model the data model to encode as JSON
  * @param provider the function that creates a [Throwable]
  */
-@ExperimentalSerializationApi
 fun HttpServerExchange.encodeOrThrow(
   moshi: Moshi,
   model: Any?,
@@ -104,7 +101,6 @@ fun HttpServerExchange.encodeOrThrow(
  * @param moshi the [Moshi] instance used to decode the data
  * @param klass which JVM object type this JSON maps to
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decode(
   moshi: Moshi,
   klass: Class<T>
@@ -118,7 +114,6 @@ fun <T> HttpServerExchange.decode(
  * @param klass which JVM object type this JSON maps to
  * @param provider the function that creates a [Throwable]
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeOrThrow(
   moshi: Moshi,
   klass: Class<T>,
@@ -132,7 +127,6 @@ fun <T> HttpServerExchange.decodeOrThrow(
  * @param moshi the [Moshi] instance used to decode the data
  * @param klass which JVM object type this JSON array maps to
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeList(
   moshi: Moshi,
   klass: Class<T>
@@ -151,7 +145,6 @@ fun <T> HttpServerExchange.decodeList(
  * @param klass which JVM object type this JSON array maps to
  * @param provider the function that creates a [Throwable]
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeListOrThrow(
   moshi: Moshi,
   klass: Class<T>,
@@ -165,7 +158,6 @@ fun <T> HttpServerExchange.decodeListOrThrow(
  * @param moshi the [Moshi] instance used to decode the data
  * @param klass which JVM object type this JSON array maps to
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeSet(
   moshi: Moshi,
   klass: Class<T>
@@ -179,7 +171,6 @@ fun <T> HttpServerExchange.decodeSet(
  * @param klass which JVM object type this JSON array maps to
  * @param provider the function that creates a [Throwable]
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeSetOrThrow(
   moshi: Moshi,
   klass: Class<T>,
@@ -195,7 +186,6 @@ fun <T> HttpServerExchange.decodeSetOrThrow(
  * @param moshi the [Moshi] instance used to decode the data
  * @param klass which JVM object type this JSON array maps to
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeMap(
   moshi: Moshi,
   klass: Class<T>
@@ -216,7 +206,6 @@ fun <T> HttpServerExchange.decodeMap(
  * @param klass which JVM object type this JSON array maps to
  * @param provider the function that creates a [Throwable]
  */
-@ExperimentalSerializationApi
 fun <T> HttpServerExchange.decodeMapOrThrow(
   moshi: Moshi,
   klass: Class<T>,

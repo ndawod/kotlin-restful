@@ -25,7 +25,6 @@
 
 package org.noordawod.kotlin.restful.config
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import org.noordawod.kotlin.core.config.JwtConfiguration
 
@@ -39,7 +38,6 @@ import org.noordawod.kotlin.core.config.JwtConfiguration
  * @param iv the IV portion of a block [cipher]
  * @param jwt the JWT configuration
  */
-@ExperimentalSerializationApi
 @Serializable
 data class SecurityConfiguration(
   val sip: String,

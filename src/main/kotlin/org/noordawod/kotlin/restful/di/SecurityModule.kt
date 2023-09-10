@@ -27,7 +27,6 @@ package org.noordawod.kotlin.restful.di
 
 import dagger.Module
 import dagger.Provides
-import kotlinx.serialization.ExperimentalSerializationApi
 import org.noordawod.kotlin.core.config.SecurityConfiguration
 import org.noordawod.kotlin.restful.repository.JwtAuthenticationRepository
 import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryImpl
@@ -38,7 +37,6 @@ import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryI
  * @param security the current [SecurityConfiguration] to use
  * @param issuer the value used in JWT's "iss" (issuer) property
  */
-@ExperimentalSerializationApi
 @Module
 class SecurityModule(
   private val security: SecurityConfiguration,
