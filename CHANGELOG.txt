@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+4.4.12 (October 2, 2023)
+    Allow Undertow to be started with custom options.
+
 4.4.11 (September 10, 2023)
     Remove use of `ExperimentalSerializationApi` from code.
 

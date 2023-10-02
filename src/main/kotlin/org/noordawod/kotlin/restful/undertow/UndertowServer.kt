@@ -25,7 +25,6 @@
 
 package org.noordawod.kotlin.restful.undertow
 
-import io.undertow.Handlers
 import io.undertow.UndertowOptions
 import io.undertow.server.HttpHandler
 import io.undertow.server.XnioByteBufferPool
@@ -63,40 +62,43 @@ open class UndertowServer(
    * Allows subclasses to set the initial handler for this [server]'s [channel].
    */
   @Suppress("DEPRECATION")
-  protected fun setHandler(handler: HttpHandler) {
+  protected fun setHandler(
+    handler: HttpHandler,
+    options: OptionMap? = null
+  ) {
     val buffers = org.xnio.ByteBufferSlicePool(
       BufferAllocator.DIRECT_BYTE_BUFFER_ALLOCATOR,
       config.bufferSize,
       config.bufferSize * config.buffersPerRegion
     )
 
-    channel = HttpOpenListener(
-      XnioByteBufferPool(buffers),
-      OptionMap.builder()
-        .set(
-          UndertowOptions.BUFFER_PIPELINED_DATA,
-          true
-        )
-        .set(
-          UndertowOptions.ALWAYS_SET_KEEP_ALIVE,
-          true
-        )
-        .set(
-          UndertowOptions.REQUIRE_HOST_HTTP11,
-          true
-        )
-        .set(
-          UndertowOptions.ENABLE_SPDY,
-          false
-        )
-        .set(
-          UndertowOptions.ENABLE_HTTP2,
-          false
-        )
-        .map
-    )
+    val finalOptions = OptionMap.builder()
+      .set(
+        UndertowOptions.BUFFER_PIPELINED_DATA,
+        true
+      )
+      .set(
+        UndertowOptions.ALWAYS_SET_KEEP_ALIVE,
+        true
+      )
+      .set(
+        UndertowOptions.REQUIRE_HOST_HTTP11,
+        true
+      )
+      .set(
+        UndertowOptions.ENABLE_SPDY,
+        false
+      )
+      .set(
+        UndertowOptions.ENABLE_HTTP2,
+        false
+      )
 
-    Handlers.path()
+    if (null != options) {
+      finalOptions.addAll(options)
+    }
+
+    channel = HttpOpenListener(XnioByteBufferPool(buffers), finalOptions.map)
 
     channel.rootHandler = handler
   }
@@ -122,7 +124,10 @@ open class UndertowServer(
     dieDuration: Long = 5000L,
     options: OptionMap? = null
   ) {
-    startImpl(dieDuration, options)
+    startImpl(
+      dieDuration = dieDuration,
+      options = options
+    )
   }
 
   /**
@@ -137,7 +142,7 @@ open class UndertowServer(
    */
   @Suppress("MemberVisibilityCanBePrivate", "LongMethod")
   protected fun startImpl(
-    dieDuration: Long = 5000L,
+    dieDuration: Long,
     options: OptionMap?
   ) {
     if (null == hook) {
