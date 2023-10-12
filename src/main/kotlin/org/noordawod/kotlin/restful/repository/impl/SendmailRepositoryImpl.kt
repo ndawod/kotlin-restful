@@ -64,7 +64,9 @@ internal class SendmailRepositoryImpl(
     return try {
       EmailBuilder.startingBlank().apply {
         withBounceTo(message.sender)
-        withReplyTo(replyTo)
+        if (null != replyTo) {
+          withReplyTo(replyTo)
+        }
         withSubject(message.subject)
         from(message.from.fullName, message.from.email)
         to(message.recipient.fullName, message.recipient.email)
