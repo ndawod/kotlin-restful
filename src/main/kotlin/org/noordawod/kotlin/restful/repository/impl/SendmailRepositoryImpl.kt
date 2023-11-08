@@ -39,7 +39,7 @@ import org.simplejavamail.email.EmailBuilder
  */
 internal class SendmailRepositoryImpl(
   private val config: SmtpConfiguration,
-  timeout: Long
+  timeout: Long,
 ) : SendmailRepository {
   private val mailer: Mailer = SendmailRepository.createMailer(config, timeout)
 

@@ -42,7 +42,7 @@ data class FilerConfiguration(
   private val logicalPath: String,
   val alphabet: String,
   val length: Int,
-  val depth: Int
+  val depth: Int,
 ) {
   /**
    * Absolute path to where to store files. This is the canonical path which does not include

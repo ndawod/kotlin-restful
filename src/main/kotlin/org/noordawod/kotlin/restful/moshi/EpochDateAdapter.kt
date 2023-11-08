@@ -45,7 +45,7 @@ class EpochDateAdapter(
   val usingSeconds: Boolean = true,
 
   @Suppress("MemberVisibilityCanBePrivate")
-  val zeroAsNull: Boolean = false
+  val zeroAsNull: Boolean = false,
 ) : JsonAdapter<java.util.Date>() {
   override fun fromJson(reader: JsonReader): java.util.Date? =
     if (reader.hasNext()) {

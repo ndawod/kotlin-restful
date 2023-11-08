@@ -97,7 +97,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   open fun l(
     key: String,
-    args: Iterable<Any>
+    args: Iterable<Any>,
   ): String {
     val text: String = l(key, true)
 
@@ -120,7 +120,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   open fun l(
     key: String,
-    fallback: Boolean
+    fallback: Boolean,
   ): String {
     var text: String? = clientL10n.translation[key]
     if (fallback && null == text) {
@@ -139,7 +139,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   @Suppress("StringLiteralDuplication")
   open fun l(
     key: String,
-    count: Int
+    count: Int,
   ): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
     val rule = pluralRules.select(count.toDouble()).lowercase(java.util.Locale.ENGLISH)
@@ -159,7 +159,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   open fun l(
     key: String,
     count: Int,
-    args: Iterable<Any>
+    args: Iterable<Any>,
   ): String {
     val pluralRules = PluralRules.forLocale(clientL10n.locale)
     val rule = pluralRules.select(count.toDouble()).lowercase(java.util.Locale.ENGLISH)
@@ -177,7 +177,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   @Suppress("StringLiteralDuplication")
   open fun lq(
     key: String,
-    quantity: Int
+    quantity: Int,
   ): String {
     val rule = quantifyRule(quantity)
 
@@ -197,7 +197,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
   open fun lq(
     key: String,
     quantity: Int,
-    args: Iterable<Any>
+    args: Iterable<Any>,
   ): String {
     val rule = quantifyRule(quantity)
 
@@ -211,7 +211,7 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method l(key) instead.",
-    ReplaceWith("l(key)")
+    ReplaceWith("l(key)"),
   )
   open fun l10n(key: String): String = l(key)
 
@@ -225,14 +225,14 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method l(key, args) instead.",
-    ReplaceWith("l(key, args)")
+    ReplaceWith("l(key, args)"),
   )
   open fun l10n(
     key: String,
-    args: Iterable<Any>
+    args: Iterable<Any>,
   ): String = l(
     key,
-    args
+    args,
   )
 
   /**
@@ -246,14 +246,14 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method l(key, fallback) instead.",
-    ReplaceWith("l(key, fallback)")
+    ReplaceWith("l(key, fallback)"),
   )
   open fun l10n(
     key: String,
-    fallback: Boolean
+    fallback: Boolean,
   ): String = l(
     key,
-    fallback
+    fallback,
   )
 
   /**
@@ -264,14 +264,14 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method l(key, count) instead.",
-    ReplaceWith("l(key, count)")
+    ReplaceWith("l(key, count)"),
   )
   open fun l10n(
     key: String,
-    count: Int
+    count: Int,
   ): String = l(
     key,
-    count
+    count,
   )
 
   /**
@@ -284,16 +284,16 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method l(key, count, args) instead.",
-    ReplaceWith("l(key, count, args)")
+    ReplaceWith("l(key, count, args)"),
   )
   open fun l10n(
     key: String,
     count: Int,
-    args: Iterable<Any>
+    args: Iterable<Any>,
   ): String = l(
     key,
     count,
-    args
+    args,
   )
 
   /**
@@ -305,14 +305,14 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method lq(key, quantity) instead.",
-    ReplaceWith("lq(key, quantity)")
+    ReplaceWith("lq(key, quantity)"),
   )
   open fun l10nq(
     key: String,
-    quantity: Int
+    quantity: Int,
   ): String = lq(
     key,
-    quantity
+    quantity,
   )
 
   /**
@@ -326,16 +326,16 @@ abstract class FreeMarkerL10nDataModel : BaseFreeMarkerDataModel() {
    */
   @Deprecated(
     "Use the method lq(key, quantity, args) instead.",
-    ReplaceWith("lq(key, quantity, args)")
+    ReplaceWith("lq(key, quantity, args)"),
   )
   open fun l10nq(
     key: String,
     quantity: Int,
-    args: Iterable<Any>
+    args: Iterable<Any>,
   ): String = lq(
     key,
     quantity,
-    args
+    args,
   )
 
   private fun quantifyRule(quantity: Int): String = when (quantity) {

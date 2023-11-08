@@ -40,7 +40,7 @@ import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryI
 @Module
 class SecurityModule(
   private val security: SecurityConfiguration,
-  private val issuer: String
+  private val issuer: String,
 ) {
   /**
    * The [JwtAuthenticationRepository] singleton.

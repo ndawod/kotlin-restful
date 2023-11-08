@@ -50,7 +50,7 @@ abstract class BaseHtmlFreeMarkerHttpHandler<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String = Constants.FTL_EMAIL_FOLDER,
   bufferSize: Int = DEFAULT_BUFFER_SIZE,
-  protected val compressor: HtmlCompressorRepository? = null
+  protected val compressor: HtmlCompressorRepository? = null,
 ) : BaseByteArrayFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
   /**
    * Perform the sendmail operation.
@@ -60,7 +60,7 @@ abstract class BaseHtmlFreeMarkerHttpHandler<T : Any>(
    */
   abstract fun handleContents(
     exchange: HttpServerExchange,
-    contents: String
+    contents: String,
   )
 
   override fun handleRequest(exchange: HttpServerExchange) {

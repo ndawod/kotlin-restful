@@ -49,7 +49,7 @@ annotation class Base62Json
  */
 class Base62JsonAdapter(
   @Suppress("MemberVisibilityCanBePrivate")
-  val rethrowOnError: Boolean
+  val rethrowOnError: Boolean,
 ) : JsonAdapter<ByteArray>() {
   @Suppress("ReturnCount")
   @Throws(IllegalArgumentException::class)

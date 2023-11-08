@@ -35,7 +35,7 @@ import io.undertow.server.HttpServerExchange
  * when an error occurs executing the [handleWork] method
  */
 abstract class WorkerHttpHandler(
-  private val endExchangeOnError: Boolean = true
+  private val endExchangeOnError: Boolean = true,
 ) : HttpHandler {
   final override fun handleRequest(exchange: HttpServerExchange) {
     if (exchange.isInIoThread) {

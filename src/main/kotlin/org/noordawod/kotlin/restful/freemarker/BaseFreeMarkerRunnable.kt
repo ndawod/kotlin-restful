@@ -42,7 +42,7 @@ import org.noordawod.kotlin.restful.undertow.handler.DASHES
  */
 abstract class BaseFreeMarkerRunnable<T : Any> protected constructor(
   protected val config: FreeMarkerConfiguration,
-  protected val basePath: String
+  protected val basePath: String,
 ) : Runnable {
   /**
    * Extension for template files.

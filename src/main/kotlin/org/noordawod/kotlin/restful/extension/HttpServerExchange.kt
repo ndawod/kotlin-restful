@@ -82,7 +82,7 @@ fun HttpServerExchange.encode(moshi: Moshi, model: Any) {
 fun HttpServerExchange.encodeOrThrow(
   moshi: Moshi,
   model: Any?,
-  provider: ThrowableProvider
+  provider: ThrowableProvider,
 ) {
   if (null == model) {
     throw provider(null)
@@ -103,7 +103,7 @@ fun HttpServerExchange.encodeOrThrow(
  */
 fun <T> HttpServerExchange.decode(
   moshi: Moshi,
-  klass: Class<T>
+  klass: Class<T>,
 ): T? = moshi.adapter(klass).fromJson(bufferedInput())
 
 /**
@@ -117,7 +117,7 @@ fun <T> HttpServerExchange.decode(
 fun <T> HttpServerExchange.decodeOrThrow(
   moshi: Moshi,
   klass: Class<T>,
-  provider: ThrowableProvider
+  provider: ThrowableProvider,
 ): T = decode(moshi, klass) ?: throw provider(null)
 
 /**
@@ -129,7 +129,7 @@ fun <T> HttpServerExchange.decodeOrThrow(
  */
 fun <T> HttpServerExchange.decodeList(
   moshi: Moshi,
-  klass: Class<T>
+  klass: Class<T>,
 ): List<T>? = try {
   val listType = Types.newParameterizedType(List::class.java, klass)
   moshi.adapter<List<T>>(listType).fromJson(bufferedInput())
@@ -148,7 +148,7 @@ fun <T> HttpServerExchange.decodeList(
 fun <T> HttpServerExchange.decodeListOrThrow(
   moshi: Moshi,
   klass: Class<T>,
-  provider: ThrowableProvider
+  provider: ThrowableProvider,
 ): List<T> = decodeList(moshi, klass) ?: throw provider(null)
 
 /**
@@ -160,7 +160,7 @@ fun <T> HttpServerExchange.decodeListOrThrow(
  */
 fun <T> HttpServerExchange.decodeSet(
   moshi: Moshi,
-  klass: Class<T>
+  klass: Class<T>,
 ): Set<T>? = decodeList(moshi, klass)?.toSet()
 
 /**
@@ -174,7 +174,7 @@ fun <T> HttpServerExchange.decodeSet(
 fun <T> HttpServerExchange.decodeSetOrThrow(
   moshi: Moshi,
   klass: Class<T>,
-  provider: ThrowableProvider
+  provider: ThrowableProvider,
 ): Set<T> = decodeSet(moshi, klass) ?: throw provider(null)
 
 /**
@@ -188,7 +188,7 @@ fun <T> HttpServerExchange.decodeSetOrThrow(
  */
 fun <T> HttpServerExchange.decodeMap(
   moshi: Moshi,
-  klass: Class<T>
+  klass: Class<T>,
 ): Map<String, T>? = try {
   val mapType = Types.newParameterizedType(Map::class.java, String::class.java, klass)
   moshi.adapter<Map<String, T>>(mapType).fromJson(bufferedInput())
@@ -209,7 +209,7 @@ fun <T> HttpServerExchange.decodeMap(
 fun <T> HttpServerExchange.decodeMapOrThrow(
   moshi: Moshi,
   klass: Class<T>,
-  provider: ThrowableProvider
+  provider: ThrowableProvider,
 ): Map<String, T> = decodeMap(moshi, klass) ?: throw provider(null)
 
 /**
@@ -263,7 +263,7 @@ fun HttpServerExchange.listQueryParameter(paramName: String): List<String>? =
  */
 fun HttpServerExchange.listQueryParameter(
   paramName: String,
-  separator: Char
+  separator: Char,
 ): List<String>? {
   val values = queryParameter(paramName)?.split(separator)
   if (values.isNullOrEmpty()) {
@@ -292,7 +292,7 @@ fun HttpServerExchange.listQueryParameter(
  */
 fun <T> HttpServerExchange.listQueryParameter(
   paramName: String,
-  transform: (String) -> T?
+  transform: (String) -> T?,
 ): List<T>? = listQueryParameter(paramName, DEFAULT_QUERY_VALUE_SEPARATOR, transform)
 
 /**
@@ -307,7 +307,7 @@ fun <T> HttpServerExchange.listQueryParameter(
 fun <T> HttpServerExchange.listQueryParameter(
   paramName: String,
   separator: Char,
-  transform: (String) -> T?
+  transform: (String) -> T?,
 ): List<T>? {
   val values = queryParameter(paramName)?.split(separator)
   if (values.isNullOrEmpty()) {
@@ -348,7 +348,7 @@ fun HttpServerExchange.setQueryParameter(paramName: String): Set<String>? =
  */
 fun HttpServerExchange.setQueryParameter(
   paramName: String,
-  separator: Char
+  separator: Char,
 ): Set<String>? = listQueryParameter(paramName, separator)?.toSet()
 
 /**
@@ -361,7 +361,7 @@ fun HttpServerExchange.setQueryParameter(
  */
 fun <T> HttpServerExchange.setQueryParameter(
   paramName: String,
-  transform: (String) -> T?
+  transform: (String) -> T?,
 ): Set<T>? = setQueryParameter(paramName, DEFAULT_QUERY_VALUE_SEPARATOR, transform)
 
 /**
@@ -376,7 +376,7 @@ fun <T> HttpServerExchange.setQueryParameter(
 fun <T> HttpServerExchange.setQueryParameter(
   paramName: String,
   separator: Char,
-  transform: (String) -> T?
+  transform: (String) -> T?,
 ): Set<T>? = listQueryParameter(paramName, separator, transform)?.toSet()
 
 /**
@@ -586,17 +586,17 @@ fun HttpServerExchange.binaryOutput(file: java.io.File): Long =
  */
 fun HttpServerExchange.binaryOutput(
   file: java.io.File,
-  bufferSize: Int
+  bufferSize: Int,
 ): Long = java.io.BufferedOutputStream(
   java.io.FileOutputStream(file),
-  bufferSize
+  bufferSize,
 ).use { fileStream ->
   inputStream.bufferOutput(fileStream, bufferSize)
 }
 
 internal fun java.io.InputStream.bufferOutput(
   output: java.io.OutputStream,
-  bufferSize: Int
+  bufferSize: Int,
 ): Long {
   var hasBytes: Boolean
   var totalBytes = 0L

@@ -34,7 +34,7 @@ import freemarker.template.Version
 open class FreeMarkerConfiguration(
   version: Version = DEFAULT_VERSION,
   charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
-  cache: CacheStorage? = null
+  cache: CacheStorage? = null,
 ) : freemarker.template.Configuration(version) {
   init {
     defaultEncoding = charset.name()

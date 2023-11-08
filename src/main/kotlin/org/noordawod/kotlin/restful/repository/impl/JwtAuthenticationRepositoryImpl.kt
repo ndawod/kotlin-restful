@@ -45,7 +45,7 @@ import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
 @Suppress("MemberVisibilityCanBePrivate")
 internal class JwtAuthenticationRepositoryImpl(
   override val config: JwtConfiguration,
-  val issuer: String
+  val issuer: String,
 ) : JwtAuthenticationRepository {
   override fun interceptor(next: HttpHandler, enforced: Boolean): HttpHandler =
     JwtAuthenticationHandler(
@@ -55,7 +55,7 @@ internal class JwtAuthenticationRepositoryImpl(
       prependBearer = true,
       enforced = enforced,
       rearmThreshold = java.time.Duration.ofMinutes(config.rearmThreshold.toLong()),
-      rearmDuration = java.time.Duration.ofMinutes(config.rearmDuration.toLong())
+      rearmDuration = java.time.Duration.ofMinutes(config.rearmDuration.toLong()),
     )
 
   override fun getAccessToken(exchange: HttpServerExchange): Jwt? =
@@ -65,14 +65,14 @@ internal class JwtAuthenticationRepositoryImpl(
     verifyAccessToken(jwt).apply {
       exchange.responseHeaders.put(
         Headers.AUTHORIZATION,
-        "${JwtAuthenticationHandler.BEARER_PREFIX}$jwt"
+        "${JwtAuthenticationHandler.BEARER_PREFIX}$jwt",
       )
     }
 
   override fun createAccessToken(
     id: String,
     subject: String,
-    expiresAt: java.util.Date
+    expiresAt: java.util.Date,
   ): JwtAuthentication {
     try {
       val algorithm = config.algorithm.algorithm(config.secret)
@@ -95,6 +95,6 @@ internal class JwtAuthenticationRepositoryImpl(
     id: String,
     subject: String,
     @Suppress("UNUSED_PARAMETER") issuer: String,
-    expiresAt: java.util.Date
+    expiresAt: java.util.Date,
   ): JwtAuthentication = createAccessToken(id, subject, expiresAt)
 }

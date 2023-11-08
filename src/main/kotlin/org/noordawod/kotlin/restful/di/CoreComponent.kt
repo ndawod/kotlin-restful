@@ -37,8 +37,8 @@ import org.noordawod.kotlin.core.di.BaseComponent
     HttpHtmlModule::class,
     SecurityModule::class,
     SendmailModule::class,
-    SerializableModule::class
-  ]
+    SerializableModule::class,
+  ],
 )
 abstract class CoreComponent : BaseComponent {
   /**

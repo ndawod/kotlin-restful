@@ -36,7 +36,7 @@ import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
 internal class HtmlCompressorRepositoryImpl(
   enabled: Boolean,
   compressCss: Boolean = true,
-  compressJs: Boolean = true
+  compressJs: Boolean = true,
 ) : HtmlCompressorRepository {
   private val delegate = HtmlCompressor().apply {
     isEnabled = enabled
@@ -80,7 +80,7 @@ internal class HtmlCompressorRepositoryImpl(
           html.substring(htmlTagStart)
         } else {
           html
-        }
+        },
       )
 
       // Prepend content appearing before the <head> tag, if any.

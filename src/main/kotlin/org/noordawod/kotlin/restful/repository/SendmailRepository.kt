@@ -61,7 +61,7 @@ interface SendmailRepository {
      */
     fun createMailer(
       config: SmtpConfiguration,
-      timeout: Long
+      timeout: Long,
     ): Mailer = MailerBuilder
       .withSMTPServer(config.host, config.port, config.auth?.user, config.auth?.pass)
       .withTransportStrategy(TransportStrategy.SMTP)
@@ -72,7 +72,7 @@ interface SendmailRepository {
           .requireTopLevelDomain()
           .disallowObsoleteWhitespace()
           .disallowReservedDomains()
-          .disallowExplicitSourceRouting()
+          .disallowExplicitSourceRouting(),
       )
       .withDebugLogging(true == config.logging)
       .withSessionTimeout(timeout.toInt())
@@ -92,7 +92,7 @@ data class SendmailPerson(
   val email: String,
   val firstName: String?,
   val lastName: String?,
-  val fullName: String?
+  val fullName: String?,
 )
 
 /**
@@ -120,5 +120,5 @@ open class SendmailMessage(
   val subject: String,
   val html: String,
   val textual: String,
-  val isHtml: Boolean = true
+  val isHtml: Boolean = true,
 )

@@ -37,7 +37,7 @@ import org.noordawod.kotlin.restful.undertow.handler.JwtAuthentication
  */
 open class AuthenticationException(
   message: String,
-  cause: Throwable? = null
+  cause: Throwable? = null,
 ) : RuntimeException(message, cause)
 
 /**
@@ -48,7 +48,7 @@ open class AuthenticationException(
  */
 open class AuthenticationInvalidException(
   message: String,
-  cause: Throwable? = null
+  cause: Throwable? = null,
 ) : AuthenticationException(message, cause)
 
 /**
@@ -59,7 +59,7 @@ open class AuthenticationInvalidException(
  */
 open class AuthenticationCreationException(
   message: String,
-  cause: Throwable? = null
+  cause: Throwable? = null,
 ) : AuthenticationException(message, cause)
 
 /**
@@ -115,7 +115,7 @@ interface JwtAuthenticationRepository {
   fun createAccessToken(
     id: String,
     subject: String,
-    expiresAt: java.util.Date
+    expiresAt: java.util.Date,
   ): JwtAuthentication
 
   /**

@@ -44,7 +44,7 @@ import org.noordawod.kotlin.restful.repository.impl.HtmlCompressorRepositoryImpl
 class HttpHtmlModule(
   private val environment: Environment,
   private val compressCss: Boolean = true,
-  private val compressJs: Boolean = true
+  private val compressJs: Boolean = true,
 ) {
   /**
    * Returns the singleton [HtmlCompressorRepository] instance.
@@ -57,7 +57,7 @@ class HttpHtmlModule(
     return HtmlCompressorRepositoryImpl(
       enabled = enabled,
       compressCss = compressCss,
-      compressJs = compressJs
+      compressJs = compressJs,
     )
   }
 

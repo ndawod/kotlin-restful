@@ -50,7 +50,7 @@ fun java.io.OutputStream.bufferedOutput(): BufferedSink = sink().buffer()
  */
 fun <T> java.io.OutputStream.jsonOutput(
   model: T,
-  adapterProvider: JsonAdapterProvider<T>
+  adapterProvider: JsonAdapterProvider<T>,
 ) {
   bufferedOutput().use {
     adapterProvider(model).toJson(it, model)
@@ -65,7 +65,7 @@ fun <T> java.io.OutputStream.jsonOutput(
  */
 fun <T> T.jsonOutput(
   stream: java.io.OutputStream,
-  adapterProvider: JsonAdapterProvider<T>
+  adapterProvider: JsonAdapterProvider<T>,
 ) {
   stream.bufferedOutput().use {
     adapterProvider(this).toJson(it, this)

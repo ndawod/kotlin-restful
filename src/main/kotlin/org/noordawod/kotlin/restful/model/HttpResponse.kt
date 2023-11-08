@@ -49,7 +49,7 @@ sealed class HttpResponse {
     if (null != contentTypeNormalized) {
       exchange.responseHeaders.put(
         Headers.CONTENT_TYPE,
-        contentTypeNormalized
+        contentTypeNormalized,
       )
     }
   }
@@ -60,7 +60,7 @@ sealed class HttpResponse {
    * @param statusCode the HTTP status code to send with the response
    */
   class NoContent(
-    val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT
+    val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT,
   ) : HttpResponse() {
     override val contentType: String = ""
 
@@ -112,7 +112,7 @@ sealed class HttpResponse {
    */
   class Json<T>(
     val body: T,
-    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String =
@@ -149,7 +149,7 @@ sealed class HttpResponse {
    */
   class JsonString(
     val body: String,
-    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String =
@@ -185,7 +185,7 @@ sealed class HttpResponse {
    */
   open class Text(
     val body: String,
-    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+    val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
   ) : HttpResponse() {
     override val contentType: String =
       if ("$charset".isBlank()) TEXT_PLAIN else "$TEXT_PLAIN; $CHARSET$charset".lowercase()
@@ -231,7 +231,7 @@ sealed class HttpResponse {
    */
   class Html(
     body: String,
-    charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8
+    charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
   ) : Text(body, charset) {
     override val contentType: String =
       if ("$charset".isBlank()) TEXT_HTML else "$TEXT_HTML; $CHARSET$charset".lowercase()
@@ -251,7 +251,7 @@ sealed class HttpResponse {
   open class BinaryBytes(
     val bytes: ByteArray,
     val bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    override val contentType: String = BINARY
+    override val contentType: String = BINARY,
   ) : HttpResponse() {
     protected open val klassName: String = "BinaryBytes"
 
@@ -278,7 +278,7 @@ sealed class HttpResponse {
           } else {
             inputStream
           },
-          bufferSize = bufferSize
+          bufferSize = bufferSize,
         )
       }
     }
@@ -296,7 +296,7 @@ sealed class HttpResponse {
   open class BinaryFile(
     val file: java.io.File,
     val bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    override val contentType: String = BINARY
+    override val contentType: String = BINARY,
   ) : HttpResponse() {
     protected open val klassName: String = "BinaryFile"
 
@@ -318,11 +318,11 @@ sealed class HttpResponse {
       setContentType(exchange)
       java.io.BufferedInputStream(
         java.io.FileInputStream(file),
-        bufferSize
+        bufferSize,
       ).use { inputStream ->
         exchange.sendBinaryResponse(
           inputStream = inputStream,
-          bufferSize = bufferSize
+          bufferSize = bufferSize,
         )
       }
     }
@@ -337,11 +337,11 @@ sealed class HttpResponse {
    */
   class JpegBytes(
     val image: ByteArray,
-    bufferSize: Int = DEFAULT_BUFFER_SIZE
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
   ) : BinaryBytes(
     bytes = image,
     bufferSize = bufferSize,
-    contentType = JPEG_IMAGE
+    contentType = JPEG_IMAGE,
   ) {
     override val klassName: String = "JpegBytes"
   }
@@ -355,11 +355,11 @@ sealed class HttpResponse {
    */
   class JpegFile(
     val image: java.io.File,
-    bufferSize: Int = DEFAULT_BUFFER_SIZE
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
   ) : BinaryFile(
     file = image,
     bufferSize = bufferSize,
-    contentType = JPEG_IMAGE
+    contentType = JPEG_IMAGE,
   ) {
     override val klassName: String = "JpegFile"
   }
@@ -373,11 +373,11 @@ sealed class HttpResponse {
    */
   class PngBytes(
     val image: ByteArray,
-    bufferSize: Int = DEFAULT_BUFFER_SIZE
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
   ) : BinaryBytes(
     bytes = image,
     bufferSize = bufferSize,
-    contentType = PNG_IMAGE
+    contentType = PNG_IMAGE,
   ) {
     override val klassName: String = "PngBytes"
   }
@@ -391,11 +391,11 @@ sealed class HttpResponse {
    */
   class PngFile(
     val image: java.io.File,
-    bufferSize: Int = DEFAULT_BUFFER_SIZE
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
   ) : BinaryFile(
     file = image,
     bufferSize = bufferSize,
-    contentType = PNG_IMAGE
+    contentType = PNG_IMAGE,
   ) {
     override val klassName: String = "PngFile"
   }
@@ -444,10 +444,10 @@ sealed class HttpResponse {
 
 private fun HttpServerExchange.sendBinaryResponse(
   inputStream: java.io.InputStream,
-  bufferSize: Int
+  bufferSize: Int,
 ): Long = java.io.BufferedOutputStream(
   outputStream,
-  bufferSize
+  bufferSize,
 ).use { outputStream ->
   inputStream.bufferOutput(outputStream, bufferSize)
 }

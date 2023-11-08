@@ -45,7 +45,7 @@ import org.xnio.channels.AcceptingChannel
  * @param config configuration required to start this Undertow server
  */
 open class UndertowServer(
-  @Suppress("MemberVisibilityCanBePrivate") val config: Configuration
+  @Suppress("MemberVisibilityCanBePrivate") val config: Configuration,
 ) {
   private val mainThread = Thread.currentThread()
   private var hook: Thread? = null
@@ -64,34 +64,34 @@ open class UndertowServer(
   @Suppress("DEPRECATION")
   protected fun setHandler(
     handler: HttpHandler,
-    options: OptionMap? = null
+    options: OptionMap? = null,
   ) {
     val buffers = org.xnio.ByteBufferSlicePool(
       BufferAllocator.DIRECT_BYTE_BUFFER_ALLOCATOR,
       config.bufferSize,
-      config.bufferSize * config.buffersPerRegion
+      config.bufferSize * config.buffersPerRegion,
     )
 
     val finalOptions = OptionMap.builder()
       .set(
         UndertowOptions.BUFFER_PIPELINED_DATA,
-        true
+        true,
       )
       .set(
         UndertowOptions.ALWAYS_SET_KEEP_ALIVE,
-        true
+        true,
       )
       .set(
         UndertowOptions.REQUIRE_HOST_HTTP11,
-        true
+        true,
       )
       .set(
         UndertowOptions.ENABLE_SPDY,
-        false
+        false,
       )
       .set(
         UndertowOptions.ENABLE_HTTP2,
-        false
+        false,
       )
 
     if (null != options) {
@@ -122,11 +122,11 @@ open class UndertowServer(
    */
   open fun start(
     dieDuration: Long = 5000L,
-    options: OptionMap? = null
+    options: OptionMap? = null,
   ) {
     startImpl(
       dieDuration = dieDuration,
-      options = options
+      options = options,
     )
   }
 
@@ -143,7 +143,7 @@ open class UndertowServer(
   @Suppress("MemberVisibilityCanBePrivate", "LongMethod")
   protected fun startImpl(
     dieDuration: Long,
-    options: OptionMap?
+    options: OptionMap?,
   ) {
     if (null == hook) {
       val builder = OptionMap.builder()
@@ -151,35 +151,35 @@ open class UndertowServer(
       builder
         .set(
           Options.WORKER_IO_THREADS,
-          config.ioThreads
+          config.ioThreads,
         )
         .set(
           Options.WORKER_TASK_CORE_THREADS,
-          config.workerThreads
+          config.workerThreads,
         )
         .set(
           Options.TCP_NODELAY,
-          true
+          true,
         )
         .set(
           Options.BACKLOG,
-          config.ioThreads * config.workerThreads
+          config.ioThreads * config.workerThreads,
         )
         .set(
           Options.RECEIVE_BUFFER,
-          config.bufferSize
+          config.bufferSize,
         )
 
       val workerThreadsPerCore = config.workerThreadsPerCore
       if (null != workerThreadsPerCore && 0 < workerThreadsPerCore) {
         builder.set(
           Options.WORKER_TASK_MAX_THREADS,
-          config.workerThreads * workerThreadsPerCore
+          config.workerThreads * workerThreadsPerCore,
         )
       } else {
         builder.set(
           Options.WORKER_TASK_MAX_THREADS,
-          config.workerThreads
+          config.workerThreads,
         )
       }
 
@@ -187,7 +187,7 @@ open class UndertowServer(
       if (null != workerTasksThreshold && 0 < workerTasksThreshold) {
         builder.set(
           Options.WORKER_TASK_KEEPALIVE,
-          workerTasksThreshold
+          workerTasksThreshold,
         )
       }
 
@@ -195,7 +195,7 @@ open class UndertowServer(
       if (null != workerTasks && 0 < workerTasks) {
         builder.set(
           Options.WORKER_TASK_LIMIT,
-          workerTasks
+          workerTasks,
         )
       }
 
@@ -208,23 +208,23 @@ open class UndertowServer(
       server = worker.createStreamConnectionServer(
         java.net.InetSocketAddress(
           java.net.Inet4Address.getByName(config.ipAddr),
-          config.port
+          config.port,
         ),
         ChannelListeners.openListenerAdapter(channel),
         OptionMap.builder()
           .set(
             Options.WORKER_IO_THREADS,
-            config.ioThreads
+            config.ioThreads,
           )
           .set(
             Options.TCP_NODELAY,
-            true
+            true,
           )
           .set(
             Options.REUSE_ADDRESSES,
-            true
+            true,
           )
-          .map
+          .map,
       )
 
       object : Thread() {

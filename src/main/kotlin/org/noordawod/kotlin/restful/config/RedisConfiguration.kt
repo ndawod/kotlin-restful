@@ -36,5 +36,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RedisConfiguration(
   val host: String,
-  val port: Int
+  val port: Int,
 )

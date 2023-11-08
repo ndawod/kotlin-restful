@@ -39,7 +39,7 @@ import org.noordawod.kotlin.core.util.CloseableByteArrayOutputStream
 abstract class BaseByteArrayFreeMarkerRunnable<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String,
-  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE
+  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE,
 ) : BaseFreeMarkerRunnable<T>(config, basePath) {
   /**
    * A memory-based, [ByteArray]-backed writer to use for preparing the content.
@@ -49,6 +49,6 @@ abstract class BaseByteArrayFreeMarkerRunnable<T : Any>(
   override fun prepareWriter(): java.io.BufferedWriter =
     java.io.BufferedWriter(
       java.io.OutputStreamWriter(bytes, FreeMarkerDataModel.CHARSET),
-      bufferSize
+      bufferSize,
     )
 }

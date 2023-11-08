@@ -46,7 +46,7 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
 abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
-  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE
+  protected val bufferSize: Int = DEFAULT_BUFFER_SIZE,
 ) : BaseFreeMarkerRunnable<T>(config, basePath), HttpHandler {
   final override fun run() {
     error("Use handleRequest(exchange) instead.")
@@ -85,7 +85,7 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   protected open fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
     java.io.BufferedWriter(
       java.io.OutputStreamWriter(exchange.outputStream, FreeMarkerDataModel.CHARSET),
-      bufferSize
+      bufferSize,
     )
 
   /**
@@ -103,7 +103,7 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
    */
   protected open fun modifyTemplate(
     exchange: HttpServerExchange,
-    template: Template
+    template: Template,
   ) {
     // NO-OP
   }
@@ -116,7 +116,7 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
    */
   protected open fun log(
     exchange: HttpServerExchange,
-    error: Throwable
+    error: Throwable,
   ) {
     println(DASHES)
     @Suppress("PrintStackTrace")

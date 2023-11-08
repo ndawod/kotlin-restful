@@ -45,5 +45,5 @@ data class SecurityConfiguration(
   val cipher: String,
   val key: String,
   val iv: String,
-  val jwt: JwtConfiguration
+  val jwt: JwtConfiguration,
 )

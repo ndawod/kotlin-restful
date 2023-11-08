@@ -46,7 +46,7 @@ fun Algorithm.createJwt(
   id: String,
   subject: String,
   issuer: String,
-  expiresAt: java.util.Date
+  expiresAt: java.util.Date,
 ): String {
   try {
     return JWT

@@ -51,7 +51,7 @@ abstract class BaseCorsHttpHandler protected constructor(
   val next: HttpHandler,
   val hosts: HostsCollection,
   val headers: Collection<String>,
-  val maxAge: Long
+  val maxAge: Long,
 ) : HttpHandler {
   /**
    * The actual method that sends CORS headers to the client.
@@ -77,7 +77,7 @@ abstract class BaseCorsHttpHandler protected constructor(
     // sent and not only in preflight requests.
     exchange.responseHeaders.put(
       ACCESS_CONTROL_EXPOSE_HEADERS,
-      headers.joinToString(separator = ", ")
+      headers.joinToString(separator = ", "),
     )
 
     // If this is a preflight method, just send the necessary headers and end transmission.
@@ -91,7 +91,7 @@ abstract class BaseCorsHttpHandler protected constructor(
           Headers.ORIGIN_STRING,
           Headers.CONTENT_TYPE_STRING,
           Headers.COOKIE_STRING,
-          Headers.CONNECTION_STRING
+          Headers.CONNECTION_STRING,
         ).joinToString(separator = ", ")
 
       exchange.responseHeaders.put(ACCESS_CONTROL_ALLOW_HEADERS, allowedHeaders)

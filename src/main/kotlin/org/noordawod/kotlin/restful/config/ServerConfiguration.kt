@@ -46,7 +46,7 @@ open class ServerConfiguration(
   val host: String,
   val port: Int,
   val threads: ServerThreadsConfiguration,
-  val buffer: ServerBufferConfiguration
+  val buffer: ServerBufferConfiguration,
 ) {
   /**
    * Returns the combination of this server's hostname and port, separated by a colon.
@@ -87,7 +87,7 @@ open class ServerThreadsConfiguration(
   val worker: Int,
   val perCore: Int = 1,
   val concurrency: Int = 0,
-  val aliveThreshold: Int = 0
+  val aliveThreshold: Int = 0,
 ) {
   override fun equals(other: Any?): Boolean = other is ServerThreadsConfiguration &&
     other.io == io &&
@@ -116,7 +116,7 @@ open class ServerThreadsConfiguration(
 @Serializable
 open class ServerBufferConfiguration(
   val size: Int,
-  val perRegion: Int
+  val perRegion: Int,
 ) {
   override fun equals(other: Any?): Boolean = other is ServerBufferConfiguration &&
     other.size == size &&

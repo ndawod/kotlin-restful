@@ -46,7 +46,7 @@ abstract class BaseHtmlFreeMarkerRunnable<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String,
   bufferSize: Int = DEFAULT_BUFFER_SIZE,
-  protected val compressor: HtmlCompressorRepository? = null
+  protected val compressor: HtmlCompressorRepository? = null,
 ) : BaseByteArrayFreeMarkerRunnable<T>(config, basePath, bufferSize) {
   /**
    * Perform the sendmail operation.

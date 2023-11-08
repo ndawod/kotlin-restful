@@ -46,12 +46,12 @@ fun java.io.File.freeMarkerConfiguration(
   version: Version = FreeMarkerConfiguration.DEFAULT_VERSION,
   charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
   cache: CacheStorage? = null,
-  env: Environment? = null
+  env: Environment? = null,
 ): FreeMarkerConfiguration {
   val freeMarker = FreeMarkerConfiguration(
     version = version,
     charset = charset,
-    cache = cache
+    cache = cache,
   )
 
   freeMarker.setDirectoryForTemplateLoading(this)
@@ -59,7 +59,9 @@ fun java.io.File.freeMarkerConfiguration(
   if (null != env) {
     freeMarker.templateExceptionHandler = when (env) {
       Environment.LOCAL,
-      Environment.DEVEL -> TemplateExceptionHandler.HTML_DEBUG_HANDLER
+      Environment.DEVEL,
+      -> TemplateExceptionHandler.HTML_DEBUG_HANDLER
+
       Environment.BETA -> TemplateExceptionHandler.DEBUG_HANDLER
       Environment.PRODUCTION -> TemplateExceptionHandler.RETHROW_HANDLER
     }

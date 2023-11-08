@@ -42,7 +42,7 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
 abstract class BaseByteArrayFreeMarkerHttpHandler<T : Any>(
   config: FreeMarkerConfiguration,
   basePath: String,
-  bufferSize: Int = DEFAULT_BUFFER_SIZE
+  bufferSize: Int = DEFAULT_BUFFER_SIZE,
 ) : BaseFreeMarkerHttpHandler<T>(config, basePath, bufferSize) {
   /**
    * A memory-based, [ByteArray]-backed writer to use for preparing the content.
@@ -52,6 +52,6 @@ abstract class BaseByteArrayFreeMarkerHttpHandler<T : Any>(
   override fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
     java.io.BufferedWriter(
       java.io.OutputStreamWriter(bytes, FreeMarkerDataModel.CHARSET),
-      bufferSize
+      bufferSize,
     )
 }

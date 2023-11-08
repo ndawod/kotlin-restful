@@ -38,7 +38,7 @@ class CorsHttpHandler(
   next: HttpHandler,
   hosts: HostsCollection = listOf(),
   headers: Collection<String> = listOf(Headers.AUTHORIZATION_STRING),
-  maxAge: Long = MAX_AGE
+  maxAge: Long = MAX_AGE,
 ) : BaseCorsHttpHandler(next, hosts, headers, maxAge) {
   override fun handleRequest(exchange: HttpServerExchange) {
     // Returns the value of "Origin:" header, if provided.

@@ -47,17 +47,27 @@ enum class EncryptionAlgorithm(val method: String, val bits: Int) {
   /**
    * A moderate-length algorithm suitable for development.
    */
-  HS256("HMAC256", 512),
+  HS256(
+    method = "HMAC256",
+    bits = 512,
+  ),
 
   /**
    * A medium-length algorithm suitable for beta.
    */
-  HS384("HMAC384", 1024),
+  HS384(
+    method = "HMAC384",
+    bits = 1024,
+  ),
 
   /**
    * An adequate-length algorithm suitable for production.
    */
-  HS512("HMAC512", 1024);
+  HS512(
+    method = "HMAC512",
+    bits = 1024,
+  ),
+  ;
 
   /**
    * Returns an [Algorithm] instance with the provided [secret].
@@ -74,7 +84,7 @@ enum class EncryptionAlgorithm(val method: String, val bits: Int) {
   private fun <T> generateImpl(
     algorithm: EncryptionAlgorithm,
     secret: T,
-    klass: Class<T>
+    klass: Class<T>,
   ): Algorithm = Algorithm::class.java.getMethod(algorithm.method, klass).let { method ->
     method.invoke(null, secret) as Algorithm
   }

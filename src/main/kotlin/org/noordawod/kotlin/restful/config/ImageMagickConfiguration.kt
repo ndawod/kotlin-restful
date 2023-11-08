@@ -34,5 +34,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ImageMagickConfiguration(
-  val convertPaths: Collection<String>
+  val convertPaths: Collection<String>,
 )

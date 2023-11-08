@@ -49,7 +49,7 @@ typealias JwtAuthenticationCreator = (
   id: String,
   subject: String,
   issuer: String,
-  expiresAt: java.util.Date
+  expiresAt: java.util.Date,
 ) -> String
 
 /**
@@ -86,7 +86,7 @@ class JwtAuthenticationHandler(
   val prependBearer: Boolean = false,
   val enforced: Boolean = true,
   val rearmThreshold: java.time.Duration = java.time.Duration.ofDays(1),
-  val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14)
+  val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14),
 ) : HttpHandler {
   override fun handleRequest(exchange: HttpServerExchange) {
     // Extract the JWT token from the header.
@@ -143,8 +143,8 @@ class JwtAuthenticationHandler(
           jwt.id,
           jwt.subject,
           jwt.issuer,
-          java.util.Date(nowMillis + rearmDuration.toMillis())
-        )
+          java.util.Date(nowMillis + rearmDuration.toMillis()),
+        ),
       )
     } else if (sendAlways) {
       // Resending the same authorization to client.
@@ -155,7 +155,7 @@ class JwtAuthenticationHandler(
   private fun sendHeader(
     exchange: HttpServerExchange,
     prefix: String,
-    token: JwtAuthentication
+    token: JwtAuthentication,
   ) {
     exchange.responseHeaders.put(Headers.AUTHORIZATION, "$prefix$token")
   }

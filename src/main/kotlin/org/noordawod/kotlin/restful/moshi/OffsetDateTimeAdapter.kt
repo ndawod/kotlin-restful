@@ -45,7 +45,7 @@ class OffsetDateTimeAdapter(
   val usingSeconds: Boolean = true,
 
   @Suppress("MemberVisibilityCanBePrivate")
-  val zeroAsNull: Boolean = false
+  val zeroAsNull: Boolean = false,
 ) : JsonAdapter<java.time.OffsetDateTime>() {
   override fun fromJson(reader: JsonReader): java.time.OffsetDateTime? =
     if (reader.hasNext()) {
@@ -55,7 +55,7 @@ class OffsetDateTimeAdapter(
         java.time.Instant.ofEpochMilli(milliseconds)
           .atZone(java.time.ZoneOffset.UTC)
           .toLocalDateTime(),
-        java.time.ZoneOffset.UTC
+        java.time.ZoneOffset.UTC,
       )
     } else {
       null
@@ -77,8 +77,8 @@ class OffsetDateTimeAdapter(
  */
 fun Moshi.Builder.addOffsetDateTimeAdapter(
   usingSeconds: Boolean,
-  zeroAsNull: Boolean
+  zeroAsNull: Boolean,
 ): Moshi.Builder = add(
   java.time.OffsetDateTime::class.java,
-  OffsetDateTimeAdapter(usingSeconds, zeroAsNull)
+  OffsetDateTimeAdapter(usingSeconds, zeroAsNull),
 )

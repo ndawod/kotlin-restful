@@ -46,7 +46,7 @@ object ImageUtils {
     val dimension = getDimension(sourceFile)
     return ImageDetails(
       sourceFile,
-      ImageDimension(dimension.first, dimension.second)
+      ImageDimension(dimension.first, dimension.second),
     )
   }
 
@@ -65,7 +65,7 @@ object ImageUtils {
     sourceFile: java.io.File,
     targetFile: java.io.File,
     quality: Float,
-    maxSize: Int?
+    maxSize: Int?,
   ): ImageDetails {
     val convertPath = convertPaths.firstOrNull {
       val file = java.io.File(it)
@@ -85,8 +85,8 @@ object ImageUtils {
         "JPEG",
         "-quality",
         @Suppress("MagicNumber")
-        "${quality * 100.0f}"
-      )
+        "${quality * 100.0f}",
+      ),
     )
     if (null != maxSize && 0 < maxSize) {
       args.add("-resize")
@@ -106,7 +106,7 @@ object ImageUtils {
    */
   fun getDimension(filePath: java.io.File): Pair<Int, Int> {
     val input: java.awt.image.BufferedImage = javax.imageio.ImageIO.read(
-      java.io.BufferedInputStream(java.io.FileInputStream(filePath.canonicalFile))
+      java.io.BufferedInputStream(java.io.FileInputStream(filePath.canonicalFile)),
     )
     return input.width to input.height
   }
@@ -123,7 +123,7 @@ object ImageUtils {
       "-ping",
       "-format",
       "%w %h",
-      filePath.absolutePath
+      filePath.absolutePath,
     )
 
     // Execute the external program.
@@ -151,7 +151,7 @@ object ImageUtils {
     sourceFile: java.io.File,
     targetFile: java.io.File,
     quality: Float,
-    maxSize: Int
+    maxSize: Int,
   ): ImageDetails {
     if (!sourceFile.isFile) {
       error("Source file is invalid: $sourceFile")
@@ -176,7 +176,7 @@ object ImageUtils {
 
     // Prepare input and output images.
     val input: java.awt.image.BufferedImage = javax.imageio.ImageIO.read(
-      java.io.BufferedInputStream(java.io.FileInputStream(sourceFile))
+      java.io.BufferedInputStream(java.io.FileInputStream(sourceFile)),
     )
 
     // Meta data about input image.
@@ -205,29 +205,29 @@ object ImageUtils {
       input.getScaledInstance(newWidth, newHeight, java.awt.Image.SCALE_SMOOTH),
       0,
       0,
-      null
+      null,
     )
 
-/*
-    // Resize the image.
-    val resizedImage = java.awt.image.BufferedImage(
-      newWidth,
-      newHeight,
-      java.awt.image.BufferedImage.TYPE_INT_RGB
-    ).apply {
-      createGraphics().apply {
-        drawImage(input, 0, 0, newWidth, newHeight, null)
-        dispose()
-      }
-    }
-*/
+    /*
+        // Resize the image.
+        val resizedImage = java.awt.image.BufferedImage(
+          newWidth,
+          newHeight,
+          java.awt.image.BufferedImage.TYPE_INT_RGB
+        ).apply {
+          createGraphics().apply {
+            drawImage(input, 0, 0, newWidth, newHeight, null)
+            dispose()
+          }
+        }
+    */
 
     // Write resized image.
     javax.imageio.ImageIO.write(resizedImage, FORMAT_NAME, targetFile)
 
     return ImageDetails(
       targetFile,
-      ImageDimension(newWidth, newHeight)
+      ImageDimension(newWidth, newHeight),
     )
   }
 
@@ -237,7 +237,7 @@ object ImageUtils {
    * @param file file to calculate the blur hash for
    */
   fun getBlurHash(file: java.io.File): String = BlurHash.encode(
-    javax.imageio.ImageIO.read(java.io.BufferedInputStream(java.io.FileInputStream(file)))
+    javax.imageio.ImageIO.read(java.io.BufferedInputStream(java.io.FileInputStream(file))),
   )
 
   /**
@@ -246,7 +246,7 @@ object ImageUtils {
    * @param path path to file to calculate the blur hash for
    */
   fun getBlurHash(path: String): String = BlurHash.encode(
-    javax.imageio.ImageIO.read(java.io.BufferedInputStream(java.io.FileInputStream(path)))
+    javax.imageio.ImageIO.read(java.io.BufferedInputStream(java.io.FileInputStream(path))),
   )
 
   private fun getImageWriter(): javax.imageio.ImageWriter {
