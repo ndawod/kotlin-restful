@@ -33,7 +33,11 @@ import org.noordawod.kotlin.restful.util.QuerySeparator
  * A handy method to generate a [String] in the format key=value or key[]=value1,key[]=value2,...
  * based on the specified [values].
  */
-fun StringBuilder.appendQueryParameter(sep: QuerySeparator, key: String, values: Iterable<*>) {
+fun StringBuilder.appendQueryParameter(
+  sep: QuerySeparator,
+  key: String,
+  values: Iterable<*>,
+) {
   append(sep.value)
   append(StringUtil.URLEnc(key, FreeMarkerDataModel.CHARSET_NAME))
 

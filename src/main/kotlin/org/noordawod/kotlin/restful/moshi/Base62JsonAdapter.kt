@@ -80,7 +80,10 @@ class Base62JsonAdapter(
     }
   }
 
-  override fun toJson(writer: JsonWriter, value: ByteArray?) {
+  override fun toJson(
+    writer: JsonWriter,
+    value: ByteArray?,
+  ) {
     val json: String? = when {
       null == value -> null
       rethrowOnError -> ByteUtils.toBase62(value)
@@ -98,5 +101,8 @@ class Base62JsonAdapter(
 /**
  * A helper extension function to allow regular concatenation of [Moshi.Builder].
  */
-fun Moshi.Builder.addBase62JsonAdapter(rethrowOnError: Boolean): Moshi.Builder =
-  add(ByteArray::class.java, Base62Json::class.java, Base62JsonAdapter(rethrowOnError))
+fun Moshi.Builder.addBase62JsonAdapter(rethrowOnError: Boolean): Moshi.Builder = add(
+  ByteArray::class.java,
+  Base62Json::class.java,
+  Base62JsonAdapter(rethrowOnError),
+)

@@ -47,27 +47,35 @@ internal class JwtAuthenticationRepositoryImpl(
   override val config: JwtConfiguration,
   val issuer: String,
 ) : JwtAuthenticationRepository {
-  override fun interceptor(next: HttpHandler, enforced: Boolean): HttpHandler =
-    JwtAuthenticationHandler(
-      next = next,
-      creator = ::createAccessToken,
-      verifier = ::verifyAccessToken,
-      prependBearer = true,
-      enforced = enforced,
-      rearmThreshold = java.time.Duration.ofMinutes(config.rearmThreshold.toLong()),
-      rearmDuration = java.time.Duration.ofMinutes(config.rearmDuration.toLong()),
+  override fun interceptor(
+    next: HttpHandler,
+    enforced: Boolean,
+  ): HttpHandler = JwtAuthenticationHandler(
+    next = next,
+    creator = ::createAccessToken,
+    verifier = ::verifyAccessToken,
+    prependBearer = true,
+    enforced = enforced,
+    rearmThreshold = java.time.Duration.ofMinutes(config.rearmThreshold.toLong()),
+    rearmDuration = java.time.Duration.ofMinutes(config.rearmDuration.toLong()),
+  )
+
+  override fun getAccessToken(exchange: HttpServerExchange): Jwt? = exchange
+    .getAttachment(JwtAuthenticationHandler.SERVER_JWT_ID)
+
+  override fun setAccessToken(
+    exchange: HttpServerExchange,
+    jwt: JwtAuthentication,
+  ): Jwt {
+    val token = verifyAccessToken(jwt)
+
+    exchange.responseHeaders.put(
+      Headers.AUTHORIZATION,
+      "${JwtAuthenticationHandler.BEARER_PREFIX}$jwt",
     )
 
-  override fun getAccessToken(exchange: HttpServerExchange): Jwt? =
-    exchange.getAttachment(JwtAuthenticationHandler.SERVER_JWT_ID)
-
-  override fun setAccessToken(exchange: HttpServerExchange, jwt: JwtAuthentication): Jwt =
-    verifyAccessToken(jwt).apply {
-      exchange.responseHeaders.put(
-        Headers.AUTHORIZATION,
-        "${JwtAuthenticationHandler.BEARER_PREFIX}$jwt",
-      )
-    }
+    return token
+  }
 
   override fun createAccessToken(
     id: String,
@@ -77,7 +85,10 @@ internal class JwtAuthenticationRepositoryImpl(
     try {
       val algorithm = config.algorithm.algorithm(config.secret)
       return algorithm.createJwt(id, subject, issuer, expiresAt)
-    } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+    } catch (
+      @Suppress("TooGenericExceptionCaught")
+      error: Throwable,
+    ) {
       throw AuthenticationInvalidException("Access token creation error.", error)
     }
   }
@@ -86,7 +97,10 @@ internal class JwtAuthenticationRepositoryImpl(
     try {
       val algorithm = config.algorithm.algorithm(config.secret)
       return algorithm.verifyJwt(issuer).verify(jwt)
-    } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+    } catch (
+      @Suppress("TooGenericExceptionCaught")
+      error: Throwable,
+    ) {
       throw AuthenticationInvalidException("Access token verification error.", error)
     }
   }

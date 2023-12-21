@@ -45,14 +45,23 @@ abstract class WorkerHttpHandler(
       var shouldEndExchange = false
       try {
         shouldEndExchange = handleWork(exchange)
-      } catch (@Suppress("TooGenericExceptionCaught") e: Throwable) {
+      } catch (
+        @Suppress("TooGenericExceptionCaught")
+        error: Throwable,
+      ) {
         val classSimpleName = javaClass.simpleName
-        log("Unhandled error while handling work in '$classSimpleName'", e)
+        log("Unhandled error while handling work in '$classSimpleName'", error)
         shouldEndExchange = endExchangeOnError
         try {
-          handleError(exchange, e)
-        } catch (@Suppress("TooGenericExceptionCaught") ee: Throwable) {
-          log("Unhandled error while handling error for '$classSimpleName'", ee)
+          handleError(
+            exchange = exchange,
+            error = error,
+          )
+        } catch (
+          @Suppress("TooGenericExceptionCaught")
+          throwable: Throwable,
+        ) {
+          log("Unhandled error while handling error for '$classSimpleName'", throwable)
         }
       } finally {
         if (shouldEndExchange) {
@@ -66,12 +75,15 @@ abstract class WorkerHttpHandler(
    * Logs a message, defaults to writing it to the standard output.
    *
    * @param message message to log
-   * @param e optional error to log too
+   * @param error optional error to log too
    */
-  protected open fun log(message: String, e: Throwable? = null) {
+  protected open fun log(
+    message: String,
+    error: Throwable? = null,
+  ) {
     System.err.println(message)
     @Suppress("PrintStackTrace")
-    e?.printStackTrace()
+    error?.printStackTrace()
   }
 
   /**
@@ -82,9 +94,12 @@ abstract class WorkerHttpHandler(
   abstract fun handleWork(exchange: HttpServerExchange): Boolean
 
   /**
-   * Handles an exception [e] that was thrown while work was being done using [handleWork].
+   * Handles an exception [error] that was thrown while work was being done using [handleWork].
    *
    * @param exchange the HTTP request/response exchange
    */
-  abstract fun handleError(exchange: HttpServerExchange, e: Throwable)
+  abstract fun handleError(
+    exchange: HttpServerExchange,
+    error: Throwable,
+  )
 }

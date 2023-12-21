@@ -47,7 +47,8 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   config: FreeMarkerConfiguration,
   basePath: String,
   protected val bufferSize: Int = DEFAULT_BUFFER_SIZE,
-) : BaseFreeMarkerRunnable<T>(config, basePath), HttpHandler {
+) : BaseFreeMarkerRunnable<T>(config, basePath),
+  HttpHandler {
   final override fun run() {
     error("Use handleRequest(exchange) instead.")
   }
@@ -84,7 +85,10 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
    */
   protected open fun prepareWriter(exchange: HttpServerExchange): java.io.BufferedWriter =
     java.io.BufferedWriter(
-      java.io.OutputStreamWriter(exchange.outputStream, FreeMarkerDataModel.CHARSET),
+      java.io.OutputStreamWriter(
+        exchange.outputStream,
+        FreeMarkerDataModel.CHARSET,
+      ),
       bufferSize,
     )
 
@@ -109,7 +113,7 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
   }
 
   /**
-   * Logs an error that occurred during processing of the FreeMarker templace.
+   * Logs an error that occurred during processing of the FreeMarker template.
    *
    * @param exchange the HTTP request/response exchange
    * @param error the error to log
@@ -139,14 +143,23 @@ abstract class BaseFreeMarkerHttpHandler<T : Any> protected constructor(
       val template = config.getTemplate("$basePath/$filePath")
 
       // Allow extended classes to modify the FreeMarker template, if needed.
-      modifyTemplate(exchange, template)
+      modifyTemplate(
+        exchange = exchange,
+        template = template,
+      )
 
       // Prepare the writer buffer to accommodate the contents.
       writer = prepareWriter(exchange)
 
       template.process(model, writer)
-    } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
-      log(exchange, error)
+    } catch (
+      @Suppress("TooGenericExceptionCaught")
+      error: Throwable,
+    ) {
+      log(
+        exchange = exchange,
+        error = error,
+      )
       throw error
     } finally {
       writer?.flush()

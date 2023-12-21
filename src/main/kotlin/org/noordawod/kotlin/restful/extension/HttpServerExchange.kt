@@ -65,7 +65,10 @@ typealias ThrowableProvider = (cause: Throwable?) -> Throwable
  * @param moshi the [Moshi] instance used to encode the data
  * @param model the data model to encode as JSON
  */
-fun HttpServerExchange.encode(moshi: Moshi, model: Any) {
+fun HttpServerExchange.encode(
+  moshi: Moshi,
+  model: Any,
+) {
   jsonOutput(model) {
     moshi.adapter(it.javaClass.simplifyType())
   }
@@ -87,9 +90,13 @@ fun HttpServerExchange.encodeOrThrow(
   if (null == model) {
     throw provider(null)
   }
+
   try {
     encode(moshi, model)
-  } catch (@Suppress("TooGenericExceptionCaught") cause: Throwable) {
+  } catch (
+    @Suppress("TooGenericExceptionCaught")
+    cause: Throwable,
+  ) {
     throw provider(cause)
   }
 }
@@ -118,7 +125,10 @@ fun <T> HttpServerExchange.decodeOrThrow(
   moshi: Moshi,
   klass: Class<T>,
   provider: ThrowableProvider,
-): T = decode(moshi, klass) ?: throw provider(null)
+): T = decode(
+  moshi = moshi,
+  klass = klass,
+) ?: throw provider(null)
 
 /**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
@@ -149,7 +159,10 @@ fun <T> HttpServerExchange.decodeListOrThrow(
   moshi: Moshi,
   klass: Class<T>,
   provider: ThrowableProvider,
-): List<T> = decodeList(moshi, klass) ?: throw provider(null)
+): List<T> = decodeList(
+  moshi = moshi,
+  klass = klass,
+) ?: throw provider(null)
 
 /**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
@@ -161,7 +174,10 @@ fun <T> HttpServerExchange.decodeListOrThrow(
 fun <T> HttpServerExchange.decodeSet(
   moshi: Moshi,
   klass: Class<T>,
-): Set<T>? = decodeList(moshi, klass)?.toSet()
+): Set<T>? = decodeList(
+  moshi = moshi,
+  klass = klass,
+)?.toSet()
 
 /**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
@@ -175,7 +191,10 @@ fun <T> HttpServerExchange.decodeSetOrThrow(
   moshi: Moshi,
   klass: Class<T>,
   provider: ThrowableProvider,
-): Set<T> = decodeSet(moshi, klass) ?: throw provider(null)
+): Set<T> = decodeSet(
+  moshi = moshi,
+  klass = klass,
+) ?: throw provider(null)
 
 /**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
@@ -210,7 +229,10 @@ fun <T> HttpServerExchange.decodeMapOrThrow(
   moshi: Moshi,
   klass: Class<T>,
   provider: ThrowableProvider,
-): Map<String, T> = decodeMap(moshi, klass) ?: throw provider(null)
+): Map<String, T> = decodeMap(
+  moshi = moshi,
+  klass = klass,
+) ?: throw provider(null)
 
 /**
  * Notifies the client that there will be no content in the response, finally this will also
@@ -293,7 +315,11 @@ fun HttpServerExchange.listQueryParameter(
 fun <T> HttpServerExchange.listQueryParameter(
   paramName: String,
   transform: (String) -> T?,
-): List<T>? = listQueryParameter(paramName, DEFAULT_QUERY_VALUE_SEPARATOR, transform)
+): List<T>? = listQueryParameter(
+  paramName = paramName,
+  separator = DEFAULT_QUERY_VALUE_SEPARATOR,
+  transform = transform,
+)
 
 /**
  * Returns a list of unique values, transformed via the provided [transform] block, of a
@@ -349,7 +375,10 @@ fun HttpServerExchange.setQueryParameter(paramName: String): Set<String>? =
 fun HttpServerExchange.setQueryParameter(
   paramName: String,
   separator: Char,
-): Set<String>? = listQueryParameter(paramName, separator)?.toSet()
+): Set<String>? = listQueryParameter(
+  paramName = paramName,
+  separator = separator,
+)?.toSet()
 
 /**
  * Returns a set of unique values, transformed via the provided [transform] block, of a
@@ -362,7 +391,11 @@ fun HttpServerExchange.setQueryParameter(
 fun <T> HttpServerExchange.setQueryParameter(
   paramName: String,
   transform: (String) -> T?,
-): Set<T>? = setQueryParameter(paramName, DEFAULT_QUERY_VALUE_SEPARATOR, transform)
+): Set<T>? = setQueryParameter(
+  paramName = paramName,
+  separator = DEFAULT_QUERY_VALUE_SEPARATOR,
+  transform = transform,
+)
 
 /**
  * Returns a set of unique values, transformed via the provided [transform] block, of a
@@ -377,7 +410,11 @@ fun <T> HttpServerExchange.setQueryParameter(
   paramName: String,
   separator: Char,
   transform: (String) -> T?,
-): Set<T>? = listQueryParameter(paramName, separator, transform)?.toSet()
+): Set<T>? = listQueryParameter(
+  paramName = paramName,
+  separator = separator,
+  transform = transform,
+)?.toSet()
 
 /**
  * Returns the [Boolean] value of a parameter embedded in this [HttpServerExchange]
@@ -401,8 +438,8 @@ fun HttpServerExchange.booleanQueryParameter(paramName: String): Boolean? {
  *
  * @param paramName parameter name to retrieve
  */
-fun HttpServerExchange.intQueryParameter(paramName: String): Int? =
-  queryParameter(paramName)?.toIntOrNull()
+fun HttpServerExchange.intQueryParameter(paramName: String): Int? = queryParameter(paramName)
+  ?.toIntOrNull()
 
 /**
  * Returns the [Int] value of a parameter embedded in this [HttpServerExchange]
@@ -410,8 +447,8 @@ fun HttpServerExchange.intQueryParameter(paramName: String): Int? =
  *
  * @param paramName parameter name to retrieve
  */
-fun HttpServerExchange.shortQueryParameter(paramName: String): Short? =
-  queryParameter(paramName)?.toShortOrNull()
+fun HttpServerExchange.shortQueryParameter(paramName: String): Short? = queryParameter(paramName)
+  ?.toShortOrNull()
 
 /**
  * Returns the [Long] value of a parameter embedded in this [HttpServerExchange]
@@ -419,8 +456,8 @@ fun HttpServerExchange.shortQueryParameter(paramName: String): Short? =
  *
  * @param paramName parameter name to retrieve
  */
-fun HttpServerExchange.longQueryParameter(paramName: String): Long? =
-  queryParameter(paramName)?.toLongOrNull()
+fun HttpServerExchange.longQueryParameter(paramName: String): Long? = queryParameter(paramName)
+  ?.toLongOrNull()
 
 /**
  * Returns the [Float] value of a parameter embedded in this [HttpServerExchange]
@@ -428,8 +465,8 @@ fun HttpServerExchange.longQueryParameter(paramName: String): Long? =
  *
  * @param paramName parameter name to retrieve
  */
-fun HttpServerExchange.floatQueryParameter(paramName: String): Float? =
-  queryParameter(paramName)?.toFloatOrNull()
+fun HttpServerExchange.floatQueryParameter(paramName: String): Float? = queryParameter(paramName)
+  ?.toFloatOrNull()
 
 /**
  * Returns the [Double] value of a parameter embedded in this [HttpServerExchange]
@@ -437,22 +474,23 @@ fun HttpServerExchange.floatQueryParameter(paramName: String): Float? =
  *
  * @param paramName parameter name to retrieve
  */
-fun HttpServerExchange.doubleQueryParameter(paramName: String): Double? =
-  queryParameter(paramName)?.toDoubleOrNull()
+fun HttpServerExchange.doubleQueryParameter(paramName: String): Double? = queryParameter(paramName)
+  ?.toDoubleOrNull()
 
 /**
  * Returns a list of [Locales][java.util.Locale] matching the
  * [Accept-Language][Headers.ACCEPT_LANGUAGE] HTTP header value on success, null otherwise.
  */
-fun HttpServerExchange.acceptLanguages(): List<java.util.Locale>? =
-  requestHeaders.acceptLocales()?.toList()
+fun HttpServerExchange.acceptLanguages(): List<java.util.Locale>? = requestHeaders
+  .acceptLocales()
+  ?.toList()
 
 /**
  * Returns the client’s preferred locale embedded in
  * [Accept-Language][Headers.ACCEPT_LANGUAGE] HTTP header value on success, null otherwise.
  */
-fun HttpServerExchange.clientLocale(): java.util.Locale? =
-  acceptLanguages()?.firstOrNull()
+fun HttpServerExchange.clientLocale(): java.util.Locale? = acceptLanguages()
+  ?.firstOrNull()
 
 /**
  * Returns the client’s preferred locale embedded in this [HttpServerExchange] request
@@ -471,11 +509,11 @@ fun HttpServerExchange.clientLocaleOr(fallback: java.util.Locale): java.util.Loc
  * their value instead if found.
  */
 fun HttpServerExchange.sourceAddress(): java.net.InetAddress? {
-  var forwardedSourceAddress: String? = (
-    requestHeaders["X-Real-IP"]?.peekFirst()
-      ?: requestHeaders["CF-Connecting-IP"]?.peekFirst()
-      ?: requestHeaders["X-Forwarded-For"]?.peekFirst()
-    )?.trimOrNull()
+  var forwardedSourceAddress: String? = requestHeaders["X-Real-IP"]?.peekFirst()
+    ?: requestHeaders["CF-Connecting-IP"]?.peekFirst()
+    ?: requestHeaders["X-Forwarded-For"]?.peekFirst()
+
+  forwardedSourceAddress = forwardedSourceAddress?.trimOrNull()
 
   if (null != forwardedSourceAddress) {
     val commaPos = forwardedSourceAddress.indexOf(',')
@@ -516,7 +554,10 @@ fun HttpServerExchange.setDeleteHeader(headerName: String) {
  * @param headerName the header to delete
  */
 fun HttpServerExchange.setDeleteHeader(headerName: HttpString) {
-  setHeader(headerName, HTTP_HEADER_DELETE)
+  setHeader(
+    headerName = headerName,
+    headerValue = HTTP_HEADER_DELETE,
+  )
 }
 
 /**
@@ -525,7 +566,10 @@ fun HttpServerExchange.setDeleteHeader(headerName: HttpString) {
  * @param headerName the header to set
  * @param headerValue the header value to set
  */
-fun HttpServerExchange.setHeader(headerName: String, headerValue: String) {
+fun HttpServerExchange.setHeader(
+  headerName: String,
+  headerValue: String,
+) {
   responseHeaders.put(HttpString(headerName), headerValue)
 }
 
@@ -535,7 +579,10 @@ fun HttpServerExchange.setHeader(headerName: String, headerValue: String) {
  * @param headerName the header to set
  * @param headerValue the header value to set
  */
-fun HttpServerExchange.setHeader(headerName: HttpString, headerValue: String) {
+fun HttpServerExchange.setHeader(
+  headerName: HttpString,
+  headerValue: String,
+) {
   responseHeaders.put(headerName, headerValue)
 }
 
@@ -555,11 +602,18 @@ fun HttpServerExchange.bufferedOutput(): BufferedSink = outputStream.bufferedOut
  * Returns a new [BufferedSink] that buffers writes from this [HttpServerExchange]'s
  * [OutputStream][java.io.OutputStream].
  */
-fun <T> HttpServerExchange.jsonOutput(model: T?, adapterProvider: JsonAdapterProvider<T>) {
+fun <T> HttpServerExchange.jsonOutput(
+  model: T?,
+  adapterProvider: JsonAdapterProvider<T>,
+) {
   if (null == model) {
     statusCode = StatusCodes.NO_CONTENT
   } else {
-    responseHeaders.put(Headers.CONTENT_TYPE, "application/json; charset=utf-8")
+    responseHeaders.put(
+      Headers.CONTENT_TYPE,
+      "application/json; charset=utf-8",
+    )
+
     bufferedOutput().use {
       adapterProvider(model).toJson(it, model)
       it.flush()
@@ -574,8 +628,10 @@ fun <T> HttpServerExchange.jsonOutput(model: T?, adapterProvider: JsonAdapterPro
  *
  * Note that if the [file] already exists in the file system, it will be overwritten.
  */
-fun HttpServerExchange.binaryOutput(file: java.io.File): Long =
-  binaryOutput(file, DEFAULT_BUFFER_SIZE)
+fun HttpServerExchange.binaryOutput(file: java.io.File): Long = binaryOutput(
+  file = file,
+  bufferSize = DEFAULT_BUFFER_SIZE,
+)
 
 /**
  * Stores the request body of this [HttpServerExchange]'s [InputStream][java.io.InputStream]
@@ -591,7 +647,10 @@ fun HttpServerExchange.binaryOutput(
   java.io.FileOutputStream(file),
   bufferSize,
 ).use { fileStream ->
-  inputStream.bufferOutput(fileStream, bufferSize)
+  inputStream.bufferOutput(
+    output = fileStream,
+    bufferSize = bufferSize,
+  )
 }
 
 internal fun java.io.InputStream.bufferOutput(

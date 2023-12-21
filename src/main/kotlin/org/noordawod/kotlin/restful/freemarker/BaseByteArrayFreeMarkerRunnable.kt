@@ -46,9 +46,8 @@ abstract class BaseByteArrayFreeMarkerRunnable<T : Any>(
    */
   protected val bytes = CloseableByteArrayOutputStream(bufferSize)
 
-  override fun prepareWriter(): java.io.BufferedWriter =
-    java.io.BufferedWriter(
-      java.io.OutputStreamWriter(bytes, FreeMarkerDataModel.CHARSET),
-      bufferSize,
-    )
+  override fun prepareWriter(): java.io.BufferedWriter = java.io.BufferedWriter(
+    java.io.OutputStreamWriter(bytes, FreeMarkerDataModel.CHARSET),
+    bufferSize,
+  )
 }

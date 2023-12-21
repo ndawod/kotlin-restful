@@ -38,21 +38,25 @@ internal class HtmlCompressorRepositoryImpl(
   compressCss: Boolean = true,
   compressJs: Boolean = true,
 ) : HtmlCompressorRepository {
-  private val delegate = HtmlCompressor().apply {
-    isEnabled = enabled
-    isCompressCss = compressCss
-    isCompressJavaScript = compressJs
-    isGenerateStatistics = false
-    isRemoveComments = true
-    isPreserveLineBreaks = false
-    isRemoveFormAttributes = false
-    isRemoveIntertagSpaces = true
-    isRemoveMultiSpaces = true
-    isRemoveQuotes = true
-    isRemoveScriptAttributes = true
-    isRemoveStyleAttributes = true
-    isYuiJsNoMunge = true
-    isYuiJsPreserveAllSemiColons = false
+  private val delegate: HtmlCompressor
+
+  init {
+    val delegateLocked = HtmlCompressor()
+    delegateLocked.isEnabled = enabled
+    delegateLocked.isCompressCss = compressCss
+    delegateLocked.isCompressJavaScript = compressJs
+    delegateLocked.isGenerateStatistics = false
+    delegateLocked.isRemoveComments = true
+    delegateLocked.isPreserveLineBreaks = false
+    delegateLocked.isRemoveFormAttributes = false
+    delegateLocked.isRemoveIntertagSpaces = true
+    delegateLocked.isRemoveMultiSpaces = true
+    delegateLocked.isRemoveQuotes = true
+    delegateLocked.isRemoveScriptAttributes = true
+    delegateLocked.isRemoveStyleAttributes = true
+    delegateLocked.isYuiJsNoMunge = true
+    delegateLocked.isYuiJsPreserveAllSemiColons = false
+    delegate = delegateLocked
   }
 
   override val isEnabled: Boolean get() = delegate.isEnabled
@@ -61,39 +65,40 @@ internal class HtmlCompressorRepositoryImpl(
     delegate.isEnabled = enabled
   }
 
-  override fun compress(html: String): String =
-    // We'll check to see if there are special IE tags that require special attention.
-    if (
-      1 > html.indexOf("<![endif]-->", ignoreCase = true) &&
-      1 > html.indexOf("<!--<![endif]-->", ignoreCase = true)
-    ) {
-      delegate.compress(html)
-    } else {
-      // We shall retain all code before the starting <head> tag because that code may
-      // container IE-specific code using <!--[if IE]> and <![endif]-->, which will fail
-      // to work if the new lines are removed.
-      val htmlTagStart = html.indexOf("<head", ignoreCase = true)
+  // We'll check to see if there are special IE tags that require special attention.
+  override fun compress(html: String): String = if (
+    1 > html.indexOf("<![endif]-->", ignoreCase = true) &&
+    1 > html.indexOf("<!--<![endif]-->", ignoreCase = true)
+  ) {
+    delegate.compress(html)
+  } else {
+    // We shall retain all code before the starting <head> tag because that code may
+    // container IE-specific code using <!--[if IE]> and <![endif]-->, which will fail
+    // to work if the new lines are removed.
+    val htmlTagStart = html.indexOf("<head", ignoreCase = true)
 
-      // Compress from the correct position in the HTML.
-      val compressedHtml = delegate.compress(
-        if (0 < htmlTagStart) {
-          html.substring(htmlTagStart)
-        } else {
-          html
-        },
-      )
-
-      // Prepend content appearing before the <head> tag, if any.
+    // Compress from the correct position in the HTML.
+    val compressedHtml = delegate.compress(
       if (0 < htmlTagStart) {
-        "${html.substring(0, htmlTagStart)}$compressedHtml"
+        html.substring(htmlTagStart)
       } else {
-        compressedHtml
-      }
+        html
+      },
+    )
+
+    // Prepend content appearing before the <head> tag, if any.
+    if (0 < htmlTagStart) {
+      "${html.substring(0, htmlTagStart)}$compressedHtml"
+    } else {
+      compressedHtml
     }
+  }
 
-  override fun compressCssStyles(styles: String): String =
-    delegate.cssCompressor.compress(styles)
+  override fun compressCssStyles(styles: String): String = delegate
+    .cssCompressor
+    .compress(styles)
 
-  override fun compressJavaScript(js: String): String =
-    delegate.javaScriptCompressor.compress(js)
+  override fun compressJavaScript(js: String): String = delegate
+    .javaScriptCompressor
+    .compress(js)
 }

@@ -235,7 +235,7 @@ open class UndertowServer(
           }
           this@UndertowServer.stop()
         }
-      }.let {
+      }.also {
         Runtime.getRuntime().addShutdownHook(it)
         hook = it
       }

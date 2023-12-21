@@ -43,25 +43,26 @@ import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 class OffsetDateTimeAdapter(
   @Suppress("MemberVisibilityCanBePrivate")
   val usingSeconds: Boolean = true,
-
   @Suppress("MemberVisibilityCanBePrivate")
   val zeroAsNull: Boolean = false,
 ) : JsonAdapter<java.time.OffsetDateTime>() {
-  override fun fromJson(reader: JsonReader): java.time.OffsetDateTime? =
-    if (reader.hasNext()) {
-      val value = reader.nextLong()
-      val milliseconds = if (usingSeconds) MILLIS_IN_1_SECOND * value else value
-      java.time.OffsetDateTime.of(
-        java.time.Instant.ofEpochMilli(milliseconds)
-          .atZone(java.time.ZoneOffset.UTC)
-          .toLocalDateTime(),
-        java.time.ZoneOffset.UTC,
-      )
-    } else {
-      null
-    }
+  override fun fromJson(reader: JsonReader): java.time.OffsetDateTime? = if (reader.hasNext()) {
+    val value = reader.nextLong()
+    val milliseconds = if (usingSeconds) MILLIS_IN_1_SECOND * value else value
+    java.time.OffsetDateTime.of(
+      java.time.Instant.ofEpochMilli(milliseconds)
+        .atZone(java.time.ZoneOffset.UTC)
+        .toLocalDateTime(),
+      java.time.ZoneOffset.UTC,
+    )
+  } else {
+    null
+  }
 
-  override fun toJson(writer: JsonWriter, value: java.time.OffsetDateTime?) {
+  override fun toJson(
+    writer: JsonWriter,
+    value: java.time.OffsetDateTime?,
+  ) {
     val time: Long? = if (null == value) {
       if (zeroAsNull) 0L else null
     } else {
@@ -80,5 +81,8 @@ fun Moshi.Builder.addOffsetDateTimeAdapter(
   zeroAsNull: Boolean,
 ): Moshi.Builder = add(
   java.time.OffsetDateTime::class.java,
-  OffsetDateTimeAdapter(usingSeconds, zeroAsNull),
+  OffsetDateTimeAdapter(
+    usingSeconds = usingSeconds,
+    zeroAsNull = zeroAsNull,
+  ),
 )

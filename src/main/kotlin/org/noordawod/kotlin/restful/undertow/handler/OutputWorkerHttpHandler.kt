@@ -31,7 +31,7 @@ import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.restful.extension.JsonAdapterProvider
 import org.noordawod.kotlin.restful.extension.jsonOutput
 
-internal const val DASHES =
+internal const val DASHES: String =
   "--------------------------------------------------------------------------------"
 
 /**
@@ -60,15 +60,21 @@ abstract class ErrorWorkerHttpHandler(
     return true
   }
 
-  override fun handleError(exchange: HttpServerExchange, e: Throwable) {
+  override fun handleError(
+    exchange: HttpServerExchange,
+    error: Throwable,
+  ) {
     if (!exchange.isResponseStarted) {
-      exchange.statusCode = mapThrowable(e)
+      exchange.statusCode = mapThrowable(error)
     }
   }
 
-  override fun log(message: String, e: Throwable?) {
+  override fun log(
+    message: String,
+    error: Throwable?,
+  ) {
     System.err.println(DASHES)
-    super.log(message, e)
+    super.log(message, error)
     System.err.println(DASHES)
   }
 }
@@ -90,22 +96,39 @@ abstract class OutputWorkerHttpHandler<T>(
    * Maps the Throwable [error] to a [ThrowableHttpStatus] which will guide [handleError] method
    * on how to end the exchange and return the proper HTTP status code to the client.
    */
-  abstract fun mapThrowable(exchange: HttpServerExchange, e: Throwable): ThrowableHttpStatus<T>
+  abstract fun mapThrowable(
+    exchange: HttpServerExchange,
+    error: Throwable,
+  ): ThrowableHttpStatus<T>
 
   override fun handleWork(exchange: HttpServerExchange): Boolean {
     next.handleRequest(exchange)
     return true
   }
 
-  override fun handleError(exchange: HttpServerExchange, e: Throwable) {
+  override fun handleError(
+    exchange: HttpServerExchange,
+    error: Throwable,
+  ) {
     if (!exchange.isResponseStarted) {
-      val error = mapThrowable(exchange, e)
-      exchange.statusCode = error.second
-      exchange.jsonOutput(error.first, adapterProvider)
+      val errorMapped = mapThrowable(
+        exchange = exchange,
+        error = error,
+      )
+
+      exchange.statusCode = errorMapped.second
+
+      exchange.jsonOutput(
+        model = errorMapped.first,
+        adapterProvider = adapterProvider,
+      )
     }
   }
 
-  override fun log(message: String, e: Throwable?) {
+  override fun log(
+    message: String,
+    error: Throwable?,
+  ) {
     // NO-OP.
   }
 }

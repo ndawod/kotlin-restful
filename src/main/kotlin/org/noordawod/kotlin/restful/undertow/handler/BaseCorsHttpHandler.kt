@@ -60,7 +60,10 @@ abstract class BaseCorsHttpHandler protected constructor(
    * @param originHost value of "Origin:" request header
    */
   @Suppress("unused")
-  protected open fun setCorsResponseHeaders(exchange: HttpServerExchange, originHost: String) {
+  protected open fun setCorsResponseHeaders(
+    exchange: HttpServerExchange,
+    originHost: String,
+  ) {
     // Allowed headers are usually supplied by the client.
     val allowedMethod = exchange.requestHeaders[ACCESS_CONTROL_REQUEST_METHOD]?.firstOrNull()
       ?: "*"

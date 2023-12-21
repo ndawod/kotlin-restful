@@ -81,7 +81,10 @@ interface JwtAuthenticationRepository {
    * @param next the next [HttpHandler] to execute when the access token is valid
    * @param enforced whether an access token is required, or not
    */
-  fun interceptor(next: HttpHandler, enforced: Boolean): HttpHandler
+  fun interceptor(
+    next: HttpHandler,
+    enforced: Boolean,
+  ): HttpHandler
 
   /**
    * Returns the access token embedded in the [exchange request][exchange], null if none
@@ -99,7 +102,10 @@ interface JwtAuthenticationRepository {
    * @param jwt the access token to set
    */
   @Throws(AuthenticationInvalidException::class)
-  fun setAccessToken(exchange: HttpServerExchange, jwt: JwtAuthentication): Jwt
+  fun setAccessToken(
+    exchange: HttpServerExchange,
+    jwt: JwtAuthentication,
+  ): Jwt
 
   /**
    * Creates and returns a new [String] token from the provided arguments, or throws an

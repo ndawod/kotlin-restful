@@ -111,7 +111,10 @@ abstract class BaseFreeMarkerRunnable<T : Any> protected constructor(
       writer = prepareWriter()
 
       template.process(model, writer)
-    } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+    } catch (
+      @Suppress("TooGenericExceptionCaught")
+      error: Throwable,
+    ) {
       log(error)
       throw error
     } finally {

@@ -41,11 +41,20 @@ internal class SendmailRepositoryImpl(
   private val config: SmtpConfiguration,
   timeout: Long,
 ) : SendmailRepository {
-  private val mailer: Mailer = SendmailRepository.createMailer(config, timeout)
+  private val mailer: Mailer = SendmailRepository.createMailer(
+    config = config,
+    timeout = timeout,
+  )
 
-  override fun send(message: SendmailMessage): Throwable? = sendImpl(message, false)
+  override fun send(message: SendmailMessage): Throwable? = sendImpl(
+    message = message,
+    async = false,
+  )
 
-  override fun asyncSend(message: SendmailMessage): Throwable? = sendImpl(message, true)
+  override fun asyncSend(message: SendmailMessage): Throwable? = sendImpl(
+    message = message,
+    async = true,
+  )
 
   /**
    * Wraps the sending operation in a try-catch clause, returns the [Throwable] it it was
@@ -54,7 +63,10 @@ internal class SendmailRepositoryImpl(
    * @param message the message to send
    * @param async whether to launch another thread to send the [message] or not
    */
-  private fun sendImpl(message: SendmailMessage, async: Boolean): Throwable? {
+  private fun sendImpl(
+    message: SendmailMessage,
+    async: Boolean,
+  ): Throwable? {
     val replyTo = if (null == message.replyTo) {
       null
     } else {
@@ -62,27 +74,35 @@ internal class SendmailRepositoryImpl(
     }
 
     return try {
-      EmailBuilder.startingBlank().apply {
-        withBounceTo(message.sender)
-        if (null != replyTo) {
-          withReplyTo(replyTo)
-        }
-        withSubject(message.subject)
-        from(message.from.fullName, message.from.email)
-        to(message.recipient.fullName, message.recipient.email)
-        withPlainText(message.textual)
+      val builder = EmailBuilder.startingBlank()
+      builder.withBounceTo(message.sender)
+      if (null != replyTo) {
+        builder.withReplyTo(replyTo)
+      }
+      builder.withSubject(message.subject)
+      builder.from(
+        message.from.fullName,
+        message.from.email,
+      )
+      builder.to(
+        message.recipient.fullName,
+        message.recipient.email,
+      )
+      builder.withPlainText(message.textual)
 
-        if (message.isHtml) {
-          withHTMLText(message.html)
-        }
-
-        buildEmail().apply {
-          mailer.sendMail(this, async)
-        }
+      if (message.isHtml) {
+        builder.withHTMLText(message.html)
       }
 
+      val email = builder.buildEmail()
+
+      mailer.sendMail(email, async)
+
       null
-    } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+    } catch (
+      @Suppress("TooGenericExceptionCaught")
+      error: Throwable,
+    ) {
       error
     }
   }

@@ -113,19 +113,34 @@ class JwtAuthenticationHandler(
   }
 
   @Throws(JwtVerificationException::class)
-  private fun detectAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication? =
-    exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()?.let {
+  private fun detectAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication? {
+    val headerValue = exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()
+
+    return if (null == headerValue) {
+      null
+    } else {
       if (
-        BEARER_PREFIX_LENGTH < it.length &&
-        BEARER_PREFIX.equals(it.substring(0, BEARER_PREFIX_LENGTH), ignoreCase = true)
+        BEARER_PREFIX_LENGTH < headerValue.length &&
+        BEARER_PREFIX.equals(
+          other = headerValue.substring(
+            startIndex = 0,
+            endIndex = BEARER_PREFIX_LENGTH,
+          ),
+          ignoreCase = true,
+        )
       ) {
-        it.substring(BEARER_PREFIX_LENGTH)
+        headerValue.substring(BEARER_PREFIX_LENGTH)
       } else {
         null
       }
     }
+  }
 
-  private fun possiblyRearm(exchange: HttpServerExchange, token: JwtAuthentication, jwt: Jwt) {
+  private fun possiblyRearm(
+    exchange: HttpServerExchange,
+    token: JwtAuthentication,
+    jwt: Jwt,
+  ) {
     val prefix = if (prependBearer) BEARER_PREFIX else ""
 
     // Specify the type in Kotlin as expiration date is never null.
@@ -157,7 +172,10 @@ class JwtAuthenticationHandler(
     prefix: String,
     token: JwtAuthentication,
   ) {
-    exchange.responseHeaders.put(Headers.AUTHORIZATION, "$prefix$token")
+    exchange.responseHeaders.put(
+      Headers.AUTHORIZATION,
+      "$prefix$token",
+    )
   }
 
   companion object {

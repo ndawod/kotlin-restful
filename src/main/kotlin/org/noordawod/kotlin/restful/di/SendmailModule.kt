@@ -40,7 +40,9 @@ import org.simplejavamail.api.mailer.Mailer
  * @param smtp the current [SmtpConfiguration] to use
  */
 @Module
-class SendmailModule(private val smtp: SmtpConfiguration) {
+class SendmailModule(
+  private val smtp: SmtpConfiguration,
+) {
   /**
    * The [Mailer] singleton instance.
    *
@@ -48,14 +50,18 @@ class SendmailModule(private val smtp: SmtpConfiguration) {
    */
   @javax.inject.Singleton
   @Provides
-  fun mailer(environment: Environment): Mailer =
-    SendmailRepository.createMailer(smtp, environment.timeoutInMilliseconds())
+  fun mailer(environment: Environment): Mailer = SendmailRepository.createMailer(
+    config = smtp,
+    timeout = environment.timeoutInMilliseconds(),
+  )
 
   /**
    * The [SendmailRepository] singleton instance.
    */
   @javax.inject.Singleton
   @Provides
-  fun sendmailRepository(environment: Environment): SendmailRepository =
-    SendmailRepositoryImpl(smtp, environment.timeoutInMilliseconds())
+  fun sendmailRepository(environment: Environment): SendmailRepository = SendmailRepositoryImpl(
+    config = smtp,
+    timeout = environment.timeoutInMilliseconds(),
+  )
 }

@@ -44,9 +44,10 @@ object ImageUtils {
    */
   fun getDetails(sourceFile: java.io.File): ImageDetails {
     val dimension = getDimension(sourceFile)
+
     return ImageDetails(
-      sourceFile,
-      ImageDimension(dimension.first, dimension.second),
+      file = sourceFile,
+      dimension = ImageDimension(dimension.first, dimension.second),
     )
   }
 
@@ -94,7 +95,11 @@ object ImageUtils {
     }
     args.add(targetFile.canonicalPath)
 
-    FileSystem.execute(convertPath, args, false)
+    FileSystem.execute(
+      program = convertPath,
+      args = args,
+      includeErrors = false,
+    )
 
     return getDetails(targetFile)
   }
@@ -108,6 +113,7 @@ object ImageUtils {
     val input: java.awt.image.BufferedImage = javax.imageio.ImageIO.read(
       java.io.BufferedInputStream(java.io.FileInputStream(filePath.canonicalFile)),
     )
+
     return input.width to input.height
   }
 
@@ -117,7 +123,10 @@ object ImageUtils {
    * @param convertPath path to ImageMagick's convert program
    * @param filePath location of the image to identify
    */
-  fun getDimension(convertPath: String, filePath: java.io.File): Pair<Int, Int> {
+  fun getDimension(
+    convertPath: String,
+    filePath: java.io.File,
+  ): Pair<Int, Int> {
     // Construct the program's arguments.
     val args = listOf(
       "-ping",
@@ -127,14 +136,20 @@ object ImageUtils {
     )
 
     // Execute the external program.
-    val result = FileSystem.execute(convertPath, args, false)
+    val result = FileSystem.execute(
+      program = convertPath,
+      args = args,
+      includeErrors = false,
+    )
     var width = 0
     var height = 0
+
     if (result.isNotEmpty()) {
       val dimension = result.split(" ")
       width = dimension[0].toInt()
       height = dimension[1].toInt()
     }
+
     return width to height
   }
 
@@ -208,26 +223,12 @@ object ImageUtils {
       null,
     )
 
-    /*
-        // Resize the image.
-        val resizedImage = java.awt.image.BufferedImage(
-          newWidth,
-          newHeight,
-          java.awt.image.BufferedImage.TYPE_INT_RGB
-        ).apply {
-          createGraphics().apply {
-            drawImage(input, 0, 0, newWidth, newHeight, null)
-            dispose()
-          }
-        }
-    */
-
     // Write resized image.
     javax.imageio.ImageIO.write(resizedImage, FORMAT_NAME, targetFile)
 
     return ImageDetails(
-      targetFile,
-      ImageDimension(newWidth, newHeight),
+      file = targetFile,
+      dimension = ImageDimension(newWidth, newHeight),
     )
   }
 
@@ -254,6 +255,7 @@ object ImageUtils {
     if (!jpegWriters.hasNext()) {
       error("This system has no configured JPEG image writers.")
     }
+
     return jpegWriters.next()
   }
 

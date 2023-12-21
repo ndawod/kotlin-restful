@@ -57,7 +57,10 @@ fun Algorithm.createJwt(
       .withIssuedAt(java.util.Date())
       .withExpiresAt(expiresAt)
       .sign(this)
-  } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+  } catch (
+    @Suppress("TooGenericExceptionCaught")
+    error: Throwable,
+  ) {
     throw AuthenticationInvalidException("", error)
   }
 }
@@ -74,7 +77,10 @@ fun Algorithm.verifyJwt(issuer: String): JWTVerifier {
       .require(this)
       .withIssuer(issuer)
       .build()
-  } catch (@Suppress("TooGenericExceptionCaught") error: Throwable) {
+  } catch (
+    @Suppress("TooGenericExceptionCaught")
+    error: Throwable,
+  ) {
     throw AuthenticationInvalidException("", error)
   }
 }

@@ -43,19 +43,20 @@ import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 class EpochDateAdapter(
   @Suppress("MemberVisibilityCanBePrivate")
   val usingSeconds: Boolean = true,
-
   @Suppress("MemberVisibilityCanBePrivate")
   val zeroAsNull: Boolean = false,
 ) : JsonAdapter<java.util.Date>() {
-  override fun fromJson(reader: JsonReader): java.util.Date? =
-    if (reader.hasNext()) {
-      val value = reader.nextLong()
-      java.util.Date(if (usingSeconds) value * MILLIS_IN_1_SECOND else value)
-    } else {
-      null
-    }
+  override fun fromJson(reader: JsonReader): java.util.Date? = if (reader.hasNext()) {
+    val value = reader.nextLong()
+    java.util.Date(if (usingSeconds) value * MILLIS_IN_1_SECOND else value)
+  } else {
+    null
+  }
 
-  override fun toJson(writer: JsonWriter, value: java.util.Date?) {
+  override fun toJson(
+    writer: JsonWriter,
+    value: java.util.Date?,
+  ) {
     val time: Long? = if (null == value) {
       if (zeroAsNull) 0L else null
     } else {
@@ -69,5 +70,13 @@ class EpochDateAdapter(
 /**
  * A helper extension function to allow regular concatenation of [Moshi.Builder].
  */
-fun Moshi.Builder.addEpochDateAdapter(usingSeconds: Boolean, zeroAsNull: Boolean): Moshi.Builder =
-  add(java.util.Date::class.java, EpochDateAdapter(usingSeconds, zeroAsNull))
+fun Moshi.Builder.addEpochDateAdapter(
+  usingSeconds: Boolean,
+  zeroAsNull: Boolean,
+): Moshi.Builder = add(
+  java.util.Date::class.java,
+  EpochDateAdapter(
+    usingSeconds = usingSeconds,
+    zeroAsNull = zeroAsNull,
+  ),
+)
