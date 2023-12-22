@@ -67,8 +67,9 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
     }
 
     // Add this page's query parameters second, ignore those that were overridden.
-    if (append && queryParameters.isNotEmpty()) {
-      queryParameters.forEach { (key, values) ->
+    val queryParametersMapLocked = queryParametersMap
+    if (append && queryParametersMapLocked.isNotEmpty()) {
+      queryParametersMapLocked.forEach { (key, values) ->
         @Suppress("ComplexCondition")
         if (
           !overriddenKeys.contains(key) &&
@@ -88,7 +89,7 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
    * the first value will be examined.
    */
   fun queryParameter(name: String): String? {
-    val values = queryParameters[name]
+    val values = queryParametersMap[name]
     return if (values.isNullOrEmpty()) null else values.first
   }
 
@@ -100,7 +101,7 @@ abstract class BaseFreeMarkerDataModel : FreeMarkerDataModel {
     name: String,
     fallback: String,
   ): String {
-    val values = queryParameters[name]
+    val values = queryParametersMap[name]
     return if (values.isNullOrEmpty()) fallback else values.first
   }
 }

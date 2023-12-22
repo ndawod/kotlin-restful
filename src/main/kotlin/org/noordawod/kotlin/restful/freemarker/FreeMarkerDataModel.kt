@@ -26,9 +26,12 @@
 package org.noordawod.kotlin.restful.freemarker
 
 /**
- * An iteration of query parameters.
+ * A collection of query parameters.
+ *
+ * Note: Don't use [Iterable] as it'll cause deserializers to fail when reading a list
+ * from a file such as Yaml or JSON.
  */
-typealias QueryParameters = Iterable<String>
+typealias QueryParameters = Collection<String>
 
 /**
  * A [Map] of query parameters indexed by a [String] key, and its associated values as a
@@ -50,16 +53,16 @@ interface FreeMarkerDataModel {
   /**
    * Query parameters in this page.
    */
-  val queryParameters: QueryParametersMap
+  val queryParametersMap: QueryParametersMap
 
   /**
-   * Generates the query part of a URL from the existing [queryParameters] detected for this
+   * Generates the query part of a URL from the existing [queryParametersMap] detected for this
    * page.
    */
   fun query(): String = query(null, true)
 
   /**
-   * Generates the query part of a URL from a combination of the existing [queryParameters]
+   * Generates the query part of a URL from a combination of the existing [queryParametersMap]
    * detected for this page and the specified [params].
    *
    * @param params list of parameters as a [Map] of [String] to [Any]
@@ -68,8 +71,8 @@ interface FreeMarkerDataModel {
 
   /**
    * Generates the query part of a URL from the specified [params]. If [append] is true, then
-   * the specified [params] will be appended to the existing [queryParameters] detected for this
-   * page. Otherwise, only [params] will comprise the final result.
+   * the specified [params] will be appended to the existing [queryParametersMap] detected
+   * for this page. Otherwise, only [params] will comprise the final result.
    *
    * @param params list of parameters as a [Map] of [String] to [Any]
    * @param append whether to override the existing params or merge them to the existing ones
