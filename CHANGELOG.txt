@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+4.5.5 (January 22, 2024)
+    Bump up dependencies versions.
+
 4.5.4 (December 22, 2023)
     Use `Collection` instead of `Iterable`.
 
