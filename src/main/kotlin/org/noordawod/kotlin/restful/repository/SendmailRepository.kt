@@ -29,6 +29,7 @@ import com.sanctionco.jmail.JMail
 import org.noordawod.kotlin.core.config.SmtpConfiguration
 import org.simplejavamail.api.mailer.Mailer
 import org.simplejavamail.api.mailer.config.TransportStrategy
+import org.simplejavamail.config.ConfigLoader
 import org.simplejavamail.mailer.MailerBuilder
 
 /**
@@ -71,6 +72,10 @@ interface SendmailRepository {
       )
       .withTransportStrategy(TransportStrategy.SMTP)
       .clearEmailValidator()
+      .withProperty(
+        "${ConfigLoader.Property.DEFAULT_VERIFY_SERVER_IDENTITY}",
+        !config.auth?.user.isNullOrBlank() && !config.auth?.pass.isNullOrBlank(),
+      )
       .withEmailValidator(
         JMail.validator()
           .disallowIpDomain()
