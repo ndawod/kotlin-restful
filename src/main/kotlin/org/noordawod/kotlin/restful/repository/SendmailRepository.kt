@@ -73,7 +73,7 @@ interface SendmailRepository {
       .withTransportStrategy(TransportStrategy.SMTP)
       .clearEmailValidator()
       .withProperty(
-        "${ConfigLoader.Property.DEFAULT_VERIFY_SERVER_IDENTITY}",
+        ConfigLoader.Property.DEFAULT_VERIFY_SERVER_IDENTITY.key(),
         !config.auth?.user.isNullOrBlank() && !config.auth?.pass.isNullOrBlank(),
       )
       .withEmailValidator(

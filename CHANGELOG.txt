@@ -3,8 +3,10 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
-4.5.7 (February 28, 2024)
+4.5.8 (February 28, 2024)
     Instruct SimpleMail to verify hosts if the user/pass are given.
+
+4.5.7 (DELETED)
 
 4.5.6 (February 28, 2024)
     Bump up dependencies versions.
