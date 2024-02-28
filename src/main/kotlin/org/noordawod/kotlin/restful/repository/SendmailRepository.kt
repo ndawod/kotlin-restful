@@ -63,7 +63,12 @@ interface SendmailRepository {
       config: SmtpConfiguration,
       timeout: Long,
     ): Mailer = MailerBuilder
-      .withSMTPServer(config.host, config.port, config.auth?.user, config.auth?.pass)
+      .withSMTPServer(
+        config.host,
+        config.port,
+        config.auth?.user,
+        config.auth?.pass,
+      )
       .withTransportStrategy(TransportStrategy.SMTP)
       .clearEmailValidator()
       .withEmailValidator(
