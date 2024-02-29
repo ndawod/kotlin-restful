@@ -29,7 +29,6 @@ import com.sanctionco.jmail.JMail
 import org.noordawod.kotlin.core.config.SmtpConfiguration
 import org.simplejavamail.api.mailer.Mailer
 import org.simplejavamail.api.mailer.config.TransportStrategy
-import org.simplejavamail.config.ConfigLoader
 import org.simplejavamail.mailer.MailerBuilder
 
 /**
@@ -63,30 +62,38 @@ interface SendmailRepository {
     fun createMailer(
       config: SmtpConfiguration,
       timeout: Long,
-    ): Mailer = MailerBuilder
-      .withSMTPServer(
-        config.host,
-        config.port,
-        config.auth?.user,
-        config.auth?.pass,
-      )
-      .withTransportStrategy(TransportStrategy.SMTP)
-      .clearEmailValidator()
-      .withProperty(
-        ConfigLoader.Property.DEFAULT_VERIFY_SERVER_IDENTITY.key(),
-        !config.auth?.user.isNullOrBlank() && !config.auth?.pass.isNullOrBlank(),
-      )
-      .withEmailValidator(
-        JMail.validator()
-          .disallowIpDomain()
-          .requireTopLevelDomain()
-          .disallowObsoleteWhitespace()
-          .disallowReservedDomains()
-          .disallowExplicitSourceRouting(),
-      )
-      .withDebugLogging(true == config.logging)
-      .withSessionTimeout(timeout.toInt())
-      .buildMailer()
+    ): Mailer {
+      val checkServerIdentity = true == config.ssl
+
+      return MailerBuilder
+        .withSMTPServer(
+          config.host,
+          config.port,
+          config.auth?.user,
+          config.auth?.pass,
+        )
+        .withTransportStrategy(TransportStrategy.SMTP)
+        .clearEmailValidator()
+        // For a list of properties: https://rdr.to/1pzMxSDK0Xv
+        .withProperty("mail.smtp.ssl.checkserveridentity", checkServerIdentity)
+        .withProperty("mail.smtp.ssl.enable", checkServerIdentity)
+        .withProperty("mail.smtp.ssl.required", false)
+        .withProperty("mail.smtp.starttls.enable", checkServerIdentity)
+        .withProperty("mail.smtp.starttls.required", false)
+        .verifyingServerIdentity(checkServerIdentity)
+        .trustingAllHosts(false)
+        .withEmailValidator(
+          JMail.validator()
+            .disallowIpDomain()
+            .requireTopLevelDomain()
+            .disallowObsoleteWhitespace()
+            .disallowReservedDomains()
+            .disallowExplicitSourceRouting(),
+        )
+        .withDebugLogging(true == config.logging)
+        .withSessionTimeout(timeout.toInt())
+        .buildMailer()
+    }
   }
 }
 
