@@ -21,33 +21,26 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_11,
-    plugin_versions_outdated: '0.51.0',
-    plugin_detekt: '1.23.6',
-    plugin_ktlint: '12.1.0',
-    ktlint: '0.51.0-FINAL',
-    ktlint_reporter: '0.51.0-FINAL',
-    dagger: '2.51.1',
-    kotlin: '1.8.21', // https://kotlinlang.org/docs/releases.html#release-details
-    kotlin_coroutines: '1.7.3',
-    kotlin_serialization: '1.6.3',
-    uribuilder_tiny: '2.7.1',
-    seruco_base62: '0.1.3',
-    auth0_jwt: '4.4.0',
-    aelstad_keccakj: '1.1.0',
-    icu4j: '74.2',
-    guava: '32.1.3-jre',
-    ndawod_kotlin_core: '3.6.6',
-    moshi: '1.15.1',
-    okio: '3.9.0',
-    undertow: '2.3.12.Final',
-    htmlcompressor: '1.5.2',
-    simplemail: '8.8.0',
-    jmail: '1.6.2',
-    freemarker: '2.3.32',
-    commons_collections4: '4.4',
-    apache_httpclient5: '5.3',
-    trbl_blurhash: '1.0.0'
-]
+@file:Suppress("unused")
+
+package org.noordawod.kotlin.restful.config
+
+import kotlinx.serialization.Serializable
+
+/**
+ * Configuration for an HTTP cookie.
+ *
+ * @param name the cookie name, optional
+ * @param domain the domain where the cookie is accessible
+ * @param path the URL path where the cookie is accessible, defaults to "/"
+ * @param seconds number of seconds until the cookie expires; set to "0" for a session cookie
+ * @param rearm number of seconds to rearm the cookie before it expires
+ */
+@Serializable
+data class CookieConfiguration(
+  val name: String? = null,
+  val domain: String,
+  val path: String = "/",
+  val seconds: Int,
+  val rearm: Int,
+)

@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package org.noordawod.kotlin.restful.undertow
 
@@ -45,12 +45,12 @@ import org.xnio.channels.AcceptingChannel
  * @param config configuration required to start this Undertow server
  */
 open class UndertowServer(
-  @Suppress("MemberVisibilityCanBePrivate") val config: Configuration,
+  val config: Configuration,
 ) {
   private val mainThread = Thread.currentThread()
   private var hook: Thread? = null
-  private lateinit var channel: HttpOpenListener
-  private lateinit var server: AcceptingChannel<out StreamConnection>
+  private var channel: HttpOpenListener? = null
+  private var server: AcceptingChannel<out StreamConnection>? = null
 
   /**
    * Returns true if the servers has been started, false otherwise.
@@ -98,9 +98,13 @@ open class UndertowServer(
       finalOptions.addAll(options)
     }
 
-    channel = HttpOpenListener(XnioByteBufferPool(buffers), finalOptions.map)
+    val newChannel = HttpOpenListener(
+      XnioByteBufferPool(buffers),
+      finalOptions.map,
+    )
+    newChannel.rootHandler = handler
 
-    channel.rootHandler = handler
+    channel = newChannel
   }
 
   /**
@@ -145,6 +149,13 @@ open class UndertowServer(
     dieDuration: Long,
     options: OptionMap?,
   ) {
+    if (null == channel) {
+      throw IllegalStateException(
+        "Server cannot start because primary handler isn't set. " +
+          "Did you remember to call setHandler()?",
+      )
+    }
+
     if (null == hook) {
       val builder = OptionMap.builder()
 
@@ -205,7 +216,7 @@ open class UndertowServer(
 
       val worker: XnioWorker = Xnio.getInstance().createWorker(builder.map)
 
-      server = worker.createStreamConnectionServer(
+      val newServer = worker.createStreamConnectionServer(
         java.net.InetSocketAddress(
           java.net.Inet4Address.getByName(config.ipAddr),
           config.port,
@@ -240,7 +251,9 @@ open class UndertowServer(
         hook = it
       }
 
-      server.resumeAccepts()
+      newServer.resumeAccepts()
+
+      server = newServer
 
       onStart()
     }
@@ -253,7 +266,8 @@ open class UndertowServer(
   protected fun stopImpl() {
     if (null != hook) {
       hook = null
-      server.close()
+      server?.close()
+      server = null
 
       onShutdown()
     }
