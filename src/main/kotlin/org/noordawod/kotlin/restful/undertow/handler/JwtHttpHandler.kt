@@ -48,7 +48,8 @@ typealias Jwt = DecodedJWT
 typealias JwtAuthenticationCreator = (
   id: String,
   subject: String,
-  issuer: String,
+  issuer: String?,
+  audience: Collection<String>?,
   expiresAt: java.util.Date,
 ) -> String
 
@@ -103,7 +104,11 @@ class JwtAuthenticationHandler(
 
       // We'll listen to when the exchange is finished, so we can either resend the header,
       // or rearm it if needed.
-      possiblyRearm(exchange, token, jwt)
+      possiblyRearm(
+        exchange = exchange,
+        token = token,
+        jwt = jwt,
+      )
     } else if (enforced) {
       throw JwtVerificationException("Authorization token is invalid.")
     }
@@ -116,23 +121,19 @@ class JwtAuthenticationHandler(
   private fun detectAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication? {
     val headerValue = exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()
 
-    return if (null == headerValue) {
-      null
-    } else {
-      if (
-        BEARER_PREFIX_LENGTH < headerValue.length &&
+    return when {
+      null == headerValue -> null
+
+      BEARER_PREFIX_LENGTH < headerValue.length &&
         BEARER_PREFIX.equals(
           other = headerValue.substring(
             startIndex = 0,
             endIndex = BEARER_PREFIX_LENGTH,
           ),
           ignoreCase = true,
-        )
-      ) {
-        headerValue.substring(BEARER_PREFIX_LENGTH)
-      } else {
-        null
-      }
+        ) -> headerValue.substring(BEARER_PREFIX_LENGTH)
+
+      else -> null
     }
   }
 
@@ -152,18 +153,23 @@ class JwtAuthenticationHandler(
     if (expiresMillis - rearmThreshold.toMillis() <= nowMillis) {
       // Rearming client with a new JWT.
       sendHeader(
-        exchange,
-        prefix,
-        creator(
+        exchange = exchange,
+        prefix = prefix,
+        token = creator(
           jwt.id,
           jwt.subject,
           jwt.issuer,
+          jwt.audience.ifEmpty { null },
           java.util.Date(nowMillis + rearmDuration.toMillis()),
         ),
       )
     } else if (sendAlways) {
       // Resending the same authorization to client.
-      sendHeader(exchange, prefix, token)
+      sendHeader(
+        exchange = exchange,
+        prefix = prefix,
+        token = token,
+      )
     }
   }
 

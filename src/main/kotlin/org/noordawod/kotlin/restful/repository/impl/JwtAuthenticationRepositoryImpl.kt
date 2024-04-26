@@ -29,6 +29,7 @@ import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
 import org.noordawod.kotlin.core.config.JwtConfiguration
+import org.noordawod.kotlin.core.extension.trimOrNull
 import org.noordawod.kotlin.restful.extension.createJwt
 import org.noordawod.kotlin.restful.extension.verifyJwt
 import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
@@ -41,6 +42,7 @@ import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
  * Authentication module for JSON Web Tokens (JWT).
  *
  * @param config the [JwtConfiguration] instance to use
+ * @param issuer the value to use in JWT's "iss" (issuer) property
  */
 @Suppress("MemberVisibilityCanBePrivate")
 internal class JwtAuthenticationRepositoryImpl(
@@ -80,35 +82,38 @@ internal class JwtAuthenticationRepositoryImpl(
   override fun createAccessToken(
     id: String,
     subject: String,
+    issuer: String?,
+    audience: Collection<String>?,
     expiresAt: java.util.Date,
   ): JwtAuthentication {
     try {
       val algorithm = config.algorithm.algorithm(config.secret)
-      return algorithm.createJwt(id, subject, issuer, expiresAt)
+
+      return algorithm.createJwt(
+        id = id,
+        subject = subject,
+        issuer = (issuer ?: this.issuer).trimOrNull(),
+        audience = audience,
+        expiresAt = expiresAt,
+      )
     } catch (
       @Suppress("TooGenericExceptionCaught")
       error: Throwable,
     ) {
-      throw AuthenticationInvalidException("Access token creation error.", error)
+      throw AuthenticationInvalidException("Creation of JWT access token failed.", error)
     }
   }
 
   override fun verifyAccessToken(jwt: JwtAuthentication): Jwt {
     try {
       val algorithm = config.algorithm.algorithm(config.secret)
+
       return algorithm.verifyJwt(issuer).verify(jwt)
     } catch (
       @Suppress("TooGenericExceptionCaught")
       error: Throwable,
     ) {
-      throw AuthenticationInvalidException("Access token verification error.", error)
+      throw AuthenticationInvalidException("Verification of JWT access token failed.", error)
     }
   }
-
-  private fun createAccessToken(
-    id: String,
-    subject: String,
-    @Suppress("UNUSED_PARAMETER") issuer: String,
-    expiresAt: java.util.Date,
-  ): JwtAuthentication = createAccessToken(id, subject, expiresAt)
 }

@@ -28,6 +28,8 @@ package org.noordawod.kotlin.restful.extension
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
+import org.noordawod.kotlin.core.extension.mutableListWith
+import org.noordawod.kotlin.core.extension.trimOrNull
 import org.noordawod.kotlin.restful.repository.AuthenticationCreationException
 import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
 
@@ -39,29 +41,50 @@ import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
  * @param id the value used in JWT's "jti" (JWT ID) property
  * @param subject the value used in JWT's "sub" (subject) property
  * @param issuer the value used in JWT's "iss" (issuer) property
+ * @param audience the value used in JWT's "iss" (audience) property
  * @param expiresAt the value used in JWT's "exp" (expiresAt) property
  */
 @Throws(AuthenticationCreationException::class)
 fun Algorithm.createJwt(
   id: String,
   subject: String,
-  issuer: String,
+  issuer: String?,
+  audience: Collection<String>?,
   expiresAt: java.util.Date,
 ): String {
   try {
-    return JWT
+    val jwt = JWT
       .create()
       .withJWTId(id)
       .withSubject(subject)
-      .withIssuer(issuer)
       .withIssuedAt(java.util.Date())
       .withExpiresAt(expiresAt)
-      .sign(this)
+
+    val issuerNormalized = issuer?.trim()
+    if (!issuerNormalized.isNullOrEmpty()) {
+      jwt.withIssuer(issuerNormalized)
+    }
+
+    if (!audience.isNullOrEmpty()) {
+      val audienceNormalized = mutableListWith<String>(audience.size)
+
+      for (row in audience) {
+        val entry = row.trimOrNull() ?: continue
+        audienceNormalized.add(entry)
+      }
+
+      if (audienceNormalized.isNotEmpty()) {
+        @Suppress("SpreadOperator")
+        jwt.withAudience(*audienceNormalized.toTypedArray())
+      }
+    }
+
+    return jwt.sign(this)
   } catch (
     @Suppress("TooGenericExceptionCaught")
     error: Throwable,
   ) {
-    throw AuthenticationInvalidException("", error)
+    throw AuthenticationInvalidException("Creation of JWT access token failed.", error)
   }
 }
 
@@ -81,6 +104,6 @@ fun Algorithm.verifyJwt(issuer: String): JWTVerifier {
     @Suppress("TooGenericExceptionCaught")
     error: Throwable,
   ) {
-    throw AuthenticationInvalidException("", error)
+    throw AuthenticationInvalidException("Verification of JWT access token failed.", error)
   }
 }

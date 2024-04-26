@@ -115,12 +115,16 @@ interface JwtAuthenticationRepository {
    *
    * @param id the value used in JWT's "jti" (JWT ID) property
    * @param subject the value used in JWT's "sub" (subject) property
+   * @param issuer the value used in JWT's "iss" (issuer) property
+   * @param audience the values used in JWT's "aud" (audience) property
    * @param expiresAt the value used in JWT's "exp" (expiresAt) property
    */
   @Throws(AuthenticationInvalidException::class)
   fun createAccessToken(
     id: String,
     subject: String,
+    issuer: String?,
+    audience: Collection<String>?,
     expiresAt: java.util.Date,
   ): JwtAuthentication
 
