@@ -40,7 +40,7 @@ interface Configuration {
   val port: Int
 
   /**
-   * IO threads perform non blocking tasks, and should never perform blocking operations because
+   * IO threads perform non-blocking tasks, and should never perform blocking operations because
    * they are responsible for multiple connections, so while the operation is blocking other
    * connections will essentially hang.
    *
@@ -50,7 +50,7 @@ interface Configuration {
 
   /**
    * When performing blocking operations, such as Servlet requests, threads from this pool
-   * will be used. In general it is hard to give a reasonable default for this, as it
+   * will be used. In general, it is hard to give a reasonable default for this, as it
    * depends on the server workload.
    *
    * Generally this should be reasonably high, around 10 per CPU core.
@@ -82,7 +82,7 @@ interface Configuration {
   /**
    * These buffers are used for IO operations, and the buffer size has a big impact on application
    * performance. For servers the ideal size is generally 16k, as this is usually the maximum
-   * amount of data that can be written out via a write() operation (depending on the network
+   * amount of data that can be written out via a `write()` operation (depending on the network
    * setting of the operating system). Smaller systems may want to use smaller buffers to save
    * memory.
    */

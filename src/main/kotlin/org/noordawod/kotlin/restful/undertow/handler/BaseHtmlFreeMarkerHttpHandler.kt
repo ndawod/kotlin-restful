@@ -32,7 +32,7 @@ import org.noordawod.kotlin.restful.freemarker.FreeMarkerDataModel
 import org.noordawod.kotlin.restful.repository.HtmlCompressorRepository
 
 /**
- * A [BaseByteArrayFreeMarkerHttpHandler] that orchestrates preparing the contents of a
+ * A [BaseByteArrayFreeMarkerHttpHandler] that orchestrates preparing the contents of
  * a FreeMarker template, and optionally compressing the resulting HTML.
  *
  * The output is considered to be UTF-8 always.
