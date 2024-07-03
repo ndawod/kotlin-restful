@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.0.0 (July 3, 2024)
+    Upgrade to Kotlin version 1.9.24.
+
 4.6.0 (April 26, 2024)
     Add support for `issuer` and `audience` in JWT.
 
