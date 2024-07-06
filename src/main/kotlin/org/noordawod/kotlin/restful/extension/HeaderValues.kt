@@ -22,10 +22,13 @@
  */
 
 @file:Suppress("unused")
+@file:OptIn(ExperimentalContracts::class)
 
 package org.noordawod.kotlin.restful.extension
 
 import io.undertow.util.HeaderValues
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import org.noordawod.kotlin.core.extension.mutableListWith
 
 /**
@@ -34,6 +37,10 @@ import org.noordawod.kotlin.core.extension.mutableListWith
  * remote client.
  */
 fun HeaderValues?.acceptLocales(): Iterable<java.util.Locale>? {
+  contract {
+    returnsNotNull() implies (this@acceptLocales != null)
+  }
+
   val headerValue = this?.firstOrNull()
     ?.replace('_', '-')
     ?.ifEmpty { null } ?: return null

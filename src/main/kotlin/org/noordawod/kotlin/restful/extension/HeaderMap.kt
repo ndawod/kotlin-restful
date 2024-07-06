@@ -22,16 +22,24 @@
  */
 
 @file:Suppress("unused")
+@file:OptIn(ExperimentalContracts::class)
 
 package org.noordawod.kotlin.restful.extension
 
 import io.undertow.util.HeaderMap
 import io.undertow.util.Headers
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 /**
  * Returns the list of preferred languages (as a list of [Locale][java.util.Locale]s)
  * from this [HeaderMap], null if no preferred languages were provided by the
  * remote client.
  */
-fun HeaderMap?.acceptLocales(): Iterable<java.util.Locale>? =
-  this?.get(Headers.ACCEPT_LANGUAGE).acceptLocales()
+fun HeaderMap?.acceptLocales(): Iterable<java.util.Locale>? {
+  contract {
+    returnsNotNull() implies (this@acceptLocales != null)
+  }
+
+  return this?.get(Headers.ACCEPT_LANGUAGE).acceptLocales()
+}
