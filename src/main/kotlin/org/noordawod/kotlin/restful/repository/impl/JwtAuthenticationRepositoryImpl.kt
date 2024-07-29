@@ -44,12 +44,12 @@ import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
  * Authentication module for JSON Web Tokens (JWT).
  *
  * @param config the [JwtConfiguration] instance to use
- * @param issuer the value to use in JWT's "iss" (issuer) property
+ * @param issuer the value to use in JWT's "iss" (issuer) property, optional
  */
 @Suppress("MemberVisibilityCanBePrivate")
 internal class JwtAuthenticationRepositoryImpl(
   override val config: JwtConfiguration,
-  val issuer: String,
+  val issuer: String?,
 ) : JwtAuthenticationRepository {
   override fun interceptor(
     next: HttpHandler,
@@ -70,7 +70,7 @@ internal class JwtAuthenticationRepositoryImpl(
       return JWT.decode(accessToken)
     } catch (error: JWTDecodeException) {
       throw AuthenticationInvalidException(
-        message = "Decoding of access token failed: $accessToken",
+        message = "Decoding of JWT access token failed: $accessToken",
         cause = error,
       )
     }
@@ -92,7 +92,7 @@ internal class JwtAuthenticationRepositoryImpl(
 
   override fun createAccessToken(
     id: String,
-    subject: String,
+    subject: String?,
     issuer: String?,
     audience: Collection<String>?,
     expiresAt: java.util.Date,

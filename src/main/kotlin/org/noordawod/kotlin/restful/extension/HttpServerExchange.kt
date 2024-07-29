@@ -591,10 +591,15 @@ fun HttpServerExchange.setHeader(
 /**
  * Sets a new JWT access token in the response headers in this [HttpServerExchange].
  */
-fun HttpServerExchange.setAccessToken(accessToken: JwtAuthentication) {
+fun HttpServerExchange.setAccessToken(
+  accessToken: JwtAuthentication,
+  prefix: String? = null,
+) {
+  val accessTokenNormalized = prefix ?: JwtAuthenticationHandler.BEARER_PREFIX
+
   setHeader(
     name = Headers.AUTHORIZATION,
-    value = "${JwtAuthenticationHandler.BEARER_PREFIX}$accessToken",
+    value = "$accessTokenNormalized$accessToken",
   )
 }
 

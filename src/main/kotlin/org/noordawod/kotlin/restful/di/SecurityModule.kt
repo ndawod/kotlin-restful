@@ -35,18 +35,20 @@ import org.noordawod.kotlin.restful.repository.impl.JwtAuthenticationRepositoryI
  * Security-focused singleton instances accessible via dependency injection.
  *
  * @param security the current [SecurityConfiguration] to use
- * @param issuer the value used in JWT's "iss" (issuer) property
+ * @param issuer the value used in JWT's "iss" (issuer) property, optional
  */
 @Module
 class SecurityModule(
   private val security: SecurityConfiguration,
-  private val issuer: String,
+  private val issuer: String?,
 ) {
   /**
    * The [JwtAuthenticationRepository] singleton.
    */
   @javax.inject.Singleton
   @Provides
-  fun jwtAuthorizationRepository(): JwtAuthenticationRepository =
-    JwtAuthenticationRepositoryImpl(security.jwt, issuer)
+  fun jwtAuthorizationRepository(): JwtAuthenticationRepository = JwtAuthenticationRepositoryImpl(
+    config = security.jwt,
+    issuer = issuer,
+  )
 }

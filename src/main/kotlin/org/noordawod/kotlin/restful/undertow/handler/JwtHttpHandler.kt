@@ -45,7 +45,7 @@ typealias Jwt = DecodedJWT
  */
 typealias JwtAuthenticationCreator = (
   id: String,
-  subject: String,
+  subject: String?,
   issuer: String?,
   audience: Collection<String>?,
   expiresAt: java.util.Date,
@@ -136,19 +136,20 @@ class JwtAuthenticationHandler(
   private fun HttpServerExchange.detectAccessToken(): JwtAuthentication? {
     val headerValue = requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()
 
-    return when {
-      null == headerValue -> null
-
+    return if (
+      null != headerValue &&
       BEARER_PREFIX_LENGTH < headerValue.length &&
-        BEARER_PREFIX.equals(
-          other = headerValue.substring(
-            startIndex = 0,
-            endIndex = BEARER_PREFIX_LENGTH,
-          ),
-          ignoreCase = true,
-        ) -> headerValue.substring(BEARER_PREFIX_LENGTH)
-
-      else -> null
+      BEARER_PREFIX.equals(
+        other = headerValue.substring(
+          startIndex = 0,
+          endIndex = BEARER_PREFIX_LENGTH,
+        ),
+        ignoreCase = true,
+      )
+    ) {
+      headerValue.substring(BEARER_PREFIX_LENGTH)
+    } else {
+      null
     }
   }
 
@@ -174,10 +175,10 @@ class JwtAuthenticationHandler(
           java.util.Date(nowMillis + rearmDuration.toMillis()),
         )
 
-        // Rearming client with a new JWT.
+        // Rearm client's authorization with a new access token.
         setAccessToken(
-          prefix = prefix,
           accessToken = rearmedAccessToken,
+          prefix = prefix,
         )
       } catch (
         @Suppress("TooGenericExceptionCaught")
@@ -188,8 +189,8 @@ class JwtAuthenticationHandler(
     } else if (sendAlways) {
       // Resending the same authorization to client.
       setAccessToken(
-        prefix = prefix,
         accessToken = accessToken,
+        prefix = prefix,
       )
     }
   }
@@ -215,11 +216,4 @@ class JwtAuthenticationHandler(
      */
     val SERVER_JWT_ID: AttachmentKey<Jwt> = AttachmentKey.create(Jwt::class.java)
   }
-}
-
-private fun HttpServerExchange.setAccessToken(
-  prefix: String,
-  accessToken: JwtAuthentication,
-) {
-  setAccessToken("$prefix$accessToken")
 }

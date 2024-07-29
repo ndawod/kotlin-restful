@@ -126,15 +126,15 @@ interface JwtAuthenticationRepository {
    * The JWT's "iat" (issued at) property is set to the time when the JWT is created.
    *
    * @param id the value used in JWT's "jti" (JWT ID) property
-   * @param subject the value used in JWT's "sub" (subject) property
-   * @param issuer the value used in JWT's "iss" (issuer) property
-   * @param audience the values used in JWT's "aud" (audience) property
+   * @param subject the value used in JWT's "sub" (subject) property, optional
+   * @param issuer the value used in JWT's "iss" (issuer) property, optional
+   * @param audience the values used in JWT's "aud" (audience) property, optional
    * @param expiresAt the value used in JWT's "exp" (expiresAt) property
    */
   @Throws(AuthenticationInvalidException::class)
   fun createAccessToken(
     id: String,
-    subject: String,
+    subject: String?,
     issuer: String?,
     audience: Collection<String>?,
     expiresAt: java.util.Date,

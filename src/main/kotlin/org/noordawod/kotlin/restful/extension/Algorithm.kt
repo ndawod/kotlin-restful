@@ -39,29 +39,32 @@ import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
  * The JWT's "iat" (issued at) property is set to the time when the JWT is created.
  *
  * @param id the value used in JWT's "jti" (JWT ID) property
- * @param subject the value used in JWT's "sub" (subject) property
- * @param issuer the value used in JWT's "iss" (issuer) property
- * @param audience the value used in JWT's "iss" (audience) property
+ * @param subject the value used in JWT's "sub" (subject) property, optional
+ * @param issuer the value used in JWT's "iss" (issuer) property, optional
+ * @param audience the value used in JWT's "iss" (audience) property, optional
  * @param expiresAt the value used in JWT's "exp" (expiresAt) property
  */
 @Throws(AuthenticationCreationException::class)
 fun Algorithm.createJwt(
   id: String,
-  subject: String,
+  subject: String?,
   issuer: String?,
   audience: Collection<String>?,
   expiresAt: java.util.Date,
 ): String {
   try {
-    val jwt = JWT
-      .create()
+    val jwt = JWT.create()
       .withJWTId(id)
-      .withSubject(subject)
       .withIssuedAt(java.util.Date())
       .withExpiresAt(expiresAt)
 
-    val issuerNormalized = issuer?.trim()
-    if (!issuerNormalized.isNullOrEmpty()) {
+    val subjectNormalized = subject.trimOrNull()
+    if (null != subjectNormalized) {
+      jwt.withSubject(subject)
+    }
+
+    val issuerNormalized = issuer.trimOrNull()
+    if (null != issuerNormalized) {
       jwt.withIssuer(issuerNormalized)
     }
 
@@ -91,15 +94,19 @@ fun Algorithm.createJwt(
 /**
  * Generates a new JWT verifier using this [Algorithm] instance.
  *
- * @param issuer the expected issue field ("iss") of the JWT token
+ * @param issuer the expected issue field ("iss") of the JWT token, optional
  */
 @Throws(AuthenticationInvalidException::class)
-fun Algorithm.verifyJwt(issuer: String): JWTVerifier {
+fun Algorithm.verifyJwt(issuer: String?): JWTVerifier {
   try {
-    return JWT
-      .require(this)
-      .withIssuer(issuer)
-      .build()
+    val jwt = JWT.require(this)
+
+    val issuerNormalized = issuer.trimOrNull()
+    if (null != issuerNormalized) {
+      jwt.withIssuer(issuerNormalized)
+    }
+
+    return jwt.build()
   } catch (
     @Suppress("TooGenericExceptionCaught")
     error: Throwable,

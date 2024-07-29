@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.3.3 (July 29, 2024)
+    Fix a bug when sending authorization header.
+
 5.3.2 (July 29, 2024)
     Fix a situation when creating or verifying the JWT threw an exception.
 

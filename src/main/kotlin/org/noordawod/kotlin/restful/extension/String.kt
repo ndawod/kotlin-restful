@@ -25,9 +25,11 @@
 
 package org.noordawod.kotlin.restful.extension
 
+import com.auth0.jwt.JWT
 import org.noordawod.kotlin.core.Constants
 import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 import org.noordawod.kotlin.core.extension.trimOrNull
+import org.noordawod.kotlin.restful.undertow.handler.Jwt
 import org.noordawod.kotlin.restful.util.QuerySeparator
 
 /**
@@ -135,4 +137,26 @@ fun Collection<String>.basePaths(basePath: String): Collection<String> = mapNotN
     path.startsWith(java.io.File.separatorChar) -> path
     else -> "$basePath/$path"
   }
+}
+
+/**
+ * Returns true if this String representing a JWT access token with an
+ * expired expiration date, false otherwise.
+ */
+fun String.isAccessTokenExpired(): Boolean = JWT.decode(this).isAccessTokenExpired()
+
+/**
+ * Returns true if this [Jwt] has an expired expiration date, false otherwise.
+ */
+fun Jwt.isAccessTokenExpired(): Boolean = isAccessTokenExpired(java.util.Date())
+
+/**
+ * Returns true if this [Jwt] has an expiration date older than [date], false otherwise.
+ *
+ * @param date the date to check against
+ */
+fun Jwt.isAccessTokenExpired(date: java.util.Date): Boolean {
+  val expiresAt = this.expiresAt?.time
+
+  return null == expiresAt || date.time >= expiresAt
 }
