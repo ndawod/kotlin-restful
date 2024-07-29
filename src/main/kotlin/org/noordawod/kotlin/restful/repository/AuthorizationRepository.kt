@@ -87,6 +87,16 @@ interface JwtAuthenticationRepository {
   ): HttpHandler
 
   /**
+   * Returns the JWT by decoding an access token.
+   *
+   * Note: The returned JWT isn't verified for validity!
+   *
+   * @param accessToken the access token to decode
+   */
+  @Throws(AuthenticationInvalidException::class)
+  fun decodeAccessToken(accessToken: JwtAuthentication): Jwt
+
+  /**
    * Returns the access token embedded in the [exchange request][exchange], null if none
    * was detected.
    *
@@ -98,13 +108,15 @@ interface JwtAuthenticationRepository {
    * Sets a new access token in the [exchange response][exchange], and returns it encoded
    * as a [Jwt] instance.
    *
+   * Note: The returned JWT isn't verified for validity!
+   *
    * @param exchange the [HttpServerExchange] to set a new access token in
-   * @param jwt the access token to set
+   * @param accessToken the access token to set
    */
   @Throws(AuthenticationInvalidException::class)
   fun setAccessToken(
     exchange: HttpServerExchange,
-    jwt: JwtAuthentication,
+    accessToken: JwtAuthentication,
   ): Jwt
 
   /**
@@ -129,11 +141,11 @@ interface JwtAuthenticationRepository {
   ): JwtAuthentication
 
   /**
-   * Verifies the validity of the provided [access token][jwt] and returns its decoded
+   * Verifies the validity of the provided [access token][accessToken] and returns its decoded
    * parts, or throws an [AuthenticationInvalidException] if it's invalid.
    *
-   * @param jwt the access token to verify
+   * @param accessToken the access token to verify
    */
   @Throws(AuthenticationInvalidException::class)
-  fun verifyAccessToken(jwt: JwtAuthentication): Jwt
+  fun verifyAccessToken(accessToken: JwtAuthentication): Jwt
 }

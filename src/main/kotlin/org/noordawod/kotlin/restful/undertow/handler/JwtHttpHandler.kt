@@ -25,17 +25,15 @@
 
 package org.noordawod.kotlin.restful.undertow.handler
 
-import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.AttachmentKey
 import io.undertow.util.Headers
-
-/**
- * The exception that's thrown when a JWT fails verification.
- */
-typealias JwtVerificationException = JWTVerificationException
+import org.noordawod.kotlin.restful.extension.deleteAccessToken
+import org.noordawod.kotlin.restful.extension.setAccessToken
+import org.noordawod.kotlin.restful.repository.AuthenticationException
+import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
 
 /**
  * The decoded JWT after it had passed verification.
@@ -56,24 +54,25 @@ typealias JwtAuthenticationCreator = (
 /**
  * A function signature that verifies a JWT string and returns the [Jwt].
  */
-typealias JwtAuthenticationVerifier = (token: String) -> Jwt
+typealias JwtAuthenticationVerifier = (accessToken: String) -> Jwt
 
 /**
- * The JWT authorization token type.
+ * The JWT authorization access token type.
  */
 typealias JwtAuthentication = String
 
 /**
  * Performs simple authentication using a JSON Web Token mechanism.
  *
- * @param next next [HTTP handler][HttpHandler] to execute if JWT token is valid
+ * @param next next [HTTP handler][HttpHandler] to execute if JWT access token is valid
  * @param creator function to call with a future date to generate a new JWT
  * @param verifier function to verify the validity of a JWT
  * @param sendAlways whether to resend JWT authorization header regardless if rearming is
- * @param prependBearer whether the "Bearer " string appears before the JWT authorization token
- * or not
+ * @param deleteIfExpired whether to delete the authorization header if the detected
+ * JWT access token has expired
+ * @param prependBearer whether the "Bearer " string appears before the JWT access token
  * @param enforced whether to require the existence of an authorization header or not
- * @param rearmThreshold when the token expires in less than the value of this
+ * @param rearmThreshold when the access token expires in less than the value of this
  * [Duration][java.time.Duration], then it will be auto-rearmed when the exchange finishes
  * @param rearmDuration when auto-rearm is scheduled, this set the
  * [Duration][java.time.Duration] in the future for the new expiration time
@@ -84,42 +83,58 @@ class JwtAuthenticationHandler(
   val creator: JwtAuthenticationCreator,
   val verifier: JwtAuthenticationVerifier,
   val sendAlways: Boolean = false,
+  val deleteIfExpired: Boolean = false,
   val prependBearer: Boolean = false,
   val enforced: Boolean = true,
   val rearmThreshold: java.time.Duration = java.time.Duration.ofDays(1),
   val rearmDuration: java.time.Duration = java.time.Duration.ofDays(14),
 ) : HttpHandler {
+  @Throws(AuthenticationException::class)
   override fun handleRequest(exchange: HttpServerExchange) {
-    // Extract the JWT token from the header.
-    val token = detectAuthorizationHeader(exchange)
-    if (null != token) {
-      // Verify it.
-      val jwt = verifier(token)
+    // Extract the JWT access token from the header.
+    val accessToken = exchange.detectAccessToken()
 
-      // Attach encoded JWT to this exchange and allow others to access it.
-      exchange.putAttachment(CLIENT_JWT_ID, token)
+    if (null != accessToken) {
+      // The verification process may throw if the access token has the wrong claims.
+      try {
+        val jwt = verifier(accessToken)
 
-      // Attach resolved JWT to this exchange and allow others to access it.
-      exchange.putAttachment(SERVER_JWT_ID, jwt)
+        // Attach encoded JWT to this exchange and allow others to access it.
+        exchange.putAttachment(CLIENT_JWT_ID, accessToken)
 
-      // We'll listen to when the exchange is finished, so we can either resend the header,
-      // or rearm it if needed.
-      possiblyRearm(
-        exchange = exchange,
-        token = token,
-        jwt = jwt,
-      )
+        // Attach resolved JWT to this exchange and allow others to access it.
+        exchange.putAttachment(SERVER_JWT_ID, jwt)
+
+        // Rearm the authorization header if the expiration date is near.
+        exchange.possiblyRearm(
+          accessToken = accessToken,
+          jwt = jwt,
+        )
+      } catch (
+        @Suppress("TooGenericExceptionCaught")
+        error: Throwable,
+      ) {
+        if (deleteIfExpired) {
+          exchange.deleteAccessToken()
+        }
+
+        if (enforced) {
+          throw AuthenticationInvalidException(
+            message = "Authorization access token is invalid: $accessToken.",
+            cause = error,
+          )
+        }
+      }
     } else if (enforced) {
-      throw JwtVerificationException("Authorization token is invalid.")
+      throw AuthenticationInvalidException("Authorization access token is missing.")
     }
 
     // On to the next handler.
     next.handleRequest(exchange)
   }
 
-  @Throws(JwtVerificationException::class)
-  private fun detectAuthorizationHeader(exchange: HttpServerExchange): JwtAuthentication? {
-    val headerValue = exchange.requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()
+  private fun HttpServerExchange.detectAccessToken(): JwtAuthentication? {
+    val headerValue = requestHeaders[Headers.AUTHORIZATION]?.firstOrNull()
 
     return when {
       null == headerValue -> null
@@ -137,51 +152,46 @@ class JwtAuthenticationHandler(
     }
   }
 
-  private fun possiblyRearm(
-    exchange: HttpServerExchange,
-    token: JwtAuthentication,
+  private fun HttpServerExchange.possiblyRearm(
+    accessToken: JwtAuthentication,
     jwt: Jwt,
   ) {
     val prefix = if (prependBearer) BEARER_PREFIX else ""
+    val nowMillis = java.util.Date().time
 
-    // Specify the type in Kotlin as expiration date is never null.
+    // The Java call may be null, so we need to guard against it.
     val expiresAt: java.util.Date = jwt.expiresAt ?: return
     val expiresMillis = expiresAt.time
 
     // Needs to rearm or resent?
-    val nowMillis = java.util.Date().time
     if (expiresMillis - rearmThreshold.toMillis() <= nowMillis) {
-      // Rearming client with a new JWT.
-      sendHeader(
-        exchange = exchange,
-        prefix = prefix,
-        token = creator(
+      try {
+        val rearmedAccessToken = creator(
           jwt.id,
           jwt.subject,
           jwt.issuer,
           jwt.audience.ifEmpty { null },
           java.util.Date(nowMillis + rearmDuration.toMillis()),
-        ),
-      )
+        )
+
+        // Rearming client with a new JWT.
+        setAccessToken(
+          prefix = prefix,
+          accessToken = rearmedAccessToken,
+        )
+      } catch (
+        @Suppress("TooGenericExceptionCaught")
+        ignored: Throwable,
+      ) {
+        // NO-OP.
+      }
     } else if (sendAlways) {
       // Resending the same authorization to client.
-      sendHeader(
-        exchange = exchange,
+      setAccessToken(
         prefix = prefix,
-        token = token,
+        accessToken = accessToken,
       )
     }
-  }
-
-  private fun sendHeader(
-    exchange: HttpServerExchange,
-    prefix: String,
-    token: JwtAuthentication,
-  ) {
-    exchange.responseHeaders.put(
-      Headers.AUTHORIZATION,
-      "$prefix$token",
-    )
   }
 
   companion object {
@@ -205,4 +215,11 @@ class JwtAuthenticationHandler(
      */
     val SERVER_JWT_ID: AttachmentKey<Jwt> = AttachmentKey.create(Jwt::class.java)
   }
+}
+
+private fun HttpServerExchange.setAccessToken(
+  prefix: String,
+  accessToken: JwtAuthentication,
+) {
+  setAccessToken("$prefix$accessToken")
 }

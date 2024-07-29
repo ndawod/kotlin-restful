@@ -25,12 +25,14 @@
 
 package org.noordawod.kotlin.restful.repository.impl
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.exceptions.JWTDecodeException
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
-import io.undertow.util.Headers
 import org.noordawod.kotlin.core.config.JwtConfiguration
 import org.noordawod.kotlin.core.extension.trimOrNull
 import org.noordawod.kotlin.restful.extension.createJwt
+import org.noordawod.kotlin.restful.extension.setAccessToken
 import org.noordawod.kotlin.restful.extension.verifyJwt
 import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
 import org.noordawod.kotlin.restful.repository.JwtAuthenticationRepository
@@ -57,26 +59,35 @@ internal class JwtAuthenticationRepositoryImpl(
     creator = ::createAccessToken,
     verifier = ::verifyAccessToken,
     prependBearer = true,
+    deleteIfExpired = true,
     enforced = enforced,
     rearmThreshold = java.time.Duration.ofMinutes(config.rearmThreshold.toLong()),
     rearmDuration = java.time.Duration.ofMinutes(config.rearmDuration.toLong()),
   )
+
+  override fun decodeAccessToken(accessToken: JwtAuthentication): Jwt {
+    try {
+      return JWT.decode(accessToken)
+    } catch (error: JWTDecodeException) {
+      throw AuthenticationInvalidException(
+        message = "Decoding of access token failed: $accessToken",
+        cause = error,
+      )
+    }
+  }
 
   override fun getAccessToken(exchange: HttpServerExchange): Jwt? = exchange
     .getAttachment(JwtAuthenticationHandler.SERVER_JWT_ID)
 
   override fun setAccessToken(
     exchange: HttpServerExchange,
-    jwt: JwtAuthentication,
+    accessToken: JwtAuthentication,
   ): Jwt {
-    val token = verifyAccessToken(jwt)
+    val jwt = decodeAccessToken(accessToken)
 
-    exchange.responseHeaders.put(
-      Headers.AUTHORIZATION,
-      "${JwtAuthenticationHandler.BEARER_PREFIX}$jwt",
-    )
+    exchange.setAccessToken(accessToken)
 
-    return token
+    return jwt
   }
 
   override fun createAccessToken(
@@ -100,20 +111,26 @@ internal class JwtAuthenticationRepositoryImpl(
       @Suppress("TooGenericExceptionCaught")
       error: Throwable,
     ) {
-      throw AuthenticationInvalidException("Creation of JWT access token failed.", error)
+      throw AuthenticationInvalidException(
+        message = "Creation of JWT access token failed.",
+        cause = error,
+      )
     }
   }
 
-  override fun verifyAccessToken(jwt: JwtAuthentication): Jwt {
+  override fun verifyAccessToken(accessToken: JwtAuthentication): Jwt {
     try {
       val algorithm = config.algorithm.algorithm(config.secret)
 
-      return algorithm.verifyJwt(issuer).verify(jwt)
+      return algorithm.verifyJwt(issuer).verify(accessToken)
     } catch (
       @Suppress("TooGenericExceptionCaught")
       error: Throwable,
     ) {
-      throw AuthenticationInvalidException("Verification of JWT access token failed.", error)
+      throw AuthenticationInvalidException(
+        message = "Verification of JWT access token failed.",
+        cause = error,
+      )
     }
   }
 }

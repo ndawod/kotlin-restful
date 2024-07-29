@@ -37,6 +37,8 @@ import okio.BufferedSource
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.extension.simplifyType
 import org.noordawod.kotlin.core.extension.trimOrNull
+import org.noordawod.kotlin.restful.undertow.handler.JwtAuthentication
+import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
 
 /**
  * A magic string to signal that the authorization should be deleted at the client side.
@@ -540,50 +542,68 @@ fun HttpServerExchange.sourceAddressOrThrow(provider: ThrowableProvider): java.n
   sourceAddress() ?: throw provider(null)
 
 /**
- * A helper extension function to set the value of [headerName] to [HTTP_HEADER_DELETE].
+ * A helper extension function to set the value of [name] to [HTTP_HEADER_DELETE].
  *
- * @param headerName the header to delete
+ * @param name the header to delete
  */
-fun HttpServerExchange.setDeleteHeader(headerName: String) {
-  setDeleteHeader(HttpString(headerName))
+fun HttpServerExchange.setDeleteHeader(name: String) {
+  setDeleteHeader(HttpString(name))
 }
 
 /**
- * A helper extension function to set the value of [headerName] to [HTTP_HEADER_DELETE].
+ * A helper extension function to set the value of [name] to [HTTP_HEADER_DELETE].
  *
- * @param headerName the header to delete
+ * @param name the header to delete
  */
-fun HttpServerExchange.setDeleteHeader(headerName: HttpString) {
+fun HttpServerExchange.setDeleteHeader(name: HttpString) {
   setHeader(
-    headerName = headerName,
-    headerValue = HTTP_HEADER_DELETE,
+    name = name,
+    value = HTTP_HEADER_DELETE,
   )
 }
 
 /**
- * A helper extension function to set the value of [headerName] to the specified value.
+ * A helper extension function to set the value of [name] to the specified value.
  *
- * @param headerName the header to set
- * @param headerValue the header value to set
+ * @param name the header to set
+ * @param value the header value to set
  */
 fun HttpServerExchange.setHeader(
-  headerName: String,
-  headerValue: String,
+  name: String,
+  value: String,
 ) {
-  responseHeaders.put(HttpString(headerName), headerValue)
+  responseHeaders.put(HttpString(name), value)
 }
 
 /**
- * A helper extension function to set the value of [headerName] to the specified value.
+ * A helper extension function to set the value of [name] to the specified value.
  *
- * @param headerName the header to set
- * @param headerValue the header value to set
+ * @param name the header to set
+ * @param value the header value to set
  */
 fun HttpServerExchange.setHeader(
-  headerName: HttpString,
-  headerValue: String,
+  name: HttpString,
+  value: String,
 ) {
-  responseHeaders.put(headerName, headerValue)
+  responseHeaders.put(name, value)
+}
+
+/**
+ * Sets a new JWT access token in the response headers in this [HttpServerExchange].
+ */
+fun HttpServerExchange.setAccessToken(accessToken: JwtAuthentication) {
+  setHeader(
+    name = Headers.AUTHORIZATION,
+    value = "${JwtAuthenticationHandler.BEARER_PREFIX}$accessToken",
+  )
+}
+
+/**
+ * Instructs the client via this [HttpServerExchange]'s headers to delete the
+ * JWT access token.
+ */
+fun HttpServerExchange.deleteAccessToken() {
+  setDeleteHeader(Headers.AUTHORIZATION)
 }
 
 /**
@@ -609,7 +629,7 @@ fun <T> HttpServerExchange.jsonOutput(
   if (null == model) {
     statusCode = StatusCodes.NO_CONTENT
   } else {
-    responseHeaders.put(
+    setHeader(
       Headers.CONTENT_TYPE,
       "application/json; charset=utf-8",
     )
