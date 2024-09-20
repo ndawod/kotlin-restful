@@ -402,6 +402,9 @@ sealed class HttpResponse {
     override val klassName: String = "PngFile"
   }
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     private const val CHARSET: String = "charset="
     private const val BODY: String = "body="

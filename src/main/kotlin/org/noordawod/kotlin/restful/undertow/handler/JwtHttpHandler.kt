@@ -195,6 +195,9 @@ class JwtAuthenticationHandler(
     }
   }
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     /**
      * The JWT authorization type we support.

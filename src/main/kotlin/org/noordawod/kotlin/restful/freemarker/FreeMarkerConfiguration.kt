@@ -49,6 +49,9 @@ open class FreeMarkerConfiguration(
     }
   }
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     /**
      * The [Version] of FreeMarker we're targeting.

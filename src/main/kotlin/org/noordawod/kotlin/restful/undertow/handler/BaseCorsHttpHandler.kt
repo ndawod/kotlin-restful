@@ -103,6 +103,9 @@ abstract class BaseCorsHttpHandler protected constructor(
     }
   }
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     /**
      * Value for "Access-Control-Request-Method" HTTP header.

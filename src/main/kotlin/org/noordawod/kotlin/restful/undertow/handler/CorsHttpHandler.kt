@@ -54,6 +54,9 @@ class CorsHttpHandler(
     }
   }
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     /**
      * Default maximum age for CORS headers.

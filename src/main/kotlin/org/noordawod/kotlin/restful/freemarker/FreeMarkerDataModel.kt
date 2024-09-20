@@ -82,6 +82,9 @@ interface FreeMarkerDataModel {
     append: Boolean,
   ): String
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     /**
      * The [java.nio.charset.Charset] name this package shall use when encoding query parameters.

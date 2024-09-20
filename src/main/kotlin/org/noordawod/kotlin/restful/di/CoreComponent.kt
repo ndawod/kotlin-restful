@@ -53,6 +53,9 @@ abstract class CoreComponent : BaseComponent {
     }
   }
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     private var privateInstance: CoreComponent? = null
 

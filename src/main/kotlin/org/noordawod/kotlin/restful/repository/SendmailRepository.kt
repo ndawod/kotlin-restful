@@ -52,6 +52,9 @@ interface SendmailRepository {
    */
   fun asyncSend(message: SendmailMessage): Throwable?
 
+  /**
+   * Static functions, constants and other values.
+   */
   companion object {
     /**
      * Creates a new [Mailer] instance based on the provided parameters.
