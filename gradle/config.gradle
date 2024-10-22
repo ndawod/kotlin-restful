@@ -30,7 +30,7 @@ ext.versions = [
     ktlint: '0.51.0-FINAL',
     ktlint_reporter: '0.51.0-FINAL',
     dagger: '2.52',
-    kotlin: '2.0.20', // https://kotlinlang.org/docs/releases.html#release-details
+    kotlin: '2.0.21', // https://kotlinlang.org/docs/releases.html#release-details
     kotlin_coroutines: '1.9.0', // https://github.com/Kotlin/kotlinx.coroutines/releases
     kotlin_serialization: '1.7.3', // https://github.com/Kotlin/kotlinx.serialization/releases
     uribuilder_tiny: '2.7.1',
@@ -39,12 +39,12 @@ ext.versions = [
     aelstad_keccakj: '1.1.0',
     icu4j: '75.1',
     guava: '32.1.3-jre',
-    ndawod_kotlin_core: '4.3.4',
+    ndawod_kotlin_core: '4.3.5',
     moshi: '1.15.1',
     okio: '3.9.1',
-    undertow: '2.3.17.Final',
+    undertow: '2.3.18.Final',
     htmlcompressor: '1.5.2',
-    simplemail: '8.11.3',
+    simplemail: '8.12.2',
     jmail: '1.6.3',
     freemarker: '2.3.33',
     commons_collections4: '4.4',
