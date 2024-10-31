@@ -30,14 +30,13 @@ import com.auth0.jwt.exceptions.JWTDecodeException
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.core.config.JwtConfiguration
-import org.noordawod.kotlin.core.extension.trimOrNull
-import org.noordawod.kotlin.restful.extension.createJwt
+import org.noordawod.kotlin.restful.Jwt
+import org.noordawod.kotlin.restful.JwtAuthentication
+import org.noordawod.kotlin.restful.exception.AuthenticationInvalidException
+import org.noordawod.kotlin.restful.extension.createAccessToken
 import org.noordawod.kotlin.restful.extension.setAccessToken
-import org.noordawod.kotlin.restful.extension.verifyJwt
-import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
+import org.noordawod.kotlin.restful.extension.verifyAccessToken
 import org.noordawod.kotlin.restful.repository.JwtAuthenticationRepository
-import org.noordawod.kotlin.restful.undertow.handler.Jwt
-import org.noordawod.kotlin.restful.undertow.handler.JwtAuthentication
 import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
 
 /**
@@ -96,41 +95,16 @@ internal class JwtAuthenticationRepositoryImpl(
     issuer: String?,
     audience: Collection<String>?,
     expiresAt: java.util.Date,
-  ): JwtAuthentication {
-    try {
-      val algorithm = config.algorithm.algorithm(config.secret)
+  ): JwtAuthentication = config.createAccessToken(
+    id = id,
+    subject = subject,
+    issuer = issuer ?: this.issuer,
+    audience = audience,
+    expiresAt = expiresAt,
+  )
 
-      return algorithm.createJwt(
-        id = id,
-        subject = subject,
-        issuer = (issuer ?: this.issuer).trimOrNull(),
-        audience = audience,
-        expiresAt = expiresAt,
-      )
-    } catch (
-      @Suppress("TooGenericExceptionCaught")
-      error: Throwable,
-    ) {
-      throw AuthenticationInvalidException(
-        message = "Creation of JWT access token failed.",
-        cause = error,
-      )
-    }
-  }
-
-  override fun verifyAccessToken(accessToken: JwtAuthentication): Jwt {
-    try {
-      val algorithm = config.algorithm.algorithm(config.secret)
-
-      return algorithm.verifyJwt(issuer).verify(accessToken)
-    } catch (
-      @Suppress("TooGenericExceptionCaught")
-      error: Throwable,
-    ) {
-      throw AuthenticationInvalidException(
-        message = "Verification of JWT access token failed.",
-        cause = error,
-      )
-    }
-  }
+  override fun verifyAccessToken(accessToken: JwtAuthentication): Jwt = config.verifyAccessToken(
+    accessToken = accessToken,
+    issuer = issuer,
+  )
 }

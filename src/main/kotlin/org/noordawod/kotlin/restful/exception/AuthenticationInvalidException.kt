@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2022 Noor Dawod. All rights reserved.
+ * Copyright 2024 Noor Dawod. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,33 +21,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-ext.encoding = 'UTF-8'
-ext.versions = [
-    jdk: JavaVersion.VERSION_11,
-    plugin_versions_outdated: '0.51.0',
-    plugin_detekt: '1.23.7',
-    plugin_ktlint: '12.1.1',
-    ktlint: '0.51.0-FINAL',
-    ktlint_reporter: '0.51.0-FINAL',
-    dagger: '2.52',
-    kotlin: '2.0.21', // https://kotlinlang.org/docs/releases.html#release-details
-    kotlin_coroutines: '1.9.0', // https://github.com/Kotlin/kotlinx.coroutines/releases
-    kotlin_serialization: '1.7.3', // https://github.com/Kotlin/kotlinx.serialization/releases
-    uribuilder_tiny: '2.7.1',
-    seruco_base62: '0.1.3',
-    auth0_jwt: '4.4.0',
-    aelstad_keccakj: '1.1.0',
-    icu4j: '76.1',
-    guava: '32.1.3-jre',
-    ndawod_kotlin_core: '4.3.6',
-    moshi: '1.15.1',
-    okio: '3.9.1',
-    undertow: '2.3.18.Final',
-    htmlcompressor: '1.5.2',
-    simplemail: '8.12.2',
-    jmail: '1.6.3',
-    freemarker: '2.3.33',
-    commons_collections4: '4.4',
-    apache_httpclient5: '5.4.1',
-    trbl_blurhash: '1.0.0'
-]
+package org.noordawod.kotlin.restful.exception
+
+/**
+ * An exception for when an authentication is invalid or erroneous.
+ *
+ * @param message a short explanation of why it's invalid or erroneous
+ * @param cause a [Throwable], if any, associated with the error
+ */
+open class AuthenticationInvalidException(
+  message: String,
+  cause: Throwable? = null,
+) : AuthenticationException(
+  message = message,
+  cause = cause,
+)

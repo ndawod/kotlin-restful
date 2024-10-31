@@ -28,10 +28,12 @@ package org.noordawod.kotlin.restful.extension
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.exceptions.IncorrectClaimException
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.extension.trimOrNull
-import org.noordawod.kotlin.restful.repository.AuthenticationCreationException
-import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
+import org.noordawod.kotlin.restful.JwtCreateException
+import org.noordawod.kotlin.restful.exception.AuthenticationCreationException
+import org.noordawod.kotlin.restful.exception.AuthenticationInvalidException
 
 /**
  * Generates a new JWT token using this [Algorithm] instance.
@@ -83,11 +85,11 @@ fun Algorithm.createJwt(
     }
 
     return jwt.sign(this)
-  } catch (
-    @Suppress("TooGenericExceptionCaught")
-    error: Throwable,
-  ) {
-    throw AuthenticationInvalidException("Creation of JWT access token failed.", error)
+  } catch (error: JwtCreateException) {
+    throw AuthenticationCreationException(
+      message = "Creation of JWT access token failed.",
+      cause = error,
+    )
   }
 }
 
@@ -107,10 +109,10 @@ fun Algorithm.verifyJwt(issuer: String?): JWTVerifier {
     }
 
     return jwt.build()
-  } catch (
-    @Suppress("TooGenericExceptionCaught")
-    error: Throwable,
-  ) {
-    throw AuthenticationInvalidException("Verification of JWT access token failed.", error)
+  } catch (error: IncorrectClaimException) {
+    throw AuthenticationInvalidException(
+      message = "Verification of JWT access token failed.",
+      cause = error,
+    )
   }
 }

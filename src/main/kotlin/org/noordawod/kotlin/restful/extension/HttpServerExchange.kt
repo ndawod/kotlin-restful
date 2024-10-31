@@ -37,7 +37,7 @@ import okio.BufferedSource
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.extension.simplifyType
 import org.noordawod.kotlin.core.extension.trimOrNull
-import org.noordawod.kotlin.restful.undertow.handler.JwtAuthentication
+import org.noordawod.kotlin.restful.JwtAuthentication
 import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
 
 /**

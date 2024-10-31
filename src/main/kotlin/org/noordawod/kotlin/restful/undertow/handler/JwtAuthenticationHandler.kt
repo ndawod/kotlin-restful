@@ -25,41 +25,18 @@
 
 package org.noordawod.kotlin.restful.undertow.handler
 
-import com.auth0.jwt.interfaces.DecodedJWT
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.AttachmentKey
 import io.undertow.util.Headers
+import org.noordawod.kotlin.restful.Jwt
+import org.noordawod.kotlin.restful.JwtAuthentication
+import org.noordawod.kotlin.restful.JwtAuthenticationCreator
+import org.noordawod.kotlin.restful.JwtAuthenticationVerifier
+import org.noordawod.kotlin.restful.exception.AuthenticationException
+import org.noordawod.kotlin.restful.exception.AuthenticationInvalidException
 import org.noordawod.kotlin.restful.extension.deleteAccessToken
 import org.noordawod.kotlin.restful.extension.setAccessToken
-import org.noordawod.kotlin.restful.repository.AuthenticationException
-import org.noordawod.kotlin.restful.repository.AuthenticationInvalidException
-
-/**
- * The decoded JWT after it had passed verification.
- */
-typealias Jwt = DecodedJWT
-
-/**
- * A function signature to create a JWT string that expires in a specific date.
- */
-typealias JwtAuthenticationCreator = (
-  id: String,
-  subject: String?,
-  issuer: String?,
-  audience: Collection<String>?,
-  expiresAt: java.util.Date,
-) -> String
-
-/**
- * A function signature that verifies a JWT string and returns the [Jwt].
- */
-typealias JwtAuthenticationVerifier = (accessToken: String) -> Jwt
-
-/**
- * The JWT authorization access token type.
- */
-typealias JwtAuthentication = String
 
 /**
  * Performs simple authentication using a JSON Web Token mechanism.

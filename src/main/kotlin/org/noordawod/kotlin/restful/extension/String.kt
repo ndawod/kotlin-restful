@@ -26,10 +26,16 @@
 package org.noordawod.kotlin.restful.extension
 
 import com.auth0.jwt.JWT
+import com.auth0.jwt.exceptions.JWTDecodeException
 import org.noordawod.kotlin.core.Constants
+import org.noordawod.kotlin.core.config.JwtConfiguration
 import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 import org.noordawod.kotlin.core.extension.trimOrNull
-import org.noordawod.kotlin.restful.undertow.handler.Jwt
+import org.noordawod.kotlin.restful.Constants.COOKIE_EXPIRATION_SEPARATOR
+import org.noordawod.kotlin.restful.Jwt
+import org.noordawod.kotlin.restful.JwtAuthentication
+import org.noordawod.kotlin.restful.JwtDecodeException
+import org.noordawod.kotlin.restful.exception.AuthenticationInvalidException
 import org.noordawod.kotlin.restful.util.QuerySeparator
 
 /**
@@ -44,7 +50,7 @@ import org.noordawod.kotlin.restful.util.QuerySeparator
 fun String.encodeCookieWithExpiration(
   expiration: java.util.Date,
   useSeconds: Boolean = true,
-  separator: Char = '.',
+  separator: Char = COOKIE_EXPIRATION_SEPARATOR,
 ): String {
   val multiplier = if (useSeconds) MILLIS_IN_1_SECOND else 1
   val expirationValue = expiration.time / multiplier
@@ -63,7 +69,7 @@ fun String.encodeCookieWithExpiration(
  */
 fun String.decodeCookieWithExpiration(
   useSeconds: Boolean = true,
-  separator: Char = '.',
+  separator: Char = COOKIE_EXPIRATION_SEPARATOR,
 ): Pair<String, java.util.Date>? {
   val separatorPos = lastIndexOf(separator)
   if (0 > separatorPos) {
@@ -140,23 +146,117 @@ fun Collection<String>.basePaths(basePath: String): Collection<String> = mapNotN
 }
 
 /**
- * Returns true if this String representing a JWT access token with an
- * expired expiration date, false otherwise.
+ * Attempts to decode this string as a JWT and returns it on success, null otherwise.
  */
-fun String.isAccessTokenExpired(): Boolean = JWT.decode(this).isAccessTokenExpired()
+fun String.decodeAccessToken(): Jwt? = try {
+  JWT.decode(this)
+} catch (ignored: JWTDecodeException) {
+  null
+}
 
 /**
- * Returns true if this [Jwt] has an expired expiration date, false otherwise.
+ * Creates a JWT with the specified details.
+ *
+ * @param id the value of the JWT identification field (jti)
+ * @param subject the value of the JWT subject field (sub)
+ * @param issuer the value of the JWT issuer field (iss)
+ * @param audience the value of the JWT audience field (aud)
+ * @param expiresAt the value of the JWT expires field (exp)
  */
-fun Jwt.isAccessTokenExpired(): Boolean = isAccessTokenExpired(java.util.Date())
+@Throws(AuthenticationInvalidException::class)
+fun JwtConfiguration.createAccessToken(
+  id: String,
+  subject: String?,
+  issuer: String?,
+  audience: Collection<String>?,
+  expiresAt: java.util.Date,
+): JwtAuthentication {
+  try {
+    return algorithm
+      .algorithm(secret)
+      .createJwt(
+        id = id,
+        subject = subject,
+        issuer = issuer.trimOrNull(),
+        audience = audience,
+        expiresAt = expiresAt,
+      )
+  } catch (
+    @Suppress("TooGenericExceptionCaught")
+    error: Throwable,
+  ) {
+    throw AuthenticationInvalidException(
+      message = "Creation of JWT access token failed.",
+      cause = error,
+    )
+  }
+}
+
+/**
+ * Verifies the validity of the provided [access token][accessToken] and returns its decoded
+ * parts, or throws an [AuthenticationInvalidException] if it's invalid.
+ *
+ * @param accessToken the access token to verify
+ * @param issuer optional issuer to pin and check the access token against
+ */
+@Throws(AuthenticationInvalidException::class)
+fun JwtConfiguration.verifyAccessToken(
+  accessToken: JwtAuthentication,
+  issuer: String?,
+): Jwt {
+  try {
+    return algorithm
+      .algorithm(secret)
+      .verifyJwt(issuer)
+      .verify(accessToken)
+  } catch (
+    @Suppress("TooGenericExceptionCaught")
+    error: Throwable,
+  ) {
+    throw AuthenticationInvalidException(
+      message = "Verification of JWT access token failed.",
+      cause = error,
+    )
+  }
+}
+
+/**
+ * Returns true if this String representing a [Jwt] has an expiration date
+ * older than [date], false otherwise.
+ *
+ * @param date the date to check against
+ */
+@Throws(JwtDecodeException::class)
+fun String.isAccessTokenExpired(date: java.util.Date): Boolean = try {
+  JWT.decode(this).isAccessTokenExpired(date)
+} catch (
+  @Suppress("TooGenericExceptionCaught")
+  ignored: Throwable,
+) {
+  false
+}
+
+/**
+ * Returns true if this String representing a [Jwt] has an expired expiration date,
+ * false otherwise.
+ */
+@Throws(JwtDecodeException::class)
+fun String.isAccessTokenExpired(): Boolean = isAccessTokenExpired(java.util.Date())
 
 /**
  * Returns true if this [Jwt] has an expiration date older than [date], false otherwise.
  *
  * @param date the date to check against
  */
+@Throws(JwtDecodeException::class)
 fun Jwt.isAccessTokenExpired(date: java.util.Date): Boolean {
   val expiresAt = this.expiresAt?.time
 
   return null == expiresAt || date.time >= expiresAt
 }
+
+/**
+ * Returns true if this [Jwt] has an expired expiration date, false otherwise.
+ */
+@Throws(JwtDecodeException::class)
+fun Jwt.isAccessTokenExpired(): Boolean = isAccessTokenExpired(java.util.Date())

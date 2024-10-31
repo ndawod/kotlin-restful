@@ -26,41 +26,9 @@ package org.noordawod.kotlin.restful.repository
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
 import org.noordawod.kotlin.core.config.JwtConfiguration
-import org.noordawod.kotlin.restful.undertow.handler.Jwt
-import org.noordawod.kotlin.restful.undertow.handler.JwtAuthentication
-
-/**
- * A generic exception for all problems with authentication.
- *
- * @param message a short explanation of what happened
- * @param cause a [Throwable], if any, that caused the problem
- */
-open class AuthenticationException(
-  message: String,
-  cause: Throwable? = null,
-) : RuntimeException(message, cause)
-
-/**
- * An exception for when an authentication is invalid or erroneous.
- *
- * @param message a short explanation of why it's invalid or erroneous
- * @param cause a [Throwable], if any, associated with the error
- */
-open class AuthenticationInvalidException(
-  message: String,
-  cause: Throwable? = null,
-) : AuthenticationException(message, cause)
-
-/**
- * An exception for when an authentication cannot be created.
- *
- * @param message a short explanation of why it cannot be created
- * @param cause a [Throwable], if any, associated with the error
- */
-open class AuthenticationCreationException(
-  message: String,
-  cause: Throwable? = null,
-) : AuthenticationException(message, cause)
+import org.noordawod.kotlin.restful.Jwt
+import org.noordawod.kotlin.restful.JwtAuthentication
+import org.noordawod.kotlin.restful.exception.AuthenticationInvalidException
 
 /**
  * A contract that describes methods and a configuration that facilitates authentication

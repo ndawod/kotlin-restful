@@ -65,6 +65,11 @@ object Constants {
   const val RESOURCE_DELETED: String = "deleted"
 
   /**
+   * The character used to separator a cookie value from its expiration.
+   */
+  const val COOKIE_EXPIRATION_SEPARATOR: Char = '!'
+
+  /**
    * A regular expression pattern that matches a cache-buster URI base path.
    */
   val CACHE_BUSTER_PATTERN: java.util.regex.Pattern =
