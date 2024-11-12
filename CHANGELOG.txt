@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.5.0 (November 12, 2024)
+    Bump up dependencies versions.
+
 5.4.0 (October 31, 2024)
     Refresh a few classes, and place typealiases and exceptions into their own files.
 
