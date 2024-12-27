@@ -618,6 +618,12 @@ fun HttpServerExchange.deleteAccessToken() {
 fun HttpServerExchange.bufferedInput(): BufferedSource = inputStream.bufferedInput()
 
 /**
+ * Returns the body of the request in this [HttpServerExchange]'s
+ * [InputStream][java.io.InputStream].
+ */
+fun HttpServerExchange.body(): String = inputStream.readBytes().toString(Charsets.UTF_8)
+
+/**
  * Returns a new [BufferedSink] that buffers writes from this [HttpServerExchange]'s
  * [OutputStream][java.io.OutputStream].
  */
