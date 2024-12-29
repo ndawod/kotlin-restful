@@ -35,13 +35,18 @@ import org.noordawod.kotlin.restful.config.CookieConfiguration
  *
  * @param name the name of the cookie
  * @param value the value of the cookie
+ * @param secure whether to send the cookie for a secure (https) website
+ * @param sameSite whether to send the cookie only for the same site it was created in
  * @param separator the separator character between the cookie value and its expiration,
  * defaults to [COOKIE_EXPIRATION_SEPARATOR][Constants.COOKIE_EXPIRATION_SEPARATOR]
  * @param now the base time for calculating expiration, defaults to current time
  */
+@Suppress("LongParameterList")
 fun java.time.Duration.createCookie(
   name: String,
   value: String,
+  secure: Boolean = true,
+  sameSite: Boolean = true,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
 ): Cookie {
@@ -54,9 +59,9 @@ fun java.time.Duration.createCookie(
 
   return CookieImpl(name, valueEncoded)
     .setHttpOnly(false)
-    .setSecure(true)
-    .setSameSite(true)
-    .setSameSiteMode(STRICT_COOKIE)
+    .setSecure(secure)
+    .setSameSite(sameSite)
+    .setSameSiteMode(if (sameSite) SAME_SITE_STRICT else SAME_SITE_NONE)
     .setPath("/")
     .setMaxAge(maxAge)
     .setExpires(expiration)
@@ -68,12 +73,17 @@ fun java.time.Duration.createCookie(
  *
  * @param name the name of the cookie
  * @param value the value of the cookie
+ * @param secure whether to send the cookie for a secure (https) website
+ * @param sameSite whether to send the cookie only for the same site it was created in
  * @param separator the separator character between the cookie value and its expiration
  * @param now the current date and time, defaults to current time
  */
+@Suppress("LongParameterList")
 fun CookieConfiguration.createCookie(
   name: String,
   value: String,
+  secure: Boolean = true,
+  sameSite: Boolean = true,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
 ): Cookie = java.time.Duration.ofSeconds(seconds.toLong()).createCookie(
@@ -87,15 +97,21 @@ fun CookieConfiguration.createCookie(
  * Returns a Strict cookie with an expired date named like this String.
  *
  * This is the way to force deletion of that cookie on the client side.
+ *
+ * @param secure whether to send the cookie for a secure (https) website
+ * @param sameSite whether to send the cookie only for the same site it was created in
  */
 @Suppress("MagicNumber")
-val String.deleteCookie
-  get(): Cookie = CookieImpl(this, HTTP_HEADER_DELETE)
-    .setHttpOnly(false)
-    .setSecure(true)
-    .setSameSite(true)
-    .setSameSiteMode(STRICT_COOKIE)
-    .setPath("/")
-    .setExpires(java.util.Date().minusDays(365L))
+fun String.deleteCookie(
+  secure: Boolean = true,
+  sameSite: Boolean = true,
+): Cookie = CookieImpl(this, HTTP_HEADER_DELETE)
+  .setHttpOnly(false)
+  .setSecure(secure)
+  .setSameSite(sameSite)
+  .setSameSiteMode(if (sameSite) SAME_SITE_STRICT else SAME_SITE_NONE)
+  .setPath("/")
+  .setExpires(java.util.Date().minusDays(365L))
 
-private const val STRICT_COOKIE: String = "Strict"
+private const val SAME_SITE_STRICT: String = "Strict"
+private const val SAME_SITE_NONE: String = "None"
