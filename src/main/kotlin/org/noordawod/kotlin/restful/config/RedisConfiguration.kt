@@ -32,9 +32,15 @@ import kotlinx.serialization.Serializable
  *
  * @param host which IP address to bind to when starting the Redis server
  * @param port which port to bind to when starting the Redis server
+ * @param dbNo the database number to work with
+ * @param username optional username to be able to connect to Redis server
+ * @param password optional password to be able to connect to Redis server
  */
 @Serializable
 data class RedisConfiguration(
   val host: String,
   val port: Int,
+  val dbNo: Int,
+  val username: String? = null,
+  val password: String? = null,
 )

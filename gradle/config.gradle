@@ -39,7 +39,7 @@ ext.versions = [
     aelstad_keccakj: '1.1.0',
     icu4j: '76.1',
     guava: '33.4.0-jre',
-    ndawod_kotlin_core: '4.5.0',
+    ndawod_kotlin_core: '4.5.1',
     moshi: '1.15.2',
     okio: '3.9.1',
     undertow: '2.3.18.Final',
@@ -47,7 +47,7 @@ ext.versions = [
     simplemail: '8.12.4',
     jmail: '1.6.3',
     freemarker: '2.3.34',
-    commons_collections4: '4.4',
+    commons_collections4: '4.5.0-M3',
     apache_httpclient5: '5.4.1',
     trbl_blurhash: '1.0.0'
 ]
