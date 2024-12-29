@@ -46,7 +46,7 @@ fun java.time.Duration.createCookie(
   name: String,
   value: String,
   secure: Boolean = true,
-  sameSite: Boolean = true,
+  sameSite: Boolean? = true,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
 ): Cookie {
@@ -60,8 +60,11 @@ fun java.time.Duration.createCookie(
   return CookieImpl(name, valueEncoded)
     .setHttpOnly(false)
     .setSecure(secure)
-    .setSameSite(sameSite)
-    .setSameSiteMode(if (sameSite) SAME_SITE_STRICT else SAME_SITE_NONE)
+    .setSameSiteMode(when (sameSite) {
+      true -> SAME_SITE_STRICT
+      false -> SAME_SITE_NONE
+      null -> null
+    })
     .setPath("/")
     .setMaxAge(maxAge)
     .setExpires(expiration)
@@ -83,12 +86,14 @@ fun CookieConfiguration.createCookie(
   name: String,
   value: String,
   secure: Boolean = true,
-  sameSite: Boolean = true,
+  sameSite: Boolean? = true,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
 ): Cookie = java.time.Duration.ofSeconds(seconds.toLong()).createCookie(
   name = name,
   value = value,
+  secure = secure,
+  sameSite = sameSite,
   separator = separator,
   now = now,
 )
@@ -104,12 +109,15 @@ fun CookieConfiguration.createCookie(
 @Suppress("MagicNumber")
 fun String.deleteCookie(
   secure: Boolean = true,
-  sameSite: Boolean = true,
+  sameSite: Boolean? = true,
 ): Cookie = CookieImpl(this, HTTP_HEADER_DELETE)
   .setHttpOnly(false)
   .setSecure(secure)
-  .setSameSite(sameSite)
-  .setSameSiteMode(if (sameSite) SAME_SITE_STRICT else SAME_SITE_NONE)
+  .setSameSiteMode(when (sameSite) {
+    true -> SAME_SITE_STRICT
+    false -> SAME_SITE_NONE
+    null -> null
+  })
   .setPath("/")
   .setExpires(java.util.Date().minusDays(365L))
 
