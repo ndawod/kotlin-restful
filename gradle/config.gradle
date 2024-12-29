@@ -39,7 +39,7 @@ ext.versions = [
     aelstad_keccakj: '1.1.0',
     icu4j: '76.1',
     guava: '33.4.0-jre',
-    ndawod_kotlin_core: '4.5.1',
+    ndawod_kotlin_core: '4.5.2',
     moshi: '1.15.2',
     okio: '3.9.1',
     undertow: '2.3.18.Final',
