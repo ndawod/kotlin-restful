@@ -21,6 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:Suppress("unused")
+
 package org.noordawod.kotlin.restful.extension
 
 import io.undertow.server.handlers.Cookie
@@ -60,11 +62,13 @@ fun java.time.Duration.createCookie(
   return CookieImpl(name, valueEncoded)
     .setHttpOnly(false)
     .setSecure(secure)
-    .setSameSiteMode(when (sameSite) {
-      true -> SAME_SITE_STRICT
-      false -> SAME_SITE_NONE
-      null -> null
-    })
+    .setSameSiteMode(
+      when (sameSite) {
+        true -> SAME_SITE_STRICT
+        false -> SAME_SITE_NONE
+        null -> null
+      },
+    )
     .setPath("/")
     .setMaxAge(maxAge)
     .setExpires(expiration)
@@ -113,11 +117,13 @@ fun String.deleteCookie(
 ): Cookie = CookieImpl(this, HTTP_HEADER_DELETE)
   .setHttpOnly(false)
   .setSecure(secure)
-  .setSameSiteMode(when (sameSite) {
-    true -> SAME_SITE_STRICT
-    false -> SAME_SITE_NONE
-    null -> null
-  })
+  .setSameSiteMode(
+    when (sameSite) {
+      true -> SAME_SITE_STRICT
+      false -> SAME_SITE_NONE
+      null -> null
+    },
+  )
   .setPath("/")
   .setExpires(java.util.Date().minusDays(365L))
 

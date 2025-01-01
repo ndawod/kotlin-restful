@@ -21,6 +21,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:Suppress("unused")
+
 package org.noordawod.kotlin.restful.extension
 
 import com.squareup.moshi.Moshi
@@ -35,9 +37,26 @@ inline fun <reified T : Any> Moshi.toJson(model: T): String =
   adapter(T::class.java.simplifyType()).toJson(model)
 
 /**
+ * Returns the JSON representation of a model.
+ *
+ * @param model the model to transform
+ */
+inline fun <reified T : Any> Moshi.toJsonValue(model: T): Any? =
+  adapter(T::class.java.simplifyType()).toJsonValue(model)
+
+/**
  * Returns the model from a JSON representation.
  *
  * @param json the JSON representation
  */
 inline fun <reified T : Any> Moshi.fromJson(json: String): T? =
   adapter(T::class.java).fromJson(json)
+
+/**
+ * Returns the model from a model representation, which may be any scalar value: `null`,
+ * `true`, `false`, `List`, `Map`, etc.
+ *
+ * @param value the model representation
+ */
+inline fun <reified T : Any> Moshi.fromJsonValue(value: Any): T? =
+  adapter(T::class.java).fromJsonValue(value)

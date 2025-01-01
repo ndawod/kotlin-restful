@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.6.5 (January 1, 2025)
+    Add a couple of new Moshi functions.
+
 5.6.4 (December 30, 2024)
     Accept a couple of additional arguments when working with cookies.
 
