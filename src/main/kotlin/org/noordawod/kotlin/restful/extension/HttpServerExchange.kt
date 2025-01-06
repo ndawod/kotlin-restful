@@ -29,6 +29,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.undertow.server.HttpServerExchange
+import io.undertow.util.AttachmentKey
 import io.undertow.util.Headers
 import io.undertow.util.HttpString
 import io.undertow.util.StatusCodes
@@ -36,6 +37,7 @@ import okio.BufferedSink
 import okio.BufferedSource
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.extension.simplifyType
+import org.noordawod.kotlin.core.extension.toCountryCodeOrNull
 import org.noordawod.kotlin.core.extension.trimOrNull
 import org.noordawod.kotlin.restful.JwtAuthentication
 import org.noordawod.kotlin.restful.undertow.handler.JwtAuthenticationHandler
@@ -511,26 +513,33 @@ fun HttpServerExchange.clientLocaleOr(fallback: java.util.Locale): java.util.Loc
  * their value instead if found.
  */
 fun HttpServerExchange.sourceAddress(): java.net.InetAddress? {
-  var forwardedSourceAddress: String? = requestHeaders["X-Real-IP"]?.peekFirst()
-    ?: requestHeaders["CF-Connecting-IP"]?.peekFirst()
-    ?: requestHeaders["X-Forwarded-For"]?.peekFirst()
+  var address: java.net.InetAddress? = getAttachment(REMOTE_IP_ADDR_ID)
+  if (null == address) {
+    var forwardedSourceAddress: String? = requestHeaders["CF-Connecting-IP"]?.peekFirst()
+      ?: requestHeaders["X-Forwarded-For"]?.peekFirst()
+      ?: requestHeaders["X-Real-IP"]?.peekFirst()
 
-  forwardedSourceAddress = forwardedSourceAddress?.trimOrNull()
+    forwardedSourceAddress = forwardedSourceAddress?.trimOrNull()
 
-  if (null != forwardedSourceAddress) {
-    val commaPos = forwardedSourceAddress.indexOf(',')
-    if (0 < commaPos) {
-      forwardedSourceAddress = forwardedSourceAddress.substring(0, commaPos)
+    if (null != forwardedSourceAddress) {
+      val commaPos = forwardedSourceAddress.indexOf(',')
+      if (0 < commaPos) {
+        forwardedSourceAddress = forwardedSourceAddress.substring(0, commaPos)
+      }
+
+      address = try {
+        java.net.InetAddress.getByName(forwardedSourceAddress)
+      } catch (_: java.net.UnknownHostException) {
+        null
+      } ?: sourceAddress?.address
     }
 
-    try {
-      return java.net.InetAddress.getByName(forwardedSourceAddress)
-    } catch (ignored: java.net.UnknownHostException) {
-      // NO-OP.
+    if (null != address) {
+      putAttachment(REMOTE_IP_ADDR_ID, address)
     }
   }
 
-  return sourceAddress?.address
+  return address
 }
 
 /**
@@ -540,6 +549,29 @@ fun HttpServerExchange.sourceAddress(): java.net.InetAddress? {
 @Suppress("NestedBlockDepth")
 fun HttpServerExchange.sourceAddressOrThrow(provider: ThrowableProvider): java.net.InetAddress =
   sourceAddress() ?: throw provider(null)
+
+/**
+ * Returns the source [IP address][java.net.InetAddress], be it an IPv6 or IPv6, provided
+ * by this [HttpServerExchange] request, if any, throws otherwise.
+ *
+ * Note: This function caches the resolved IP address in the same [HttpServerExchange], so
+ * calling it repeatedly will cause it reuse the cached value.
+ */
+@Throws(IllegalStateException::class)
+fun HttpServerExchange.sourceAddressOrThrow(): java.net.InetAddress = sourceAddressOrThrow {
+  RuntimeException("Unable to retrieve the source IP address.")
+}
+
+/**
+ * Returns the detected country code of the remote user as set by CloudFlare  on success,
+ * null otherwise.
+ *
+ * For more details: https://rdr.to/CtMivGGvoi6
+ */
+fun HttpServerExchange.cloudFlareClientCountryCode(): String? = requestHeaders["CF-IPCountry"]
+  ?.peekFirst()
+  ?.trimOrNull()
+  ?.toCountryCodeOrNull()
 
 /**
  * A helper extension function to set the value of [name] to [HTTP_HEADER_DELETE].
@@ -624,6 +656,16 @@ fun HttpServerExchange.bufferedInput(): BufferedSource = inputStream.bufferedInp
 fun HttpServerExchange.body(): String = inputStream.readBytes().toString(Charsets.UTF_8)
 
 /**
+ * Returns the body of the request in this [HttpServerExchange]'s
+ * [InputStream][java.io.InputStream] if it's not empty, null otherwise.
+ */
+fun HttpServerExchange.bodyOrNull(): String? {
+  val body = body()
+
+  return if (body.isEmpty()) null else body
+}
+
+/**
  * Returns a new [BufferedSink] that buffers writes from this [HttpServerExchange]'s
  * [OutputStream][java.io.OutputStream].
  */
@@ -705,3 +747,5 @@ internal fun java.io.InputStream.bufferOutput(
 
   return totalBytes
 }
+
+private val REMOTE_IP_ADDR_ID = AttachmentKey.create(java.net.InetAddress::class.java)

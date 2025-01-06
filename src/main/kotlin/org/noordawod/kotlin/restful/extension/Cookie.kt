@@ -27,10 +27,34 @@ package org.noordawod.kotlin.restful.extension
 
 import io.undertow.server.handlers.Cookie
 import io.undertow.server.handlers.CookieImpl
+import io.undertow.server.handlers.CookieSameSiteMode
 import org.noordawod.kotlin.core.extension.minusDays
 import org.noordawod.kotlin.core.extension.plusSeconds
 import org.noordawod.kotlin.restful.Constants
 import org.noordawod.kotlin.restful.config.CookieConfiguration
+
+/**
+ * The values for SameSite cookie parameter.
+ */
+enum class SameSiteMode(private val value: CookieSameSiteMode) {
+  /**
+   * Strict SameSite value.
+   */
+  STRICT(CookieSameSiteMode.STRICT),
+
+  /**
+   * Lax SameSite value.
+   */
+  LAX(CookieSameSiteMode.LAX),
+
+  /**
+   * None SameSite value.
+   */
+  NONE(CookieSameSiteMode.NONE),
+  ;
+
+  override fun toString(): String = "$value"
+}
 
 /**
  * Returns a Strict cookie with the specified name, value and [this Duration][java.time.Duration].
@@ -39,6 +63,7 @@ import org.noordawod.kotlin.restful.config.CookieConfiguration
  * @param value the value of the cookie
  * @param secure whether to send the cookie for a secure (https) website
  * @param sameSite whether to send the cookie only for the same site it was created in
+ * @param sameSiteMode how to deal with cookies when the site is accessed through a 3rd party
  * @param separator the separator character between the cookie value and its expiration,
  * defaults to [COOKIE_EXPIRATION_SEPARATOR][Constants.COOKIE_EXPIRATION_SEPARATOR]
  * @param now the base time for calculating expiration, defaults to current time
@@ -48,7 +73,8 @@ fun java.time.Duration.createCookie(
   name: String,
   value: String,
   secure: Boolean = true,
-  sameSite: Boolean? = true,
+  sameSite: Boolean = false,
+  sameSiteMode: SameSiteMode? = null,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
 ): Cookie {
@@ -62,13 +88,8 @@ fun java.time.Duration.createCookie(
   return CookieImpl(name, valueEncoded)
     .setHttpOnly(false)
     .setSecure(secure)
-    .setSameSiteMode(
-      when (sameSite) {
-        true -> SAME_SITE_STRICT
-        false -> SAME_SITE_NONE
-        null -> null
-      },
-    )
+    .setSameSite(sameSite)
+    .setSameSiteMode(if (null == sameSiteMode) null else "$sameSiteMode")
     .setPath("/")
     .setMaxAge(maxAge)
     .setExpires(expiration)
@@ -82,6 +103,7 @@ fun java.time.Duration.createCookie(
  * @param value the value of the cookie
  * @param secure whether to send the cookie for a secure (https) website
  * @param sameSite whether to send the cookie only for the same site it was created in
+ * @param sameSiteMode how to deal with cookies when the site is accessed through a 3rd party
  * @param separator the separator character between the cookie value and its expiration
  * @param now the current date and time, defaults to current time
  */
@@ -90,7 +112,8 @@ fun CookieConfiguration.createCookie(
   name: String,
   value: String,
   secure: Boolean = true,
-  sameSite: Boolean? = true,
+  sameSite: Boolean = false,
+  sameSiteMode: SameSiteMode? = null,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
 ): Cookie = java.time.Duration.ofSeconds(seconds.toLong()).createCookie(
@@ -98,6 +121,7 @@ fun CookieConfiguration.createCookie(
   value = value,
   secure = secure,
   sameSite = sameSite,
+  sameSiteMode = sameSiteMode,
   separator = separator,
   now = now,
 )
@@ -113,19 +137,11 @@ fun CookieConfiguration.createCookie(
 @Suppress("MagicNumber")
 fun String.deleteCookie(
   secure: Boolean = true,
-  sameSite: Boolean? = true,
+  sameSite: Boolean = true,
 ): Cookie = CookieImpl(this, HTTP_HEADER_DELETE)
   .setHttpOnly(false)
   .setSecure(secure)
-  .setSameSiteMode(
-    when (sameSite) {
-      true -> SAME_SITE_STRICT
-      false -> SAME_SITE_NONE
-      null -> null
-    },
-  )
+  .setSameSite(sameSite)
+  .setSameSiteMode("${SameSiteMode.STRICT}")
   .setPath("/")
   .setExpires(java.util.Date().minusDays(365L))
-
-private const val SAME_SITE_STRICT: String = "Strict"
-private const val SAME_SITE_NONE: String = "None"
