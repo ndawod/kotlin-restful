@@ -537,10 +537,10 @@ fun HttpServerExchange.sourceAddress(): java.net.InetAddress? {
     if (null == address) {
       address = sourceAddress?.address
     }
-  }
 
-  if (null != address) {
-    putAttachment(REMOTE_IP_ADDR_ID, address)
+    if (null != address) {
+      putAttachment(REMOTE_IP_ADDR_ID, address)
+    }
   }
 
   return address
