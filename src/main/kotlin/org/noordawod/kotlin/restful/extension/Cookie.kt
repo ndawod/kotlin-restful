@@ -64,7 +64,6 @@ enum class SameSiteMode(
  * @param name the name of the cookie
  * @param value the value of the cookie
  * @param secure whether to send the cookie for a secure (https) website
- * @param sameSite whether to send the cookie only for the same site it was created in
  * @param sameSiteMode how to deal with cookies when the site is accessed through a 3rd party
  * @param separator the separator character between the cookie value and its expiration,
  * defaults to [COOKIE_EXPIRATION_SEPARATOR][Constants.COOKIE_EXPIRATION_SEPARATOR]
@@ -75,7 +74,6 @@ fun java.time.Duration.createCookie(
   name: String,
   value: String,
   secure: Boolean = true,
-  sameSite: Boolean = false,
   sameSiteMode: SameSiteMode? = null,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
@@ -90,8 +88,8 @@ fun java.time.Duration.createCookie(
   return CookieImpl(name, valueEncoded)
     .setHttpOnly(false)
     .setSecure(secure)
-    .setSameSite(sameSite)
-    .setSameSiteMode(if (null == sameSiteMode) null else "$sameSiteMode")
+    .setSameSite(null != sameSiteMode)
+    .setSameSiteMode(sameSiteMode?.toString())
     .setPath("/")
     .setMaxAge(maxAge)
     .setExpires(expiration)
@@ -104,7 +102,6 @@ fun java.time.Duration.createCookie(
  * @param name the name of the cookie
  * @param value the value of the cookie
  * @param secure whether to send the cookie for a secure (https) website
- * @param sameSite whether to send the cookie only for the same site it was created in
  * @param sameSiteMode how to deal with cookies when the site is accessed through a 3rd party
  * @param separator the separator character between the cookie value and its expiration
  * @param now the current date and time, defaults to current time
@@ -114,7 +111,6 @@ fun CookieConfiguration.createCookie(
   name: String,
   value: String,
   secure: Boolean = true,
-  sameSite: Boolean = false,
   sameSiteMode: SameSiteMode? = null,
   separator: Char = Constants.COOKIE_EXPIRATION_SEPARATOR,
   now: java.util.Date = java.util.Date(),
@@ -122,7 +118,6 @@ fun CookieConfiguration.createCookie(
   name = name,
   value = value,
   secure = secure,
-  sameSite = sameSite,
   sameSiteMode = sameSiteMode,
   separator = separator,
   now = now,
@@ -134,16 +129,16 @@ fun CookieConfiguration.createCookie(
  * This is the way to force deletion of that cookie on the client side.
  *
  * @param secure whether to send the cookie for a secure (https) website
- * @param sameSite whether to send the cookie only for the same site it was created in
+ * @param sameSiteMode how to deal with cookies when the site is accessed through a 3rd party
  */
 @Suppress("MagicNumber")
 fun String.deleteCookie(
   secure: Boolean = true,
-  sameSite: Boolean = true,
+  sameSiteMode: SameSiteMode? = null,
 ): Cookie = CookieImpl(this, HTTP_HEADER_DELETE)
   .setHttpOnly(false)
   .setSecure(secure)
-  .setSameSite(sameSite)
-  .setSameSiteMode("${SameSiteMode.STRICT}")
+  .setSameSite(null != sameSiteMode)
+  .setSameSiteMode(sameSiteMode?.toString())
   .setPath("/")
   .setExpires(java.util.Date().minusDays(365L))
