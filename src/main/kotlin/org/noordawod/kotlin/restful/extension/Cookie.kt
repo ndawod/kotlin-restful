@@ -21,7 +21,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "MatchingDeclarationName")
 
 package org.noordawod.kotlin.restful.extension
 
@@ -36,7 +36,9 @@ import org.noordawod.kotlin.restful.config.CookieConfiguration
 /**
  * The values for SameSite cookie parameter.
  */
-enum class SameSiteMode(private val value: CookieSameSiteMode) {
+enum class SameSiteMode(
+  private val value: CookieSameSiteMode,
+) {
   /**
    * Strict SameSite value.
    */

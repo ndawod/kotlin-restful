@@ -531,12 +531,16 @@ fun HttpServerExchange.sourceAddress(): java.net.InetAddress? {
         java.net.InetAddress.getByName(forwardedSourceAddress)
       } catch (_: java.net.UnknownHostException) {
         null
-      } ?: sourceAddress?.address
+      }
     }
 
-    if (null != address) {
-      putAttachment(REMOTE_IP_ADDR_ID, address)
+    if (null == address) {
+      address = sourceAddress?.address
     }
+  }
+
+  if (null != address) {
+    putAttachment(REMOTE_IP_ADDR_ID, address)
   }
 
   return address
