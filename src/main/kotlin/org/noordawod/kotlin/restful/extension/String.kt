@@ -122,7 +122,7 @@ fun String.buildPath(
       builder.appendQueryParameter(
         sep = sep,
         key = key,
-        values = if (value is Iterable<*>) value else listOf(value),
+        values = value as? Iterable<*> ?: listOf(value),
       )
     }
   }

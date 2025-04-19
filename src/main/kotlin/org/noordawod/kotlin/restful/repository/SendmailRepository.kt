@@ -37,7 +37,7 @@ import org.simplejavamail.mailer.MailerBuilder
  */
 interface SendmailRepository {
   /**
-   * Sends an email [message] synchronously. This means that client waits until the message
+   * Sends an email [message] synchronously. This means that the client waits until the message
    * is sent out, which will obviously block the current thread.
    *
    * @param message details of the message like sender, recipient, subject line, etc.
@@ -45,7 +45,7 @@ interface SendmailRepository {
   fun send(message: SendmailMessage): Throwable?
 
   /**
-   * Sends an email [message] asynchronously. This means that client does not wait until the
+   * Sends an email [message] asynchronously. This means that the client does not wait until the
    * message is sent out as a new thread is spun to do the work.
    *
    * @param message details of the message like sender, recipient, subject line, etc.
@@ -117,16 +117,18 @@ data class SendmailPerson(
 
 /**
  * A model representing a message to be sent out from [one person][from] to
- * [another][recipient].
+ * [another][to].
  *
- * There is no guarantee that the [recipient] will actually receive the email message,
+ * There is no guarantee that the [to] will actually receive the email message,
  * this depends on many factors such as SMTP delivery, anti-spam measures, etc.
  *
  * @param sender the person to receive bounced/undelivered emails
  * @param from the person appearing in the "From:" message address
  * @param replyTo the person to receive replies
- * @param recipient the person to receive the [html]
- * @param subject the Subject: line in the email
+ * @param to the list of persons to receive the message
+ * @param cc the list of carbon-copied persons to receive the message, empty by default
+ * @param bcc the list of blind-carbon-copied persons to receive the message, empty by default
+ * @param subject the Subject: line in the email message
  * @param html the HTML message to send out
  * @param textual the plain text message to send out
  * @param isHtml whether the [html] is HTML (true) or text-only (false)
@@ -136,7 +138,9 @@ open class SendmailMessage(
   val sender: String,
   val from: SendmailPerson,
   val replyTo: SendmailPerson?,
-  val recipient: SendmailPerson,
+  val to: Collection<SendmailPerson>,
+  val cc: Collection<SendmailPerson> = emptyList(),
+  val bcc: Collection<SendmailPerson> = emptyList(),
   val subject: String,
   val html: String,
   val textual: String,

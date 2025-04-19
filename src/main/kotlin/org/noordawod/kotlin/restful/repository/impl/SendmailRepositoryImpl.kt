@@ -24,7 +24,9 @@
 package org.noordawod.kotlin.restful.repository.impl
 
 import org.noordawod.kotlin.core.config.SmtpConfiguration
+import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.restful.repository.SendmailMessage
+import org.noordawod.kotlin.restful.repository.SendmailPerson
 import org.noordawod.kotlin.restful.repository.SendmailRepository
 import org.simplejavamail.api.email.Recipient
 import org.simplejavamail.api.mailer.Mailer
@@ -84,10 +86,9 @@ internal class SendmailRepositoryImpl(
         message.from.fullName,
         message.from.email,
       )
-      builder.to(
-        message.recipient.fullName,
-        message.recipient.email,
-      )
+      builder.to(message.to.fromDomainModels)
+      builder.cc(message.cc.fromDomainModels)
+      builder.bcc(message.bcc.fromDomainModels)
       builder.withPlainText(message.textual)
 
       if (message.isHtml) {
@@ -106,4 +107,13 @@ internal class SendmailRepositoryImpl(
       error
     }
   }
+
+  private val Collection<SendmailPerson>.fromDomainModels: Collection<Recipient>
+    get() {
+      val result = mutableListWith<Recipient>(size)
+      for (person in this) {
+        result.add(Recipient(person.fullName, person.email, null))
+      }
+      return result
+    }
 }
