@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.7.1 (April 29, 2025)
+    Bump up dependencies versions.
+
 5.7.0 (April 19, 2025)
     Add support for sending an email message to multiple recipients.
 
