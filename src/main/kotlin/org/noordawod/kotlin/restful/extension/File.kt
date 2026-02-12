@@ -58,10 +58,9 @@ fun java.io.File.freeMarkerConfiguration(
 
   if (null != env) {
     freeMarker.templateExceptionHandler = when (env) {
-      Environment.LOCAL,
-      Environment.DEVEL,
-      -> TemplateExceptionHandler.HTML_DEBUG_HANDLER
-
+      Environment.LOCAL -> TemplateExceptionHandler.HTML_DEBUG_HANDLER
+      Environment.REMOTE -> TemplateExceptionHandler.HTML_DEBUG_HANDLER
+      Environment.DEVEL -> TemplateExceptionHandler.HTML_DEBUG_HANDLER
       Environment.BETA -> TemplateExceptionHandler.DEBUG_HANDLER
       Environment.PRODUCTION -> TemplateExceptionHandler.RETHROW_HANDLER
     }

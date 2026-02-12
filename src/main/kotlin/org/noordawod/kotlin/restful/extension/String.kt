@@ -27,7 +27,7 @@ package org.noordawod.kotlin.restful.extension
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.exceptions.JWTDecodeException
-import org.noordawod.kotlin.core.Constants
+import org.noordawod.kotlin.core.DEFAULT_LINE_WIDTH
 import org.noordawod.kotlin.core.config.JwtConfiguration
 import org.noordawod.kotlin.core.extension.MILLIS_IN_1_SECOND
 import org.noordawod.kotlin.core.extension.trimOrNull
@@ -109,7 +109,7 @@ fun String.buildPath(
   params: Map<String, Any> = emptyMap(),
   allowedParams: Set<String>? = null,
 ): String {
-  val builder = StringBuilder(Constants.DEFAULT_LINE_WIDTH)
+  val builder = StringBuilder(DEFAULT_LINE_WIDTH)
   val sep = QuerySeparator()
 
   builder.append(this)

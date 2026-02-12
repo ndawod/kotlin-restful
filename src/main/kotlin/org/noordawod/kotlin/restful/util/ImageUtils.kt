@@ -26,7 +26,7 @@
 package org.noordawod.kotlin.restful.util
 
 import io.trbl.blurhash.BlurHash
-import org.noordawod.kotlin.core.Constants
+import org.noordawod.kotlin.core.DEFAULT_LIST_CAPACITY
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.util.FileSystem
 import org.noordawod.kotlin.core.util.ImageDetails
@@ -73,7 +73,7 @@ object ImageUtils {
       file.isFile && file.canExecute()
     } ?: throw java.io.IOException("Unable to find convert program in: $convertPaths")
 
-    val args = mutableListWith<String>(Constants.DEFAULT_LIST_CAPACITY)
+    val args = mutableListWith<String>(DEFAULT_LIST_CAPACITY)
 
     args.addAll(
       listOf(

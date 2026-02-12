@@ -86,7 +86,9 @@ class Base62JsonAdapter(
   ) {
     val json: String? = when {
       null == value -> null
+
       rethrowOnError -> ByteUtils.toBase62(value)
+
       else -> try {
         ByteUtils.toBase62(value)
       } catch (ignored: IllegalArgumentException) {
@@ -94,6 +96,7 @@ class Base62JsonAdapter(
         null
       }
     }
+
     writer.value(json)
   }
 }
