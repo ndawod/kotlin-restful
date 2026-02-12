@@ -27,6 +27,7 @@ package org.noordawod.kotlin.restful.util
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import org.noordawod.kotlin.restful.moshi.ULongAdapter
 import org.noordawod.kotlin.restful.moshi.addBase62JsonAdapter
 import org.noordawod.kotlin.restful.moshi.addEpochDateAdapter
 import org.noordawod.kotlin.restful.moshi.addOffsetDateTimeAdapter
@@ -34,12 +35,55 @@ import org.noordawod.kotlin.restful.moshi.addOffsetDateTimeAdapter
 /**
  * Builds a [Moshi] instance that we'll use for all services in the backend.
  *
- * @param useSeconds whether to use seconds (true) or milliseconds (false) for epoch
- *        calculations (default is false)
+ * @param useSeconds whether to use seconds to denote a
+ * [Date][java.util.Date] when `true`, or milliseconds when `false`
+ * @param zeroAsNull whether to use the digit `0` to denote a `null`
+ * when `true`, or null itself when `false`
  */
-fun buildDefaultMoshi(useSeconds: Boolean = false): Moshi = Moshi.Builder()
+fun buildDefaultMoshi(
+  useSeconds: Boolean = false,
+  zeroAsNull: Boolean = false,
+): Moshi = buildDefaultMoshiImpl(
+  useSeconds = useSeconds,
+  zeroAsNull = zeroAsNull,
+).build()
+
+/**
+ * Builds a default [Moshi] instance and allows the caller to further configure it.
+ *
+ * @param useSeconds whether to use seconds to denote a
+ * [Date][java.util.Date] when `true`, or milliseconds when `false`
+ * @param zeroAsNull whether to use the digit `0` to denote a `null`
+ * when `true`, or null itself when `false`
+ * @param configureBlock a block to execute to further configure the eventual [Moshi.Builder]
+ */
+fun configureDefaultMoshi(
+  useSeconds: Boolean = false,
+  zeroAsNull: Boolean = false,
+  configureBlock: Moshi.Builder.() -> Unit,
+): Moshi {
+  val builder = buildDefaultMoshiImpl(
+    useSeconds = useSeconds,
+    zeroAsNull = zeroAsNull,
+  )
+
+  configureBlock.invoke(builder)
+
+  return builder.build()
+}
+
+private fun buildDefaultMoshiImpl(
+  useSeconds: Boolean = false,
+  zeroAsNull: Boolean = false,
+): Moshi.Builder = Moshi.Builder()
+  .add(ULong::class.java, ULongAdapter)
+  .addEpochDateAdapter(
+    usingSeconds = useSeconds,
+    zeroAsNull = false,
+  )
+  .addOffsetDateTimeAdapter(
+    usingSeconds = useSeconds,
+    zeroAsNull = false,
+  )
+  .addBase62JsonAdapter(false)
   .add(KotlinJsonAdapterFactory())
-  .addEpochDateAdapter(usingSeconds = useSeconds, zeroAsNull = false)
-  .addOffsetDateTimeAdapter(usingSeconds = useSeconds, zeroAsNull = false)
-  .addBase62JsonAdapter(rethrowOnError = false)
-  .build()
