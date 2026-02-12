@@ -4,8 +4,8 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 This documents the changes between versions:
 
 5.8.0 (May 31, 2025)
-    Add new extension functions, and add support for further configuring the default
-    Moshi builder.
+    Bump up Gradle version, fix few linting issues, add new extension functions,
+    and add support for further configuring the default Moshi builder.
 
 5.7.2 (May 31, 2025)
     Bump up dependencies versions.
