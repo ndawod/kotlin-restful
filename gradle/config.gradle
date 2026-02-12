@@ -23,7 +23,7 @@
 
 ext.encoding = 'UTF-8'
 ext.versions = [
-    jdk: JavaVersion.VERSION_11,
+    jdk: JavaVersion.VERSION_17,
     plugin_versions_outdated: '0.53.0',
     plugin_detekt: '1.23.8',
     plugin_ktlint: '14.0.1',
