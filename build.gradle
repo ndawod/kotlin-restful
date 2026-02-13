@@ -22,9 +22,8 @@
  */
 
 group = 'org.noordawod.kotlin.restful'
-version = '5.8.0'
+version = '5.8.1'
 description = 'Brings Kotlin closer to Undertow, FreeMarker and other libraries.'
-buildDir = 'build'
 
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.github.ben-manes.versions'
