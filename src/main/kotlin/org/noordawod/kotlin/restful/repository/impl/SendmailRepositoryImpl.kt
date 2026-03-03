@@ -23,11 +23,13 @@
 
 package org.noordawod.kotlin.restful.repository.impl
 
+import jakarta.activation.FileDataSource
 import org.noordawod.kotlin.core.config.SmtpConfiguration
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.restful.repository.SendmailMessage
 import org.noordawod.kotlin.restful.repository.SendmailPerson
 import org.noordawod.kotlin.restful.repository.SendmailRepository
+import org.simplejavamail.api.email.ContentTransferEncoding
 import org.simplejavamail.api.email.Recipient
 import org.simplejavamail.api.mailer.Mailer
 import org.simplejavamail.email.EmailBuilder
@@ -69,30 +71,44 @@ internal class SendmailRepositoryImpl(
     message: SendmailMessage,
     async: Boolean,
   ): Throwable? {
-    val replyTo = if (null == message.replyTo) {
+    val replyTo = message.replyTo
+    val replyToNormalized = if (null == replyTo) {
       null
     } else {
-      Recipient(message.replyTo.fullName, message.replyTo.email, null)
+      Recipient(replyTo.fullName, replyTo.email, null)
     }
+    val from = message.from
+    val cc = message.cc
+    val bcc = message.bcc
+    val attachments = message.attachments
 
     return try {
       val builder = EmailBuilder.startingBlank()
-      builder.withBounceTo(message.sender)
-      if (null != replyTo) {
-        builder.withReplyTo(replyTo)
-      }
+
       builder.withSubject(message.subject)
-      builder.from(
-        message.from.fullName,
-        message.from.email,
-      )
+      builder.from(from.fullName, from.email)
       builder.to(message.to.fromDomainModels)
-      builder.cc(message.cc.fromDomainModels)
-      builder.bcc(message.bcc.fromDomainModels)
+      builder.withBounceTo(message.sender)
       builder.withPlainText(message.textual)
+
+      if (null != replyToNormalized) {
+        builder.withReplyTo(replyToNormalized)
+      }
+      if (!cc.isNullOrEmpty()) {
+        builder.cc(cc.fromDomainModels)
+      }
+      if (!bcc.isNullOrEmpty()) {
+        builder.cc(bcc.fromDomainModels)
+      }
 
       if (message.isHtml) {
         builder.withHTMLText(message.html)
+      }
+
+      if (!attachments.isNullOrEmpty()) {
+        for ((name, file) in attachments) {
+          builder.withAttachment(name, FileDataSource(file), null, ContentTransferEncoding.BASE_64)
+        }
       }
 
       val email = builder.buildEmail()

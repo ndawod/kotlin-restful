@@ -124,23 +124,25 @@ data class SendmailPerson(
  *
  * @param sender the person to receive bounced/undelivered emails
  * @param from the person appearing in the "From:" message address
- * @param replyTo the person to receive replies
+ * @param replyTo the person to receive replies, optional
  * @param to the list of persons to receive the message
- * @param cc the list of carbon-copied persons to receive the message, empty by default
- * @param bcc the list of blind-carbon-copied persons to receive the message, empty by default
+ * @param cc the list of carbon-copied persons to receive the message, optional
+ * @param bcc the list of blind-carbon-copied persons to receive the message, optional
+ * @param attachments the list of attachments as a map of file name to file path, optional
  * @param subject the Subject: line in the email message
  * @param html the HTML message to send out
  * @param textual the plain text message to send out
- * @param isHtml whether the [html] is HTML (true) or text-only (false)
+ * @param isHtml whether the [html] is HTML (true) or text-only (false), true by default
  */
 @Suppress("LongParameterList")
-open class SendmailMessage(
+data class SendmailMessage(
   val sender: String,
   val from: SendmailPerson,
   val replyTo: SendmailPerson?,
   val to: Collection<SendmailPerson>,
-  val cc: Collection<SendmailPerson> = emptyList(),
-  val bcc: Collection<SendmailPerson> = emptyList(),
+  val cc: Collection<SendmailPerson>? = null,
+  val bcc: Collection<SendmailPerson>? = null,
+  val attachments: Map<String, java.io.File>? = null,
   val subject: String,
   val html: String,
   val textual: String,
