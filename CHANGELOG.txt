@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.9.0 (March 3, 2026)
+    Add support for sending attachments via SendmailRepository.
+
 5.8.4 (February 23, 2026)
     Bump up dependencies versions.
 
