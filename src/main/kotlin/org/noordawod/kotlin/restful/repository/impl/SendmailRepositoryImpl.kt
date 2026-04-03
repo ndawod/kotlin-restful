@@ -98,7 +98,7 @@ internal class SendmailRepositoryImpl(
         builder.cc(cc.fromDomainModels)
       }
       if (!bcc.isNullOrEmpty()) {
-        builder.cc(bcc.fromDomainModels)
+        builder.bcc(bcc.fromDomainModels)
       }
 
       if (message.isHtml) {

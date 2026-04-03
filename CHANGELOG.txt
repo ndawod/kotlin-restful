@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.9.2 (April 3, 2026)
+    Add a couple of new extension functions, fix a bug when adding Bcc addresses.
+
 5.9.1 (March 16, 2026)
     Bump up dependencies versions.
 

@@ -271,6 +271,18 @@ fun HttpServerExchange.queryParameter(paramName: String): String? {
 }
 
 /**
+ * Returns the value of a parameter embedded in this [HttpServerExchange] request
+ * channel, if any, or null otherwise.
+ *
+ * @param paramName parameter name to retrieve
+ * @param provider the function that creates a [Throwable]
+ */
+fun HttpServerExchange.queryParameterOrThrow(
+  paramName: String,
+  provider: ThrowableProvider,
+): String = queryParameter(paramName) ?: throw provider(null)
+
+/**
  * Returns the list of values of a parameter embedded in this [HttpServerExchange]
  * request channel separated by [the default separator][DEFAULT_QUERY_VALUE_SEPARATOR],
  * if any, or null otherwise.
