@@ -78,8 +78,8 @@ internal class SendmailRepositoryImpl(
       Recipient(replyTo.fullName, replyTo.email, null)
     }
     val from = message.from
-    val cc = message.cc
-    val bcc = message.bcc
+    val ccList = message.cc
+    val bccList = message.bcc
     val attachments = message.attachments
 
     return try {
@@ -94,11 +94,11 @@ internal class SendmailRepositoryImpl(
       if (null != replyToNormalized) {
         builder.withReplyTo(replyToNormalized)
       }
-      if (!cc.isNullOrEmpty()) {
-        builder.cc(cc.fromDomainModels)
+      if (!ccList.isNullOrEmpty()) {
+        builder.cc(ccList.fromDomainModels)
       }
-      if (!bcc.isNullOrEmpty()) {
-        builder.bcc(bcc.fromDomainModels)
+      if (!bccList.isNullOrEmpty()) {
+        builder.bcc(bccList.fromDomainModels)
       }
 
       if (message.isHtml) {
