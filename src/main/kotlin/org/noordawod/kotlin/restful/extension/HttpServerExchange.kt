@@ -35,6 +35,10 @@ import io.undertow.util.HttpString
 import io.undertow.util.StatusCodes
 import okio.BufferedSink
 import okio.BufferedSource
+import org.noordawod.kotlin.core.error.DataMissingError
+import org.noordawod.kotlin.core.error.JsonDecodingError
+import org.noordawod.kotlin.core.error.JsonEncodingError
+import org.noordawod.kotlin.core.extension.ensureNonNullOrThrow
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.core.extension.simplifyType
 import org.noordawod.kotlin.core.extension.toCountryCodeOrNull
@@ -106,6 +110,28 @@ fun HttpServerExchange.encodeOrThrow(
 }
 
 /**
+ * Encodes the data [model] as a JSON and sends it via this [HttpServerExchange]'s
+ * send channel. If encoding fails, an exception will be thrown.
+ *
+ * @param moshi the [Moshi] instance used to encode the data
+ * @param model the data model to encode as JSON
+ */
+fun HttpServerExchange.encodeOrThrow(
+  moshi: Moshi,
+  model: Any?,
+) {
+  encodeOrThrow(
+    moshi = moshi,
+    model = model,
+  ) {
+    JsonEncodingError(
+      message = "Unable to encode data of type '${model?.javaClass?.simpleName}' into JSON.",
+      cause = it,
+    )
+  }
+}
+
+/**
  * Decodes and returns the JSON residing in this [HttpServerExchange]'s input channel
  * on success, null otherwise.
  *
@@ -133,6 +159,26 @@ fun <T> HttpServerExchange.decodeOrThrow(
   moshi = moshi,
   klass = klass,
 ) ?: throw provider(null)
+
+/**
+ * Decodes and returns the JSON residing in this [HttpServerExchange]'s input channel
+ * on success, throwing an exception otherwise.
+ *
+ * @param moshi the [Moshi] instance used to decode the data
+ * @param klass which JVM object type this JSON maps to
+ */
+fun <T> HttpServerExchange.decodeOrThrow(
+  moshi: Moshi,
+  klass: Class<T>,
+): T = decodeOrThrow(
+  moshi = moshi,
+  klass = klass,
+) {
+  JsonDecodingError(
+    message = "Unable to decode class '${klass.simpleName}' from JSON.",
+    cause = it,
+  )
+}
 
 /**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
@@ -169,6 +215,26 @@ fun <T> HttpServerExchange.decodeListOrThrow(
 ) ?: throw provider(null)
 
 /**
+ * Decodes and returns the JSON residing in this [HttpServerExchange]'s input channel
+ * as a [List] on success, throwing an exception otherwise.
+ *
+ * @param moshi the [Moshi] instance used to decode the data
+ * @param klass which JVM object type this JSON array maps to
+ */
+fun <T> HttpServerExchange.decodeListOrThrow(
+  moshi: Moshi,
+  klass: Class<T>,
+): List<T> = decodeListOrThrow(
+  moshi = moshi,
+  klass = klass,
+) {
+  JsonDecodingError(
+    message = "Unable to decode a List of class '${klass.simpleName}' from JSON.",
+    cause = it,
+  )
+}
+
+/**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
  * as a [Set] on success, null otherwise.
  *
@@ -199,6 +265,26 @@ fun <T> HttpServerExchange.decodeSetOrThrow(
   moshi = moshi,
   klass = klass,
 ) ?: throw provider(null)
+
+/**
+ * Decodes and returns the JSON residing in this [HttpServerExchange]'s input channel
+ * as a [Set] on success, throwing an exception otherwise.
+ *
+ * @param moshi the [Moshi] instance used to decode the data
+ * @param klass which JVM object type this JSON array maps to
+ */
+fun <T> HttpServerExchange.decodeSetOrThrow(
+  moshi: Moshi,
+  klass: Class<T>,
+): Set<T> = decodeSetOrThrow(
+  moshi = moshi,
+  klass = klass,
+) {
+  JsonDecodingError(
+    message = "Unable to decode a Set of class '${klass.simpleName}' from JSON.",
+    cause = it,
+  )
+}
 
 /**
  * Decodes and returns the JSON residing in this [HttpServerExchange]’s input channel
@@ -237,6 +323,26 @@ fun <T> HttpServerExchange.decodeMapOrThrow(
   moshi = moshi,
   klass = klass,
 ) ?: throw provider(null)
+
+/**
+ * Decodes and returns the JSON residing in this [HttpServerExchange]'s input channel
+ * as a [Map] on success, throwing an exception otherwise.
+ *
+ * @param moshi the [Moshi] instance used to decode the data
+ * @param klass which JVM object type this JSON array maps to
+ */
+fun <T> HttpServerExchange.decodeMapOrThrow(
+  moshi: Moshi,
+  klass: Class<T>,
+): Map<String, T> = decodeMapOrThrow(
+  moshi = moshi,
+  klass = klass,
+) {
+  JsonDecodingError(
+    message = "Unable to decode a Map of class '${klass.simpleName}' from JSON.",
+    cause = it,
+  )
+}
 
 /**
  * Notifies the client that there will be no content in the response, finally this will also
@@ -281,6 +387,76 @@ fun HttpServerExchange.queryParameterOrThrow(
   paramName: String,
   provider: ThrowableProvider,
 ): String = queryParameter(paramName) ?: throw provider(null)
+
+/**
+ * Returns the value of [paramName] embedded in this [HttpServerExchange]
+ * on success, throws otherwise.
+ *
+ * @param paramName the query parameter name
+ * @param decoder the decoder function tha converts a [String] to [T]
+ */
+fun <T> HttpServerExchange.decoderValue(
+  paramName: String,
+  decoder: (String) -> T?,
+): T? {
+  val value = queryParameter(paramName)
+
+  return if (null == value) null else decoder(value)
+}
+
+/**
+ * Returns the value of [paramName] embedded in this [HttpServerExchange]
+ * on success, throws otherwise.
+ *
+ * @param paramName the query parameter name
+ * @param decoder the decoder function tha converts a [String] to [T]
+ */
+fun <T> HttpServerExchange.decoderValueOrThrow(
+  paramName: String,
+  decoder: (String) -> T?,
+): T = decoderValue(
+  paramName = paramName,
+  decoder = decoder,
+).ensureNonNullOrThrow(
+  errorFn = {
+    DataMissingError(
+      message = "Unable to retrieve the parameter value.",
+      data = paramName,
+      statusCode = StatusCodes.NOT_FOUND,
+    )
+  },
+)
+
+/**
+ * Returns the value of a date formatted as `YYYYMMDD` embedded in this [HttpServerExchange]
+ * on success, null otherwise.
+ *
+ * @param paramName the name of the query parameter
+ */
+fun HttpServerExchange.dateYmd(paramName: String): Int? = queryParameter(paramName)?.toIntOrNull()
+
+/**
+ * Returns the value of a date formatted as `YYYYMM` embedded in this [HttpServerExchange]
+ * on success, null otherwise.
+ *
+ * @param paramName the name of the query parameter
+ */
+fun HttpServerExchange.dateYm(paramName: String): Int? = queryParameter(paramName)?.toIntOrNull()
+
+/**
+ * Returns the value of a date formatted as `YYYYMMDD` embedded in this [HttpServerExchange]
+ * on success, throws otherwise.
+ */
+fun HttpServerExchange.dateYmdOrThrow(paramName: String): Int = dateYmd(paramName)
+  .ensureNonNullOrThrow(
+    errorFn = {
+      DataMissingError(
+        message = "Unable to retrieve the date value.",
+        data = paramName,
+        statusCode = StatusCodes.NOT_FOUND,
+      )
+    },
+  )
 
 /**
  * Returns the list of values of a parameter embedded in this [HttpServerExchange]
@@ -660,6 +836,43 @@ fun HttpServerExchange.deleteAccessToken() {
 }
 
 /**
+ * Redirects the remote client to a different URI with a parameter set to the current
+ * requested path.
+ *
+ * @param targetPath the target path to redirect the user to
+ * @param paramName the name of the parameter to hold the current request path
+ * @param endExchange whether to end the current exchange or not
+ */
+fun HttpServerExchange.redirectTo(
+  targetPath: String,
+  paramName: String,
+  endExchange: Boolean = true,
+) {
+  val requestPath = this.requestPath
+
+  // If the user is already requesting the same target path, do nothing.
+  if (requestPath.startsWith(targetPath)) {
+    return
+  }
+
+  val queryString = if (queryString.isEmpty()) "" else "?$queryString"
+
+  val redirectUri = targetPath.buildPath(
+    params = mapOf(
+      paramName to "$requestPath$queryString",
+    ),
+  )
+
+  statusCode = StatusCodes.FOUND
+  responseHeaders.put(Headers.LOCATION, redirectUri)
+
+  if (endExchange) {
+    responseHeaders.put(Headers.CONNECTION, "close")
+    endExchange()
+  }
+}
+
+/**
  * Returns a new [BufferedSource] that buffers reads from this [HttpServerExchange]'s
  * [InputStream][java.io.InputStream].
  */
@@ -712,7 +925,7 @@ fun <T> HttpServerExchange.jsonOutput(
 
 /**
  * Stores the request body of this [HttpServerExchange]'s [InputStream][java.io.InputStream]
- * in a [file], and returns the number of bytes written. If the request contains no body,
+ * in a [file], and returns the number of bytes written. If there's no request body,
  * then 0 is returned.
  *
  * Note that if the [file] already exists in the file system, it will be overwritten.
@@ -724,7 +937,7 @@ fun HttpServerExchange.binaryOutput(file: java.io.File): Long = binaryOutput(
 
 /**
  * Stores the request body of this [HttpServerExchange]'s [InputStream][java.io.InputStream]
- * in a [file], and returns the number of bytes written. If the request contains no body,
+ * in a [file], and returns the number of bytes written. If there's no request body,
  * then 0 is returned.
  *
  * Note that if the [file] already exists in the file system, it will be overwritten.
