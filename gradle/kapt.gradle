@@ -29,3 +29,7 @@ apply plugin: 'kotlin-kapt'
 kapt {
     includeCompileClasspath = false
 }
+
+dependencies {
+    kapt "org.jetbrains.kotlin:kotlin-metadata-jvm:${versions.kotlin}"
+}
