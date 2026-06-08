@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.10.2 (June 8, 2026)
+    Bump up dependencies versions, adjust code afterwards.
+
 5.10.1 (May 14, 2026)
     Add extension functions on `HttpServerExchange` class.
 

@@ -122,10 +122,12 @@ object ImageUtils {
    *
    * @param convertPath path to ImageMagick's convert program
    * @param filePath location of the image to identify
+   * @param throwOnError whether to throw when an error occurs, defaults to false
    */
   fun getDimension(
     convertPath: String,
     filePath: java.io.File,
+    throwOnError: Boolean = false,
   ): Pair<Int, Int> {
     // Construct the program's arguments.
     val args = listOf(
@@ -136,10 +138,11 @@ object ImageUtils {
     )
 
     // Execute the external program.
-    val result = FileSystem.execute(
+    val (_, result) = FileSystem.execute(
       program = convertPath,
       args = args,
       includeErrors = false,
+      throwOnError = throwOnError,
     )
     var width = 0
     var height = 0
