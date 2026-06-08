@@ -60,13 +60,16 @@ object ImageUtils {
    * @param targetFile target directory to store the file in, creating it if necessary
    * @param quality compression quality, a floating number between 0.0 - 1.0
    * @param maxSize maximum image size for the [output image][targetFile]
+   * @param throwOnError whether to throw when an error occurs, defaults to false
    */
+  @Suppress("LongParameterList")
   fun compressImage(
     convertPaths: Collection<String>,
     sourceFile: java.io.File,
     targetFile: java.io.File,
     quality: Float,
     maxSize: Int?,
+    throwOnError: Boolean = false,
   ): ImageDetails {
     val convertPath = convertPaths.firstOrNull {
       val file = java.io.File(it)
@@ -99,6 +102,7 @@ object ImageUtils {
       program = convertPath,
       args = args,
       includeErrors = false,
+      throwOnError = throwOnError,
     )
 
     return getDetails(targetFile)
