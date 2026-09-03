@@ -40,6 +40,11 @@ sealed class HttpResponse {
   abstract val contentType: String
 
   /**
+   * The response's status code.
+   */
+  abstract val statusCode: Int
+
+  /**
    * Sends the content type of this response to the specified [exchange].
    *
    * @param exchange the HTTP I/O exchange
@@ -55,17 +60,25 @@ sealed class HttpResponse {
   }
 
   /**
+   * Sends the content type of this response to the specified [exchange].
+   *
+   * @param exchange the HTTP I/O exchange
+   */
+  fun setStatusCode(exchange: HttpServerExchange) {
+    exchange.statusCode = statusCode
+  }
+
+  /**
    * There's no content to send in this response.
    *
    * @param statusCode the HTTP status code to send with the response
    */
   class NoContent(
-    val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT,
+    override val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT,
   ) : HttpResponse() {
     override val contentType: String = ""
 
-    override fun equals(other: Any?): Boolean = other is NoContent &&
-      statusCode == other.statusCode
+    override fun equals(other: Any?): Boolean = other is NoContent && statusCode == other.statusCode
 
     override fun hashCode(): Int = statusCode
 
@@ -77,7 +90,7 @@ sealed class HttpResponse {
      * @param exchange the HTTP I/O exchange
      */
     fun send(exchange: HttpServerExchange) {
-      exchange.statusCode = statusCode
+      setStatusCode(exchange)
     }
   }
 
@@ -86,6 +99,8 @@ sealed class HttpResponse {
    */
   object NotImplemented : HttpResponse() {
     override val contentType: String = ""
+
+    override val statusCode: Int = io.undertow.util.StatusCodes.NOT_IMPLEMENTED
 
     override fun equals(other: Any?): Boolean = other is NotImplemented
 
@@ -99,7 +114,7 @@ sealed class HttpResponse {
      * @param exchange the HTTP I/O exchange
      */
     fun send(exchange: HttpServerExchange) {
-      exchange.statusCode = io.undertow.util.StatusCodes.NOT_IMPLEMENTED
+      setStatusCode(exchange)
     }
   }
 
@@ -109,10 +124,12 @@ sealed class HttpResponse {
    * @param body the actual JSON body
    * @param charset the character set of [body], defaults to
    * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class Json<T>(
     val body: T,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
+    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String = if ("$charset".isBlank()) {
@@ -140,6 +157,7 @@ sealed class HttpResponse {
       encoder: (T) -> String,
     ) {
       setContentType(exchange)
+      setStatusCode(exchange)
       exchange.outputStream.writer(charset).use {
         it.write(encoder(body))
       }
@@ -152,10 +170,12 @@ sealed class HttpResponse {
    * @param body the actual JSON body as a String
    * @param charset the character set of [body], defaults to
    * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class JsonString(
     val body: String,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
+    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String = if ("$charset".isBlank()) {
@@ -179,6 +199,7 @@ sealed class HttpResponse {
      */
     fun send(exchange: HttpServerExchange) {
       setContentType(exchange)
+      setStatusCode(exchange)
       exchange.outputStream.writer(charset).use {
         it.write(body)
       }
@@ -190,11 +211,13 @@ sealed class HttpResponse {
    *
    * @param charset the character set of [body], defaults to
    * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
-   * @param body the actual JSON body
+   * @param body the actual textual body
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   open class Text(
     val body: String,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
+    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
   ) : HttpResponse() {
     override val contentType: String = if ("$charset".isBlank()) {
       TEXT_PLAIN
@@ -217,6 +240,7 @@ sealed class HttpResponse {
      */
     fun send(exchange: HttpServerExchange) {
       setContentType(exchange)
+      setStatusCode(exchange)
       exchange.outputStream.writer(charset).use {
         it.write(body)
       }
@@ -233,21 +257,28 @@ sealed class HttpResponse {
       body: String,
     ) {
       setContentType(exchange)
+      setStatusCode(exchange)
       exchange.responseSender.send(body)
     }
   }
 
   /**
-   * The response body is plain text (not HTML).
+   * The response body is HTML.
    *
    * @param charset the character set of [body], defaults to
    * [UTF-8][java.nio.charset.StandardCharsets.UTF_8]
-   * @param body the actual JSON body
+   * @param body the actual HTML body
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class Html(
     body: String,
     charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
-  ) : Text(body, charset) {
+    statusCode: Int = io.undertow.util.StatusCodes.OK,
+  ) : Text(
+    body = body,
+    charset = charset,
+    statusCode = statusCode,
+  ) {
     override val contentType: String = if ("$charset".isBlank()) {
       TEXT_HTML
     } else {
@@ -265,11 +296,13 @@ sealed class HttpResponse {
    * [DEFAULT_BUFFER_SIZE]
    * @param contentType the response's content type, defaults to
    * ["application/octet-stream"][BINARY].
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   open class BinaryBytes(
     val bytes: ByteArray,
     val bufferSize: Int = DEFAULT_BUFFER_SIZE,
     override val contentType: String = BINARY,
+    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
   ) : HttpResponse() {
     protected open val klassName: String = "BinaryBytes"
 
@@ -289,6 +322,7 @@ sealed class HttpResponse {
      */
     fun send(exchange: HttpServerExchange) {
       setContentType(exchange)
+      setStatusCode(exchange)
       java.io.ByteArrayInputStream(bytes).use { inputStream ->
         exchange.sendBinaryResponse(
           inputStream = if (bufferSize < bytes.size) {
@@ -310,11 +344,13 @@ sealed class HttpResponse {
    * [DEFAULT_BUFFER_SIZE]
    * @param contentType the response's content type, defaults to
    * ["application/octet-stream"][BINARY].
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   open class BinaryFile(
     val file: java.io.File,
     val bufferSize: Int = DEFAULT_BUFFER_SIZE,
     override val contentType: String = BINARY,
+    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
   ) : HttpResponse() {
     protected open val klassName: String = "BinaryFile"
 
@@ -334,6 +370,7 @@ sealed class HttpResponse {
      */
     fun send(exchange: HttpServerExchange) {
       setContentType(exchange)
+      setStatusCode(exchange)
       java.io.BufferedInputStream(
         java.io.FileInputStream(file),
         bufferSize,
@@ -352,11 +389,18 @@ sealed class HttpResponse {
    * @param image the actual bytes comprising the JPEG image
    * @param bufferSize the amount of memory to reserve for buffering the response, defaults to
    * [DEFAULT_BUFFER_SIZE]
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class JpegBytes(
     val image: ByteArray,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-  ) : BinaryBytes(bytes = image, bufferSize = bufferSize, contentType = JPEG_IMAGE) {
+    statusCode: Int = io.undertow.util.StatusCodes.OK,
+  ) : BinaryBytes(
+    bytes = image,
+    bufferSize = bufferSize,
+    contentType = JPEG_IMAGE,
+    statusCode = statusCode,
+  ) {
     override val klassName: String = "JpegBytes"
   }
 
@@ -366,11 +410,18 @@ sealed class HttpResponse {
    * @param image the JPEG image file location
    * @param bufferSize the amount of memory to reserve for buffering the response, defaults to
    * [DEFAULT_BUFFER_SIZE]
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class JpegFile(
     val image: java.io.File,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-  ) : BinaryFile(file = image, bufferSize = bufferSize, contentType = JPEG_IMAGE) {
+    statusCode: Int = io.undertow.util.StatusCodes.OK,
+  ) : BinaryFile(
+    file = image,
+    bufferSize = bufferSize,
+    contentType = JPEG_IMAGE,
+    statusCode = statusCode,
+  ) {
     override val klassName: String = "JpegFile"
   }
 
@@ -380,11 +431,18 @@ sealed class HttpResponse {
    * @param image the actual bytes comprising the PNG image
    * @param bufferSize the amount of memory to reserve for buffering the response, defaults to
    * [DEFAULT_BUFFER_SIZE]
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class PngBytes(
     val image: ByteArray,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-  ) : BinaryBytes(bytes = image, bufferSize = bufferSize, contentType = PNG_IMAGE) {
+    statusCode: Int = io.undertow.util.StatusCodes.OK,
+  ) : BinaryBytes(
+    bytes = image,
+    bufferSize = bufferSize,
+    contentType = PNG_IMAGE,
+    statusCode = statusCode,
+  ) {
     override val klassName: String = "PngBytes"
   }
 
@@ -394,11 +452,18 @@ sealed class HttpResponse {
    * @param image the PNG image file location
    * @param bufferSize the amount of memory to reserve for buffering the response, defaults to
    * [DEFAULT_BUFFER_SIZE]
+   * @param statusCode the HTTP status code to send with the response, defaults to `200`
    */
   class PngFile(
     val image: java.io.File,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-  ) : BinaryFile(file = image, bufferSize = bufferSize, contentType = PNG_IMAGE) {
+    statusCode: Int = io.undertow.util.StatusCodes.OK,
+  ) : BinaryFile(
+    file = image,
+    bufferSize = bufferSize,
+    contentType = PNG_IMAGE,
+    statusCode = statusCode,
+  ) {
     override val klassName: String = "PngFile"
   }
 
