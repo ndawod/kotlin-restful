@@ -24,6 +24,7 @@
 package org.noordawod.kotlin.restful.repository.impl
 
 import jakarta.activation.FileDataSource
+import jakarta.mail.Message
 import org.noordawod.kotlin.core.config.SmtpConfiguration
 import org.noordawod.kotlin.core.extension.mutableListWith
 import org.noordawod.kotlin.restful.repository.SendmailMessage
@@ -75,7 +76,7 @@ internal class SendmailRepositoryImpl(
     val replyToNormalized = if (null == replyTo) {
       null
     } else {
-      Recipient(replyTo.fullName, replyTo.email, null)
+      Recipient(replyTo.fullName, replyTo.email, null, null)
     }
     val from = message.from
     val ccList = message.cc
@@ -87,18 +88,24 @@ internal class SendmailRepositoryImpl(
 
       builder.withSubject(message.subject)
       builder.from(from.fullName, from.email)
-      builder.to(message.to.fromDomainModels)
       builder.withBounceTo(message.sender)
       builder.withPlainText(message.textual)
 
-      if (null != replyToNormalized) {
-        builder.withReplyTo(replyToNormalized)
-      }
+      val recipients = mutableListWith<Recipient>((ccList?.size ?: 0) + (bccList?.size ?: 0) + 1)
+
+      recipients.addAll(message.to.fromDomainModels(Message.RecipientType.TO))
+
       if (!ccList.isNullOrEmpty()) {
-        builder.cc(ccList.fromDomainModels)
+        recipients.addAll(ccList.fromDomainModels(Message.RecipientType.CC))
       }
       if (!bccList.isNullOrEmpty()) {
-        builder.bcc(bccList.fromDomainModels)
+        recipients.addAll(bccList.fromDomainModels(Message.RecipientType.BCC))
+      }
+
+      builder.withRecipients(recipients)
+
+      if (null != replyToNormalized) {
+        builder.withReplyTo(replyToNormalized)
       }
 
       if (message.isHtml) {
@@ -124,12 +131,15 @@ internal class SendmailRepositoryImpl(
     }
   }
 
-  private val Collection<SendmailPerson>.fromDomainModels: Collection<Recipient>
-    get() {
-      val result = mutableListWith<Recipient>(size)
-      for (person in this) {
-        result.add(Recipient(person.fullName, person.email, null))
-      }
-      return result
+  @Suppress("DestructuringDeclaration")
+  private fun Collection<SendmailPerson>.fromDomainModels(
+    type: Message.RecipientType?,
+  ): Collection<Recipient> {
+    val result = mutableListWith<Recipient>(size)
+    for (person in this) {
+      result.add(Recipient(person.fullName, person.email, type, null))
     }
+
+    return result
+  }
 }
