@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.11.1 (September 21, 2026)
+    Bump up target Kotlin language version.
+
 5.11.0 (September 3, 2026)
     Bump up dependencies versions, fix integration with new Jakarta Mail.
 
