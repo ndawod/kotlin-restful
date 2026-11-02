@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.12.3 (November 2, 2026)
+    Fix a bug when preparing javadoc .jar for publication.
+
 5.12.2 (November 2, 2026)
     Add new function to decode an arbitrary JWT.
 
