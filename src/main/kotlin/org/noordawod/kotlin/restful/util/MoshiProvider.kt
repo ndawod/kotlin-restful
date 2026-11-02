@@ -28,9 +28,9 @@ package org.noordawod.kotlin.restful.util
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.noordawod.kotlin.restful.moshi.ULongAdapter
-import org.noordawod.kotlin.restful.moshi.addBase62JsonAdapter
-import org.noordawod.kotlin.restful.moshi.addEpochDateAdapter
-import org.noordawod.kotlin.restful.moshi.addOffsetDateTimeAdapter
+import org.noordawod.kotlin.restful.moshi.addLastBase62JsonAdapter
+import org.noordawod.kotlin.restful.moshi.addLastEpochDateAdapter
+import org.noordawod.kotlin.restful.moshi.addLastOffsetDateTimeAdapter
 
 /**
  * Builds a [Moshi] instance that we'll use for all services in the backend.
@@ -77,13 +77,13 @@ private fun buildDefaultMoshiImpl(
   zeroAsNull: Boolean = false,
 ): Moshi.Builder = Moshi.Builder()
   .addLast(ULong::class.java, ULongAdapter)
-  .addEpochDateAdapter(
+  .addLastEpochDateAdapter(
     usingSeconds = useSeconds,
     zeroAsNull = false,
   )
-  .addOffsetDateTimeAdapter(
+  .addLastOffsetDateTimeAdapter(
     usingSeconds = useSeconds,
     zeroAsNull = false,
   )
-  .addBase62JsonAdapter(false)
+  .addLastBase62JsonAdapter(false)
   .add(KotlinJsonAdapterFactory())
