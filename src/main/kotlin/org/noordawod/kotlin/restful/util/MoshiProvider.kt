@@ -76,7 +76,7 @@ private fun buildDefaultMoshiImpl(
   useSeconds: Boolean = false,
   zeroAsNull: Boolean = false,
 ): Moshi.Builder = Moshi.Builder()
-  .add(ULong::class.java, ULongAdapter)
+  .addLast(ULong::class.java, ULongAdapter)
   .addEpochDateAdapter(
     usingSeconds = useSeconds,
     zeroAsNull = false,

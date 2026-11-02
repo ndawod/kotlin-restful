@@ -86,3 +86,17 @@ fun Moshi.Builder.addOffsetDateTimeAdapter(
     zeroAsNull = zeroAsNull,
   ),
 )
+
+/**
+ * A helper extension function to allow regular concatenation of [Moshi.Builder].
+ */
+fun Moshi.Builder.addLastOffsetDateTimeAdapter(
+  usingSeconds: Boolean,
+  zeroAsNull: Boolean,
+): Moshi.Builder = addLast(
+  java.time.OffsetDateTime::class.java,
+  OffsetDateTimeAdapter(
+    usingSeconds = usingSeconds,
+    zeroAsNull = zeroAsNull,
+  ),
+)

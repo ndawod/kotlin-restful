@@ -46,9 +46,7 @@ typealias ThrowableHttpStatus<T> = Pair<T, Int>
  *
  * @param next the next handler to execute in the chain
  */
-abstract class ErrorWorkerHttpHandler(
-  private val next: HttpHandler,
-) : WorkerHttpHandler() {
+abstract class ErrorWorkerHttpHandler(private val next: HttpHandler) : WorkerHttpHandler() {
   /**
    * Maps the Throwable [t] to an HTTP status code which will guide [handleError] method
    * on how to end the exchange and return the status code to the client.

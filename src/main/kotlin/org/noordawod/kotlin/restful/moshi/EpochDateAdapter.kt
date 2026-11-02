@@ -57,13 +57,13 @@ class EpochDateAdapter(
     writer: JsonWriter,
     value: java.util.Date?,
   ) {
-    val time: Long? = if (null == value) {
+    val date: Long? = if (null == value) {
       if (zeroAsNull) 0L else null
     } else {
       val milliseconds = value.time
       if (usingSeconds) milliseconds / MILLIS_IN_1_SECOND else milliseconds
     }
-    writer.value(time)
+    writer.value(date)
   }
 }
 
@@ -74,6 +74,20 @@ fun Moshi.Builder.addEpochDateAdapter(
   usingSeconds: Boolean,
   zeroAsNull: Boolean,
 ): Moshi.Builder = add(
+  java.util.Date::class.java,
+  EpochDateAdapter(
+    usingSeconds = usingSeconds,
+    zeroAsNull = zeroAsNull,
+  ),
+)
+
+/**
+ * A helper extension function to allow regular concatenation of [Moshi.Builder].
+ */
+fun Moshi.Builder.addLastEpochDateAdapter(
+  usingSeconds: Boolean,
+  zeroAsNull: Boolean,
+): Moshi.Builder = addLast(
   java.util.Date::class.java,
   EpochDateAdapter(
     usingSeconds = usingSeconds,

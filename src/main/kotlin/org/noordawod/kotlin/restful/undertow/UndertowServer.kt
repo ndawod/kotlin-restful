@@ -44,9 +44,7 @@ import org.xnio.channels.AcceptingChannel
  *
  * @param config configuration required to start this Undertow server
  */
-open class UndertowServer(
-  val config: Configuration,
-) {
+open class UndertowServer(val config: Configuration) {
   private val mainThread = Thread.currentThread()
   private var hook: Thread? = null
   private var channel: HttpOpenListener? = null

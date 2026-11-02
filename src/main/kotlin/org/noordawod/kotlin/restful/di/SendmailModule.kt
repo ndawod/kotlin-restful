@@ -40,9 +40,7 @@ import org.simplejavamail.api.mailer.Mailer
  * @param smtp the current [SmtpConfiguration] to use
  */
 @Module
-class SendmailModule(
-  private val smtp: SmtpConfiguration,
-) {
+class SendmailModule(private val smtp: SmtpConfiguration) {
   /**
    * The [Mailer] singleton instance.
    *

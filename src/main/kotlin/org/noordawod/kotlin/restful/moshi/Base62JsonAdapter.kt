@@ -109,3 +109,12 @@ fun Moshi.Builder.addBase62JsonAdapter(rethrowOnError: Boolean): Moshi.Builder =
   Base62Json::class.java,
   Base62JsonAdapter(rethrowOnError),
 )
+
+/**
+ * A helper extension function to allow regular concatenation of [Moshi.Builder].
+ */
+fun Moshi.Builder.addLastBase62JsonAdapter(rethrowOnError: Boolean): Moshi.Builder = addLast(
+  ByteArray::class.java,
+  Base62Json::class.java,
+  Base62JsonAdapter(rethrowOnError),
+)

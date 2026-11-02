@@ -27,6 +27,7 @@ package org.noordawod.kotlin.restful.model
 
 import io.undertow.server.HttpServerExchange
 import io.undertow.util.Headers
+import io.undertow.util.StatusCodes
 import org.noordawod.kotlin.core.extension.trimOrNull
 import org.noordawod.kotlin.restful.extension.bufferOutput
 
@@ -73,9 +74,7 @@ sealed class HttpResponse {
    *
    * @param statusCode the HTTP status code to send with the response
    */
-  class NoContent(
-    override val statusCode: Int = io.undertow.util.StatusCodes.NO_CONTENT,
-  ) : HttpResponse() {
+  class NoContent(override val statusCode: Int = StatusCodes.NO_CONTENT) : HttpResponse() {
     override val contentType: String = ""
 
     override fun equals(other: Any?): Boolean = other is NoContent && statusCode == other.statusCode
@@ -100,7 +99,7 @@ sealed class HttpResponse {
   object NotImplemented : HttpResponse() {
     override val contentType: String = ""
 
-    override val statusCode: Int = io.undertow.util.StatusCodes.NOT_IMPLEMENTED
+    override val statusCode: Int = StatusCodes.NOT_IMPLEMENTED
 
     override fun equals(other: Any?): Boolean = other is NotImplemented
 
@@ -129,7 +128,7 @@ sealed class HttpResponse {
   class Json<T>(
     val body: T,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
-    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
+    override val statusCode: Int = StatusCodes.OK,
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String = if ("$charset".isBlank()) {
@@ -175,7 +174,7 @@ sealed class HttpResponse {
   class JsonString(
     val body: String,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
-    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
+    override val statusCode: Int = StatusCodes.OK,
   ) : HttpResponse() {
     @Suppress("StringLiteralDuplication")
     override val contentType: String = if ("$charset".isBlank()) {
@@ -217,7 +216,7 @@ sealed class HttpResponse {
   open class Text(
     val body: String,
     val charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
-    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
+    override val statusCode: Int = StatusCodes.OK,
   ) : HttpResponse() {
     override val contentType: String = if ("$charset".isBlank()) {
       TEXT_PLAIN
@@ -273,7 +272,7 @@ sealed class HttpResponse {
   class Html(
     body: String,
     charset: java.nio.charset.Charset = java.nio.charset.StandardCharsets.UTF_8,
-    statusCode: Int = io.undertow.util.StatusCodes.OK,
+    statusCode: Int = StatusCodes.OK,
   ) : Text(
     body = body,
     charset = charset,
@@ -302,7 +301,7 @@ sealed class HttpResponse {
     val bytes: ByteArray,
     val bufferSize: Int = DEFAULT_BUFFER_SIZE,
     override val contentType: String = BINARY,
-    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
+    override val statusCode: Int = StatusCodes.OK,
   ) : HttpResponse() {
     protected open val klassName: String = "BinaryBytes"
 
@@ -350,7 +349,7 @@ sealed class HttpResponse {
     val file: java.io.File,
     val bufferSize: Int = DEFAULT_BUFFER_SIZE,
     override val contentType: String = BINARY,
-    override val statusCode: Int = io.undertow.util.StatusCodes.OK,
+    override val statusCode: Int = StatusCodes.OK,
   ) : HttpResponse() {
     protected open val klassName: String = "BinaryFile"
 
@@ -394,7 +393,7 @@ sealed class HttpResponse {
   class JpegBytes(
     val image: ByteArray,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    statusCode: Int = io.undertow.util.StatusCodes.OK,
+    statusCode: Int = StatusCodes.OK,
   ) : BinaryBytes(
     bytes = image,
     bufferSize = bufferSize,
@@ -415,7 +414,7 @@ sealed class HttpResponse {
   class JpegFile(
     val image: java.io.File,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    statusCode: Int = io.undertow.util.StatusCodes.OK,
+    statusCode: Int = StatusCodes.OK,
   ) : BinaryFile(
     file = image,
     bufferSize = bufferSize,
@@ -436,7 +435,7 @@ sealed class HttpResponse {
   class PngBytes(
     val image: ByteArray,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    statusCode: Int = io.undertow.util.StatusCodes.OK,
+    statusCode: Int = StatusCodes.OK,
   ) : BinaryBytes(
     bytes = image,
     bufferSize = bufferSize,
@@ -457,7 +456,7 @@ sealed class HttpResponse {
   class PngFile(
     val image: java.io.File,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    statusCode: Int = io.undertow.util.StatusCodes.OK,
+    statusCode: Int = StatusCodes.OK,
   ) : BinaryFile(
     file = image,
     bufferSize = bufferSize,

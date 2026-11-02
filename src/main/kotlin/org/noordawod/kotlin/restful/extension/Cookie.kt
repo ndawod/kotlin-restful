@@ -36,9 +36,7 @@ import org.noordawod.kotlin.restful.config.CookieConfiguration
 /**
  * The values for SameSite cookie parameter.
  */
-enum class SameSiteMode(
-  private val value: CookieSameSiteMode,
-) {
+enum class SameSiteMode(private val value: CookieSameSiteMode) {
   /**
    * Strict SameSite value.
    */

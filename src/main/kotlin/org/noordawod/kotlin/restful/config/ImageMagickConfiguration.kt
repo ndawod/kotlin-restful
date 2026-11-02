@@ -33,6 +33,4 @@ import kotlinx.serialization.Serializable
  * @param convertPaths possible paths to ImageMagick's convert program
  */
 @Serializable
-data class ImageMagickConfiguration(
-  val convertPaths: Collection<String>,
-)
+data class ImageMagickConfiguration(val convertPaths: Collection<String>)
