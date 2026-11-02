@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.12.1 (November 2, 2026)
+    Add Moshi adapters as last in builder.
+
 5.12.0 (November 2, 2026)
     Add a few Moshi adapters and bump up versions of dependencies, Gradle, and Kotlin language.
 
