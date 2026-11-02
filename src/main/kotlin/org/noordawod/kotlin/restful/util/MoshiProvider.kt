@@ -86,4 +86,4 @@ private fun buildDefaultMoshiImpl(
     zeroAsNull = false,
   )
   .addLastBase62JsonAdapter(false)
-  .add(KotlinJsonAdapterFactory())
+  .addLast(KotlinJsonAdapterFactory())

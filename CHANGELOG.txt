@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.12.2 (November 2, 2026)
+    Add new function to decode an arbitrary JWT.
+
 5.12.1 (November 2, 2026)
     Add Moshi adapters as last in builder.
 
