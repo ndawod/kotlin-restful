@@ -28,13 +28,23 @@ package org.noordawod.kotlin.restful.moshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
+import org.noordawod.kotlin.core.extension.trimOrNull
 
 /**
  * A simple Moshi adapter to encode/decode [java.util.UUID] strings.
  */
 object UuidAdapter : JsonAdapter<java.util.UUID>() {
   override fun fromJson(reader: JsonReader): java.util.UUID? =
-    if (reader.hasNext()) java.util.UUID.fromString(reader.nextString()) else null
+    if (reader.hasNext()) {
+      val value = if (JsonReader.Token.NULL == reader.peek()) {
+        reader.nextNull()
+      } else {
+        reader.nextString().trimOrNull()
+      }
+      if (null == value) null else java.util.UUID.fromString(value)
+    } else {
+      null
+    }
 
   override fun toJson(
     writer: JsonWriter,

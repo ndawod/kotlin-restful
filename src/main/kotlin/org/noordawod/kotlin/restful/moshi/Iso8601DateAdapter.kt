@@ -47,7 +47,7 @@ class Iso8601DateAdapter(dateFormat: String = DATE_TIME_FORMAT) : JsonAdapter<ja
 
   override fun fromJson(reader: JsonReader): java.util.Date? = if (reader.hasNext()) {
     val value = reader.nextString()
-    java.util.Date(MILLIS_IN_1_SECOND * java.time.OffsetDateTime.parse(value).toEpochSecond())
+    java.util.Date(MILLIS_IN_1_SECOND.times(java.time.OffsetDateTime.parse(value).toEpochSecond()))
   } else {
     null
   }

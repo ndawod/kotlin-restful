@@ -17,8 +17,15 @@ import com.squareup.moshi.JsonWriter
  * A simple Moshi adapter to encode/decode [ULong] numbers.
  */
 object ULongAdapter : JsonAdapter<ULong>() {
-  override fun fromJson(reader: JsonReader): ULong? =
-    if (reader.hasNext()) reader.nextLong().toULong() else null
+  override fun fromJson(reader: JsonReader): ULong? = if (reader.hasNext()) {
+    if (JsonReader.Token.NULL == reader.peek()) {
+      reader.nextNull()
+    } else {
+      reader.nextLong().toULong()
+    }
+  } else {
+    null
+  }
 
   override fun toJson(
     writer: JsonWriter,

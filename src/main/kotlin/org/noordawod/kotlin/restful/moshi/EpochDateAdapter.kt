@@ -47,8 +47,16 @@ class EpochDateAdapter(
   val zeroAsNull: Boolean = false,
 ) : JsonAdapter<java.util.Date>() {
   override fun fromJson(reader: JsonReader): java.util.Date? = if (reader.hasNext()) {
-    val value = reader.nextLong()
-    java.util.Date(if (usingSeconds) value * MILLIS_IN_1_SECOND else value)
+    val value = if (JsonReader.Token.NULL == reader.peek()) {
+      reader.nextNull()
+    } else {
+      reader.nextLong()
+    }
+    if (null == value) {
+      null
+    } else {
+      java.util.Date(if (usingSeconds) MILLIS_IN_1_SECOND.times(value) else value)
+    }
   } else {
     null
   }
@@ -61,7 +69,7 @@ class EpochDateAdapter(
       if (zeroAsNull) 0L else null
     } else {
       val milliseconds = value.time
-      if (usingSeconds) milliseconds / MILLIS_IN_1_SECOND else milliseconds
+      if (usingSeconds) milliseconds.div(MILLIS_IN_1_SECOND) else milliseconds
     }
     writer.value(date)
   }

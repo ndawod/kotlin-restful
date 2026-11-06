@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.12.4 (November 6, 2026)
+    Peek into next JSON value instead of throwing an exception.
+
 5.12.3 (November 2, 2026)
     Fix a bug when preparing javadoc .jar for publication.
 

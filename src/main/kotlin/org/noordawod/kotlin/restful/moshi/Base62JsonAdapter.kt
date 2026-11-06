@@ -30,6 +30,7 @@ import com.squareup.moshi.JsonQualifier
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
+import org.noordawod.kotlin.core.extension.trimOrNull
 import org.noordawod.kotlin.core.security.ByteUtils
 
 /**
@@ -58,13 +59,13 @@ class Base62JsonAdapter(
       return null
     }
 
-    val value: String? = try {
-      reader.nextString()
-    } catch (ignored: java.io.IOException) {
-      // We don't want to crash when read data is invalid.
-      null
+    val value = if (JsonReader.Token.NULL == reader.peek()) {
+      reader.nextNull()
+    } else {
+      reader.nextString().trimOrNull()
     }
-    if (value.isNullOrBlank()) {
+
+    if (null == value) {
       return null
     }
 

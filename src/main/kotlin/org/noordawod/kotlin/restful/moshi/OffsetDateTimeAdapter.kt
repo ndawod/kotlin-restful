@@ -47,14 +47,22 @@ class OffsetDateTimeAdapter(
   val zeroAsNull: Boolean = false,
 ) : JsonAdapter<java.time.OffsetDateTime>() {
   override fun fromJson(reader: JsonReader): java.time.OffsetDateTime? = if (reader.hasNext()) {
-    val value = reader.nextLong()
-    val milliseconds = if (usingSeconds) MILLIS_IN_1_SECOND * value else value
-    java.time.OffsetDateTime.of(
-      java.time.Instant.ofEpochMilli(milliseconds)
-        .atZone(java.time.ZoneOffset.UTC)
-        .toLocalDateTime(),
-      java.time.ZoneOffset.UTC,
-    )
+    val value = if (JsonReader.Token.NULL == reader.peek()) {
+      reader.nextNull()
+    } else {
+      reader.nextLong()
+    }
+    if (null == value) {
+      null
+    } else {
+      val milliseconds = if (usingSeconds) MILLIS_IN_1_SECOND.times(value) else value
+      java.time.OffsetDateTime.of(
+        java.time.Instant.ofEpochMilli(milliseconds)
+          .atZone(java.time.ZoneOffset.UTC)
+          .toLocalDateTime(),
+        java.time.ZoneOffset.UTC,
+      )
+    }
   } else {
     null
   }
@@ -67,7 +75,7 @@ class OffsetDateTimeAdapter(
       if (zeroAsNull) 0L else null
     } else {
       val milliseconds = value.toInstant().toEpochMilli()
-      if (usingSeconds) milliseconds / MILLIS_IN_1_SECOND else milliseconds
+      if (usingSeconds) milliseconds.div(MILLIS_IN_1_SECOND) else milliseconds
     }
     writer.value(time)
   }
