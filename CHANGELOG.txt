@@ -3,6 +3,9 @@ Description: Brings Kotlin closer to Undertow, FreeMarker and other libraries.
 
 This documents the changes between versions:
 
+5.13.1 (November 10, 2026)
+    Bump up dependencies versions.
+
 5.13.0 (November 10, 2026)
     Move image-related utility functions to `kotlin-core`.
 
