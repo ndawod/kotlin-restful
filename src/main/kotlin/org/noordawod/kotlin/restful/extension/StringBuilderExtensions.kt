@@ -41,7 +41,7 @@ fun StringBuilder.appendQueryParameter(
   append(sep.value)
   append(StringUtil.URLEnc(key, FreeMarkerDataModel.CHARSET_NAME))
 
-  val list = if (values is Collection<*>) values else values.toCollection(mutableListOf())
+  val list = values as? Collection<*> ?: values.toCollection(mutableListOf())
 
   if (1 < list.size) {
     list.forEach {

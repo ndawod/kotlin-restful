@@ -34,17 +34,16 @@ import org.noordawod.kotlin.core.extension.trimOrNull
  * A simple Moshi adapter to encode/decode [java.util.UUID] strings.
  */
 object UuidAdapter : JsonAdapter<java.util.UUID>() {
-  override fun fromJson(reader: JsonReader): java.util.UUID? =
-    if (reader.hasNext()) {
-      val value = if (JsonReader.Token.NULL == reader.peek()) {
-        reader.nextNull()
-      } else {
-        reader.nextString().trimOrNull()
-      }
-      if (null == value) null else java.util.UUID.fromString(value)
+  override fun fromJson(reader: JsonReader): java.util.UUID? = if (reader.hasNext()) {
+    val value = if (JsonReader.Token.NULL == reader.peek()) {
+      reader.nextNull()
     } else {
-      null
+      reader.nextString().trimOrNull()
     }
+    if (null == value) null else java.util.UUID.fromString(value)
+  } else {
+    null
+  }
 
   override fun toJson(
     writer: JsonWriter,

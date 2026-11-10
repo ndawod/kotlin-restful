@@ -26,7 +26,8 @@
 package org.noordawod.kotlin.restful.util
 
 /**
- * A helper class that returns the next query separator based on how many times it was retrieved.
+ * A helper class that returns the next query separator based on how
+ * many times it was retrieved.
  */
 class QuerySeparator {
   /**
