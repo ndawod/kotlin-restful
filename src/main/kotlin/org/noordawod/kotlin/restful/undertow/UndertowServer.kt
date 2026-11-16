@@ -58,10 +58,15 @@ open class UndertowServer(val config: Configuration) {
 
   /**
    * Allows subclasses to set the initial handler for this [server]'s [channel].
+   *
+   * @param handler the initial handler
+   * @param enableHttp2 whether to enable HTTP/2 support or not
+   * @param options optional settings to apply to Undertow [Builder][OptionMap.Builder]
    */
   @Suppress("DEPRECATION")
   protected fun setHandler(
     handler: HttpHandler,
+    enableHttp2: Boolean = false,
     options: OptionMap? = null,
   ) {
     val buffers = org.xnio.ByteBufferSlicePool(
@@ -80,16 +85,8 @@ open class UndertowServer(val config: Configuration) {
         true,
       )
       .set(
-        UndertowOptions.REQUIRE_HOST_HTTP11,
-        true,
-      )
-      .set(
-        UndertowOptions.ENABLE_SPDY,
-        false,
-      )
-      .set(
         UndertowOptions.ENABLE_HTTP2,
-        false,
+        enableHttp2,
       )
 
     if (null != options) {
